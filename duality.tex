@@ -1,0 +1,207 @@
+\documentclass[]{article}
+\usepackage[portrait, margin=5mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{listings}
+\pagenumbering{gobble}
+
+%\renewcommand{\.}{\hskip .75pt}
+
+\DeclareMathOperator{\aand}{\;\wedge\;}
+\DeclareMathOperator{\st}{,\;}
+\DeclareMathOperator{\ex}{\,\exists}
+
+\begin{document}
+
+\let\r=\rightarrow
+\let\*=\cdot
+
+\renewcommand{\arraystretch}{1.25}
+
+\lstset{
+	basicstyle=\ttfamily\small,
+	literate=
+	{→}{{$\rightarrow$}}1
+	{∀}{{$\forall$}}1
+	{∃}{{$\exists$}}1
+	{×}{{$\times$}}1
+	{σ}{{$\sigma$}}1
+	{τ}{{$\tau$}}1
+	{≠}{{$\neq$}}1
+	{≤}{{$\leq$}}1
+	{≥}{{$\geq$}}1
+	{↔}{{$\iff$}}1
+	{¬}{{$\neg$}}1
+	{∧}{{$\wedge$}}1
+	{•}{$\bullet$}1
+	{·}{$\cdot$}1
+	{⬝}{$\cdot$}1
+	{ℕ}{{$\mathbb{N}$}}1
+	{ₗ}{{$_l$}}1
+	{₀}{{$_0$}}1
+	{∑}{{$\sum$}}1
+	{ᵀ}{{$^\texttt{T}$}}1
+	{ᵥ}{{$_v$}}1
+}
+
+Farkas established that a system of linear inequalities has a solution if and only if we cannot obtain
+a contradiction by taking a nonnegative linear combination of the inequalities.
+We state and formally prove several Farkas-like theorems in Lean 4.
+Furthermore, we consider the rational numbers extended with two special elements denoted by $\bot$ and $\top$
+where $\bot$ is below every rational number and $\top$ is above every rational number.
+We define $\bot + a = \bot = a + \bot$ of all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
+For multiplication, we define $\bot \cdot c = \bot = c \cdot \bot$ for every $c \ge 0$ but
+$\top \cdot d = \top = d \cdot \top$ only for $d > 0$ because $\top \cdot 0 = 0 = 0 \cdot \top$.
+We extend certain versions of the Farkas-like theorems about matrices to a setting where
+coefficients are extended rationals and variables are nonnegative rationals.
+
+
+\section {Introduction}
+
+Rouché, Capelli, Kronecker, Fonténe, Frobenius established that
+a system of linear equalities has a solution if and only if
+we cannot obtain a contradiction by taking a linear combination of the equalities.
+One of many ways to state the theorem is to say that, given a matrix $A : (I \times J) \r F$
+and a vector $b : I \r F$, where $I$ is the set of row indices, $J$ is the set of column indices,
+and $F$ is a field, exactly one of the following statements is true:
+\begin{itemize}
+	\item $ \ex x : J \r F \st A \* x = b $
+	\item $ \ex y : I \r F \st A^T \* y = 0 \aand b \* y < 0 $
+\end{itemize}
+A similar characterization exists for systems of linear equalities with nonnegative variables, due to Farkas;
+a system of linear equalities has a solution if and only if we cannot obtain
+a contradiction by taking a linear combination of the equalities.
+From here on, we require $F$ to be a linear-ordered field.
+Using the same notation as before, we can write that exactly one of the following statements is true:
+\begin{itemize}
+	\item $ \ex x : J \r F \st A \* x = b \aand x \ge 0 $
+	\item $ \ex y : I \r F \st A^T \* y \ge 0 \aand b \* y < 0 $
+\end{itemize}
+The former branch got stricter by requiring $x$ to be nonnegative, while the latter branch
+got looser by allowing $\ge$ in place of the original equality.
+We can also read the statement from bottom up (take $A^T$ in place of $A$) to obtain
+a characterizationof systems of linear inequalities with unconstrained variables.
+We state the same theorem in Lean as follows:
+\begin{lstlisting}
+theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+We can do one more step in the direction of considering inequalities and nonnegative variables only.
+There is a characterization of systems of linear inequalities with nonnegative variables.
+We can write that exactly one of the following statements is true:
+\begin{itemize}
+	\item $ \ex x : J \r F \st A \* x \le b \aand x \ge 0 $
+	\item $ \ex y : I \r F \st A^T \* y \ge 0 \aand b \* y < 0 \aand y \ge 0$
+\end{itemize}
+We state this theorem in Lean as follows:
+\begin{lstlisting}
+theorem inequalityFarkas (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+
+
+\section{Preliminaries}
+
+We distinguish two types of vectors; implicit vectors and explicit vectors.
+Implicit vectors are members of a vector space; they don't have any internal structure.
+Explicit vectors are functions from coordinates to values.
+The set of coordinates needn't be ordered.
+Matrices live next to explicit vectors. They are also functions; they take a row index
+and a column index and they output a value at the given spot.
+Neither the row indices nor the column vertices are required to form an ordered set.
+That's why multiplication between matrices and vectors is defined only in structures
+where addition forms a commutative semigroup. Consider the following example:
+$$
+\begin{pmatrix}
+	1 & 2 & 3 \\
+	4 & 5 & 6 \\
+\end{pmatrix}
+\*
+\begin{pmatrix}
+	7 \\ 8 \\ 9
+\end{pmatrix}
+=
+\begin{pmatrix}
+	? \\ \_
+\end{pmatrix}
+$$
+We don't know whether the value at the question mark is equal to
+$ (1 \* 7 + 2 \* 8) + 3 \* 9 $ or to
+$ (2 \* 8 + 1 \* 7) + 3 \* 9 $ or to
+any other ordering of summands.
+This is why commutativity of addition is necessary for the definition to be valid.
+On the other hand, we don't assume any property of multiplication in the
+definition of multiplication between matrices and vectors; they don't even
+have to be of the same type; we only require the elements of the vector
+to have an action on the elements of the matrix.
+
+Let $p$ and $q$ be rational numbers.
+Addition and multiplication on extended rationals is defined as follows:
+\begin{center}
+	\begin{tabular}{ c || c | c | c | }
+		+ & $\bot$ & $q$ & $\top$  \\
+		\hline\hline
+		$\bot$ & $\bot$ & $\bot$ & $\bot$  \\ 
+		\hline
+		$p$ & $\bot$ & $p\!+\!q$ & $\top$  \\ 
+		\hline
+		$\top$ & $\bot$ & $\top$ & $\top$ \\ 
+		\hline
+	\end{tabular}
+	\qquad\qquad\qquad
+	\begin{tabular}{ c || c | c | c | }
+		$\bullet$ & $\bot$ & $q$ & $\top$  \\
+		\hline\hline
+		$0$ & $\bot$ & $0$ & $0$  \\ 
+		\hline
+		$p>0$ & $\bot$ & $p \cdot q$ & $\top$  \\ 
+		\hline
+	\end{tabular}
+\end{center}
+TODO
+
+
+\section {Proving the Farkas-Bartl theorem}
+
+Let \texttt{n} be a natural number.
+Let \texttt{R} be a linear-ordered division ring.
+Let \texttt{V} be a linear-ordered module over \texttt{R}.
+Let \texttt{W} be a module over \texttt{R}.
+Let \texttt{A} be a linear (w.r.t.~\texttt{R}) map from \texttt{W} to $\texttt{R}^{\texttt{n}}$.
+Let \texttt{b} be a linear (w.r.t.~\texttt{R}) map from \texttt{W} to \texttt{V}.
+We claim that exactly one of the following is true;
+(1) there is nonnegative \texttt{x} in $\texttt{V}^{\texttt{n}}$ such that \texttt{b} is equal to
+the sum of elementwise mutliplications of \texttt{x} by scalars from \texttt{A}, or
+(2) there exists \texttt{y} in \texttt{W} such that \texttt{A} applied to \texttt{y}
+gives a nonpositive vector from \texttt{V} and \texttt{b} applied to \texttt{y} gives
+a positive vector from \texttt{V}.
+
+The part ``exists at most one'' is straightforward.\\
+Lemma inv\_pos\_of\_pos': If $0 < a$ then $0 < a^{-1}$. \\
+Lemma filter\_yielding\_singleton\_attach\_sum:
+$ \sum_{i \in [m]; \neg (i < m)} f~j \bullet v = f~m \bullet v $ \\
+Lemma impossible\_index: Let $i \in [m]$. We cannot have both $\neg (i < m)$ and $i \neq m$. \\
+Lemma sum\_nneg\_aux: If $x \ge 0$ and $A~y \le 0$ then $ \sum_{i \in [m]} A~y~i \bullet x~i \le 0 $. \\
+Lemma finishing\_piece: Let $R$ be a semiring,
+$V$ be an additive commutative monoid that is a module over $R$, 
+$W$ be an additive commutative monoid that is a module over $R$,
+$m$ be a natural number,
+$A$ be an $R$-linear map from $W$ to $[m\!+\!1] \r R$,
+$w$ be a vector from $W$, and
+$x$ be a vector from $[m] \r V$.
+We claim $ \sum_{i \in [m]} A_{<m}~w~i \bullet x~i = \sum_{i \in [m\!+\!1]; i < m} A~w~i \bullet x~i $. \\
+TODO.
+
+
+\section {Inequalities and linear programming}
+
+TODO.
+
+
+\section {Proving the extended strong duality}
+
+TODO.
+
+
+\end{document}
