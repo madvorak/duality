@@ -266,7 +266,27 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
-TODO everything about linear programming.
+Note that extendedFarkas looks pretty much like equalityFarkas\_neg and,
+in certain sense, generalizes it. Indeed, in Section TODO, we prove
+extendedFarkas using equalityFarkas\_neg and some additional machinery.
+
+\medskip \noindent
+\textbf{Definition:}
+Let $I$ and $J$ be finite types.
+Let $R$ be a a partially ordered semiring.
+Let $A$ be a matrix of type $(I \times J) \r R$.
+Let $b$ be a vector of type $I \r R$.
+Let $c$ be a vector of type $J \r R$.
+We say that $P = (A, b, c)$ is a \textbf{linear program} over $R$.
+We say that its \textbf{constraints} are indexed by $I$.
+We say that its \textbf{variables} are indexed by $J$.
+We say that a nonnegative vector $x : J \r R$ is
+a \textbf{solution} to $P$ if and only if $A \* x \le b$.
+We say that $P$ \textbf{reaches} an objective value $r$
+if and only if there exists $x$ such that $x$ is a solution to $P$
+and $c \* x = r$.
+
+TODO feasibility, dualize, weakDuality, strongDuality.
 
 \section{Preliminaries}
 
@@ -312,7 +332,22 @@ TODO.
 TODO.
 
 
-\section {Proving the extended strong duality}
+\section {Proving the extended Farkas theorem}
+
+TODO.
+
+
+\section {Proving the (extended) strong LP duality}
+
+TODO.
+
+
+\section {Related work}
+
+TODO.
+
+
+\section {Conclusion}
 
 TODO.
 
