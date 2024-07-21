@@ -191,7 +191,8 @@ This result origins from TODO.
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $V$ be a linearly ordered $R$-module\footnote{We furthermore require PosSMulMono R V.}.
+Let $V$ be a linearly ordered $R$-module\footnote{We furthermore require PosSMulMono R V,
+which means TODO.}.
 Let $A$ be an $R$-linear map from from $W$ to $(J \r R)$.
 Let $b$ be an $R$-linear map from from $W$ to $V$.
 Exactly one of the following exists:
@@ -200,7 +201,12 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \le 0$ and $b~y > 0$
 \end{itemize}
-Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions),
+In the last branch, $A~y \le 0$ uses the partial order\footnote{The order on $(J \r R)$ is
+always the coordinate-wise application of $R$'s linear order.} on $(J \r R)$ whereäs
+$b~y > 0$ uses the linear order\footnote{In case $V$ has finite dimension, you can choose
+an arbitrary direction and project vectors from $V$ onto it, or you can order elements of
+$V$ lexicographically.} on $V$.
+Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
 We prove fintypeFarkasBartl in Section TODO, which is where the heavy lifting comes.
 
