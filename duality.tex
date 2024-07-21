@@ -332,10 +332,97 @@ TODO.
 TODO.
 
 
-\section {Proving the extended Farkas theorem}
+\section {Extended Farkas theorem}
 
-TODO.
-
+\textbf{Theorem (extendedFarkas):}
+Let $I$ and $J$ be finite types.
+%where $I$ is the set of row indices, $J$ is the set of column indices,
+Let $F$ be a linearly ordered field.
+Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
+Let $b$ be a vector of type $I \r F_\infty$.
+Assume that $A$ does not have $\bot$ and $\top$ in the same row.
+Assume that $A$ does not have $\bot$ and $\top$ in the same column.
+Assume that $A$ does not have $\top$ in any row where $b$ has $\top$.
+Assume that $A$ does not have $\bot$ in any row where $b$ has~$\bot$.
+Exactly one of the following exists:
+\begin{itemize}
+	\item nonnegative vector $x : J \r F$ such that $A \* x \le b$
+	\item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
+\end{itemize}
+(restated) \\
+Proof:
+We need to do the following steps in given order:
+\begin{enumerate}
+	\item Delete all rows of both $A$ and $b$ where $A$ has $\bot$ or $b$ has $\top$
+	(they are tautologies).
+	\item Delete all columns of $A$ that contain $\top$
+	(they force respective variables to be zero).
+	\item If $b$ contains $\bot$ then the $A \* x \le b$ cannot be satisfied,
+	but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
+	\item Assume there is no $\bot$ in $b$. Use inequalityFarkas\_neg.
+	In either case, extend $x$ or $y$ with zeros on	all deleted positions.
+	\item Carefully check all four implications.
+\end{enumerate}
+We now give a few counterexamples for situations where the preconditions
+are not met.
+$$
+A =
+\begin{pmatrix}
+	\bot \\
+	\top
+\end{pmatrix}
+\qquad \qquad
+b =
+\begin{pmatrix}
+	-1 \\
+	0
+\end{pmatrix}
+$$
+Putting $x = (0)$ satisfies $A \* x \le b$.
+Putting $y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+$$
+A =
+\begin{pmatrix}
+	\bot & \top \\
+	0 & -1
+\end{pmatrix}
+\qquad \qquad
+b =
+\begin{pmatrix}
+	0 \\
+	-1
+\end{pmatrix}
+$$
+Putting $x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$ satisfies $A \* x \le b$.
+Putting $y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+$$
+A =
+\begin{pmatrix}
+	\bot
+\end{pmatrix}
+\qquad \qquad
+b =
+\begin{pmatrix}
+	\bot
+\end{pmatrix}
+$$
+Putting $x = (1)$ satisfies $A \* x \le b$.
+Putting $y = (0)$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+$$
+A =
+\begin{pmatrix}
+	\top \\
+	-1
+\end{pmatrix}
+\qquad \qquad
+b =
+\begin{pmatrix}
+	\top \\
+	-1
+\end{pmatrix}
+$$
+Putting $x = (1)$ satisfies $A \* x \le b$.
+Putting $y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
 
 \section {Proving the (extended) strong LP duality}
 
