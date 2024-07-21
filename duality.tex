@@ -6,7 +6,7 @@
 \usepackage{listings}
 \pagenumbering{gobble}
 
-%\renewcommand{\.}{\hskip .75pt}
+\renewcommand{\.}{\hskip .75pt}
 
 \DeclareMathOperator{\aand}{\;\wedge\;}
 \DeclareMathOperator{\st}{,\;}
@@ -45,16 +45,16 @@
 	{ᵥ}{{$_v$}}1
 }
 
+\noindent \textbf{Abstract:}\;
 Farkas established that a system of linear inequalities has a solution if and only if we cannot obtain
-a contradiction by taking a nonnegative linear combination of the inequalities.
+a contradiction by taking a linear combination of the inequalities.
 We state and formally prove several Farkas-like theorems in Lean 4.
-Furthermore, we consider the rational numbers extended with two special elements denoted by $\bot$ and $\top$
-where $\bot$ is below every rational number and $\top$ is above every rational number.
+Furthermore, we consider a linearly ordered field extended with two special elements denoted by $\bot$ and $\top$
+where $\bot$ is below every element and $\top$ is above every element.
 We define $\bot + a = \bot = a + \bot$ of all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
 For multiplication, we define $\bot \cdot c = \bot = c \cdot \bot$ for every $c \ge 0$ but
 $\top \cdot d = \top = d \cdot \top$ only for $d > 0$ because $\top \cdot 0 = 0 = 0 \cdot \top$.
-We extend certain Farkas-like theorems about matrices to a setting where
-coefficients are extended rationals and variables are nonnegative rationals.
+We extend certain Farkas-like theorem to a setting where coefficients are from an extended linearly ordered field.
 
 
 
@@ -238,7 +238,7 @@ We define addition and scalar action on $F_\infty$ as follows:
 Informally speaking, $\top$ represents the positive infinity,
 $\bot$ represents the negative infinity, and we say that
 $\bot$ is ``stronger'' than $\top$ in~all arithmetic operations.
-The surprising parts are $\bot + \top = \bot$ and $0 \bullet \bot = \bot$.
+The surprising parts are $\bot + \top = \bot$ and $0 \.\bullet \bot = \bot$.
 Because of that, $F_\infty$ is not a field.
 However, $F_\infty$ is still a densely linearly ordered abelian monoid
 with characteristic zero.
@@ -301,11 +301,6 @@ TODO.
 
 
 \section {Proving the Farkas-Bartl theorem}
-
-TODO.
-
-
-\section {Inequalities and linear programming}
 
 TODO.
 
