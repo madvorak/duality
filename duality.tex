@@ -54,7 +54,7 @@ where $\bot$ is below every element and $\top$ is above every element.
 We define $\bot + a = \bot = a + \bot$ of all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
 For multiplication, we define $\bot \cdot c = \bot = c \cdot \bot$ for every $c \ge 0$ but
 $\top \cdot d = \top = d \cdot \top$ only for $d > 0$ because $\top \cdot 0 = 0 = 0 \cdot \top$.
-We extend certain Farkas-like theorem to a setting where coefficients are from an extended linearly ordered field.
+We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
 
 
 
@@ -151,6 +151,7 @@ $(I \times I) \r F$.
 
 The next theorem generalizes equalityFarkas\_neg to structures where
 multiplication does not have to be commutative.
+Furthermore, we can have infinitely many equations.
 
 \medskip \noindent
 \textbf{Theorem (coordinateFarkas):}
@@ -165,8 +166,8 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : I \r R$ such that $A~y \le 0$ and $b~y > 0$
 \end{itemize}
-In the next generalization, we replace the ``coordinate-equipped'' module $I \r R$ by
-a general $R$-module $W$.
+In the next generalization, we replace the ``coordinate-equipped module'' $I \r R$ by
+a general $R$-module $W$, which does not have to be ordered.
 
 \medskip \noindent
 \textbf{Theorem (scalarFarkas):}
