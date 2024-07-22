@@ -183,7 +183,7 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \le 0$ and $b~y > 0$
 \end{itemize}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
-a linearly ordered $R$-module $V$ whose ordering respects TODO.
+a linearly ordered $R$-module $V$ whose order respects order on $R$.
 This result origins from TODO.
 
 \medskip \noindent
@@ -191,13 +191,13 @@ This result origins from TODO.
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $V$ be a linearly ordered $R$-module\footnote{We furthermore require PosSMulMono R V,
-which means TODO.}.
+Let $V$ be a linearly ordered $R$-module\footnote{We furthermore require 
+monotonicity of scalar multiplication by nonnegative elements on the left.}.
 Let $A$ be an $R$-linear map from from $W$ to $(J \r R)$.
 Let $b$ be an $R$-linear map from from $W$ to $V$.
 Exactly one of the following exists:
 \begin{itemize}
-\item nonnegative (TODO terminology???) bivector $x : J \r V$ such that, for all $w$ in $W$, we have
+\item nonnegative bivector $x : J \r V$ such that, for all $w$ in $W$, we have
 $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \le 0$ and $b~y > 0$
 \end{itemize}
@@ -210,7 +210,7 @@ Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other version
 since $R$ can be viewed as a linearly ordered module over itself.
 We prove fintypeFarkasBartl in Section TODO, which is where the heavy lifting comes.
 
-Until now, we have talked about known results from TODO.
+Until now, we have talked about known results.
 What follows is a new extension of the theory.
 
 \medskip \noindent
@@ -253,7 +253,6 @@ with characteristic zero.
 \medskip \noindent
 \textbf{Theorem (extendedFarkas):}
 Let $I$ and $J$ be finite types.
-%where $I$ is the set of row indices, $J$ is the set of column indices,
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
 Let $b$ be a vector of type $I \r F_\infty$.
@@ -288,7 +287,7 @@ and $c \* x = r$.
 
 TODO feasibility, dualize, weakDuality, strongDuality.
 
-\section{RENAME preliminaries}
+\section{Formalization}
 
 We distinguish two types of vectors; implicit vectors and explicit vectors.
 Implicit vectors are members of a vector space; they don't have any internal structure.
@@ -345,21 +344,21 @@ Assume that $A$ does not have $\top$ in any row where $b$ has $\top$.
 Assume that $A$ does not have $\bot$ in any row where $b$ has~$\bot$.
 Exactly one of the following exists:
 \begin{itemize}
-	\item nonnegative vector $x : J \r F$ such that $A \* x \le b$
-	\item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
+\item nonnegative vector $x : J \r F$ such that $A \* x \le b$
+\item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
 (restated) \\
-Proof:
+Proof idea:
 We need to do the following steps in given order:
 \begin{enumerate}
-	\item Delete all rows of both $A$ and $b$ where $A$ has $\bot$ or $b$ has $\top$
-	(they are tautologies).
-	\item Delete all columns of $A$ that contain $\top$
-	(they force respective variables to be zero).
-	\item If $b$ contains $\bot$ then the $A \* x \le b$ cannot be satisfied,
-	but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
-	\item Assume there is no $\bot$ in $b$. Use inequalityFarkas\_neg.
-	In either case, extend $x$ or $y$ with zeros on	all deleted positions.
+\item Delete all rows of both $A$ and $b$ where $A$ has $\bot$ or $b$ has $\top$
+(they are tautologies).
+\item Delete all columns of $A$ that contain $\top$
+(they force respective variables to be zero).
+\item If $b$ contains $\bot$, then $A \* x \le b$ cannot be satisfied,
+but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
+\item Assume there is no $\bot$ in $b$. Use inequalityFarkas\_neg.
+In either case, extend $x$ or $y$ with zeros on	all deleted positions.
 \end{enumerate}
 
 \subsection{Counterexamples}
