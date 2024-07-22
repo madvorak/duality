@@ -78,8 +78,22 @@ Exactly one of the following exists:
 \end{itemize}
 This theorem can be given in much more general settings.
 In our paper, however, this is the only version we provide.
-This fundamental staple of linear algebra is not our main focus,
+This fundamental staple of linear algebra is not our main focus
 but a byproduct of the other theorems we prove.
+In particular, we obtain equalityFrobenius as an immediate corollary
+of the following theorem.
+
+\medskip \noindent
+\textbf{Theorem (equalityFrobenius\_lt):}
+Let $I$ and $J$ be finite types.
+Let $F$ be a linearly ordered field.
+Let $A$ be a matrix of type $(I \times J) \r F$.
+Let $b$ be a vector of type $I \r F$.
+Exactly one of the following exists:
+\begin{itemize}
+\item vector $x : J \r F$ such that $A \* x = b$
+\item vector $y : I \r F$ such that $A^T\! \* y = 0$ and $b \* y < 0$
+\end{itemize}
 The way we state the theorem exemplifies certain patterns that
 permeate TODO.
 
@@ -98,27 +112,13 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-For reasons that will be apparent later, we give another version of the last theorem.
-
-\medskip \noindent
-\textbf{Theorem (equalityFarkas\_neg):}
-Let $I$ and $J$ be finite types.
-Let $F$ be a linearly ordered field.
-Let $A$ be a matrix of type $(I \times J) \r F$.
-Let $b$ be a vector of type $I \r F$.
-Exactly one of the following exists:
-\begin{itemize}
-\item nonnegative vector $x : J \r F$ such that $A \* x = b$
-\item vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
-\end{itemize}
-The proof of equalityFarkas\_neg will come later. However, we note that equalityFarkas is
-an immediate corollary of equalityFarkas\_neg and that equalityFrobenius is proved by applying
-equalityFarkas to the matrix $(A~|-\!\!A)$.
+We prove equalityFrobenius\_lt by applying equalityFarkas to the matrix $(A~|-\!\!A)$.
+Theorem equalityFarkas will be proved later.
 
 Minkowski (TODO citation) similarly established that
 a system of linear inequalities has a nonnegative solution if and only if
 we cannot obtain a contradiction by taking a nonnegative linear combination of the inequalities.
-We state his theorem as follows.
+For reasons that will be apparent later, we give two versions of this theorem.
 
 \medskip \noindent
 \textbf{Theorem (inequalityFarkas):}
@@ -131,9 +131,8 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-Again, we provide one more version that will make sense later.
 
-\medskip \noindent
+\noindent
 \textbf{Theorem (inequalityFarkas\_neg):}
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
@@ -144,14 +143,14 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
-Again, inequalityFarkas is an immediate corollary of inequalityFarkas\_neg.
-And as for inequalityFarkas\_neg, we prove it by  applying equalityFarkas\_neg 
+Obviously, inequalityFarkas\_neg is an immediate corollary of inequalityFarkas.
+We prove inequalityFarkas by applying equalityFarkas 
 to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
 $(I \times I) \r F$.
 
-The next theorem generalizes equalityFarkas\_neg to structures where
+The next theorem generalizes equalityFarkas to structures where
 multiplication does not have to be commutative.
-Furthermore, we can have infinitely many equations.
+Furthermore, it supports infinitely many equations.
 
 \medskip \noindent
 \textbf{Theorem (coordinateFarkas):}
@@ -163,8 +162,8 @@ Let $b$ be an $R$-linear map from from $(I \r R)$ to $R$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector $x : J \r R$ such that, for all $w : I \r R$, we have
-$ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
-\item vector $y : I \r R$ such that $A~y \le 0$ and $b~y > 0$
+$ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
+\item vector $y : I \r R$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 In the next generalization, we replace the partially ordered module $I \r R$ by
 a general $R$-module $W$.
@@ -178,9 +177,9 @@ Let $A$ be an $R$-linear map from from $W$ to $(J \r R)$.
 Let $b$ be an $R$-linear map from from $W$ to $R$.
 Exactly one of the following exists:
 \begin{itemize}
-\item nonnegative vector $x : J \r R$ such that, for all $w$ in $W$, we have
-$ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
-\item vector $y : W$ such that $A~y \le 0$ and $b~y > 0$
+\item nonnegative vector $x : J \r R$ such that, for all $w : W$, we have
+$ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
+\item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
 a linearly ordered $R$-module $V$ whose order respects order on $R$.
@@ -193,17 +192,17 @@ Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
 Let $V$ be a linearly ordered $R$-module\footnote{We furthermore require 
 monotonicity of scalar multiplication by nonnegative elements on the left.}.
-Let $A$ be an $R$-linear map from from $W$ to $(J \r R)$.
-Let $b$ be an $R$-linear map from from $W$ to $V$.
+Let $A$ be an $R$-linear map from $W$ to $(J \r R)$.
+Let $b$ be an $R$-linear map from $W$ to $V$.
 Exactly one of the following exists:
 \begin{itemize}
-\item nonnegative bivector $x : J \r V$ such that, for all $w$ in $W$, we have
-$ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
-\item vector $y : W$ such that $A~y \le 0$ and $b~y > 0$
+\item nonnegative bivector $x : J \r V$ such that, for all $w : W$, we have
+$ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
+\item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-In the last branch, $A~y \le 0$ uses the partial order\footnote{The order on $(J \r R)$ is
+In the last branch, $A~y \ge 0$ uses the partial order\footnote{The order on $(J \r R)$ is
 always the coordinate-wise application of $R$'s linear order.} on $(J \r R)$ whereäs
-$b~y > 0$ uses the linear order\footnote{In case $V$ has finite dimension, you can choose
+$b~y < 0$ uses the linear order\footnote{In case $V$ has finite dimension, you can choose
 an arbitrary direction and project vectors from $V$ onto it, or you can order elements of
 $V$ lexicographically.} on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
