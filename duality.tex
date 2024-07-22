@@ -288,7 +288,7 @@ and $c \* x = r$.
 
 TODO feasibility, dualize, weakDuality, strongDuality.
 
-\section{Preliminaries}
+\section{RENAME preliminaries}
 
 We distinguish two types of vectors; implicit vectors and explicit vectors.
 Implicit vectors are members of a vector space; they don't have any internal structure.
@@ -336,7 +336,6 @@ TODO.
 
 \textbf{Theorem (extendedFarkas):}
 Let $I$ and $J$ be finite types.
-%where $I$ is the set of row indices, $J$ is the set of column indices,
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
 Let $b$ be a vector of type $I \r F_\infty$.
@@ -361,25 +360,11 @@ We need to do the following steps in given order:
 	but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
 	\item Assume there is no $\bot$ in $b$. Use inequalityFarkas\_neg.
 	In either case, extend $x$ or $y$ with zeros on	all deleted positions.
-	\item Carefully check all four implications.
 \end{enumerate}
-We now give a few counterexamples for situations where the preconditions
-are not met.
-$$
-A =
-\begin{pmatrix}
-	\bot \\
-	\top
-\end{pmatrix}
-\qquad \qquad
-b =
-\begin{pmatrix}
-	-1 \\
-	0
-\end{pmatrix}
-$$
-Putting $x = (0)$ satisfies $A \* x \le b$.
-Putting $y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+
+\subsection{Counterexamples}
+
+If $A$ has $\bot$ and $\top$ in the same row, it may happen that both $x$ and $y$ exist:
 $$
 A =
 \begin{pmatrix}
@@ -387,27 +372,29 @@ A =
 	0 & -1
 \end{pmatrix}
 \qquad \qquad
-b =
-\begin{pmatrix}
-	0 \\
-	-1
-\end{pmatrix}
+b = \begin{pmatrix}	0 \\ -1 \end{pmatrix}
+\qquad \qquad
+x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
+\qquad \qquad
+y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
-Putting $x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$ satisfies $A \* x \le b$.
-Putting $y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+If $A$ has $\bot$ and $\top$ in the same column, it may happen that both $x$ and $y$ exist:
 $$
 A =
 \begin{pmatrix}
-	\bot
+	\bot \\
+	\top
 \end{pmatrix}
 \qquad \qquad
-b =
-\begin{pmatrix}
-	\bot
-\end{pmatrix}
+b = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
+\qquad \qquad
+x = \begin{pmatrix} 0 \end{pmatrix}
+\qquad \qquad
+y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 $$
-Putting $x = (1)$ satisfies $A \* x \le b$.
-Putting $y = (0)$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+If $A$ has $\top$ in a row where $b$ has $\top$, it may happen that both $x$ and $y$ exist:
+%$x$ such that $A \* x \le b$ and 
+%$y$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$ exist:
 $$
 A =
 \begin{pmatrix}
@@ -415,14 +402,25 @@ A =
 	-1
 \end{pmatrix}
 \qquad \qquad
-b =
-\begin{pmatrix}
-	\top \\
-	-1
-\end{pmatrix}
+b = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+\qquad \qquad
+x = \begin{pmatrix}	1 \end{pmatrix}
+\qquad \qquad
+y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
-Putting $x = (1)$ satisfies $A \* x \le b$.
-Putting $y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$.
+If $A$ has $\bot$ in a row where $b$ has $\bot$, it may happen that both $x$ and $y$ exist:
+$$
+A =
+\begin{pmatrix}
+	\bot
+\end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix}	\bot \end{pmatrix}
+\qquad \qquad
+x = \begin{pmatrix}	1 \end{pmatrix}
+\qquad \qquad
+y = \begin{pmatrix}	0 \end{pmatrix}
+$$
 
 \section {Proving the (extended) strong LP duality}
 
