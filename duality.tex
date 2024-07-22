@@ -45,6 +45,12 @@
 	{ᵥ}{{$_v$}}1
 }
 
+
+\title{Duality theory in linear optimization and its extensions\,---\,formally verified}
+\date{}
+\maketitle
+
+
 \noindent \textbf{Abstract:}\;
 Farkas established that a system of linear inequalities has a solution if and only if we cannot obtain
 a contradiction by taking a linear combination of the inequalities.
@@ -90,7 +96,7 @@ from where all column vectors of $A$ get projected.
 
 This theorem can be given in much more general settings.
 In our paper, however, this is the only version we provide.
-This fundamental staple of linear algebra is not our main focus
+This staple of linear algebra is not our main focus
 but a byproduct of the other theorems we prove.
 In particular, we obtain equalityFrobenius as an immediate corollary
 of the following theorem.
@@ -107,7 +113,15 @@ Exactly one of the following exists:
 \item vector $y : I \r F$ such that $A^T\! \* y = 0$ and $b \* y < 0$
 \end{itemize}
 The way we state the theorem exemplifies certain patterns that
-permeate TODO.
+permeate through our work. Our results are phrased as
+``there are two systems of (in)equalities; exactly one of them has a solution''.
+This goes hand-in-hand with our decision to focus mostly on ``symmetric'' Farkas-like theorems.
+Note that it must be impossible to satisfy the second system by $y=0$.
+Had it been allowed, we would have said nothing about the first system as it would
+have to lead to a contradiction every time. The constraint $b \* y < 0$ disqualifies
+the zero solution in most of our theorems. Intuitively, it should make sense that
+one of the systems is always ``strict'', which also means that our two systems will
+never be ``fully symmetric''.
 
 Farkas (TODO citation) gave a similar characterization for systems of linear equalities
 with nonnegative variables.
@@ -136,7 +150,7 @@ strictly separates $b$ from given cone
 (in this case, $y$ gives a normal vector of this hyperplane).
 
 We prove equalityFrobenius\_lt by applying equalityFarkas to the matrix $(A~|-\!\!A)$.
-Theorem equalityFarkas will be proved later, from a more general theorem.
+However, equalityFarkas will be proved later, from a more general theorem.
 
 Minkowski (TODO citation) similarly established that
 a system of linear inequalities has a nonnegative solution if and only if
@@ -321,7 +335,9 @@ We say that $P$ \textbf{reaches} an objective value $r$
 if and only if there exists $x$ such that $x$ is a solution to $P$
 and $c \* x = r$.
 
-TODO feasibility, dualize, weakDuality, strongDuality.
+TODO define feasibility and dualize.
+
+TODO state weakDuality and strongDuality.
 
 \section{Formalization}
 
