@@ -149,7 +149,7 @@ or there exists a hyperplane that contains the origin and that
 strictly separates $b$ from given cone
 (in this case, $y$ gives a normal vector of this hyperplane).
 
-We prove equalityFrobenius\_lt by applying equalityFarkas to the matrix $(A~|-\!\!A)$.
+We prove equalityFrobenius\_lt by applying equalityFarkas to the matrix $(A~|-\!\! A)$.
 However, equalityFarkas will be proved later, from a more general theorem.
 
 Minkowski (TODO citation) similarly established that
@@ -375,6 +375,55 @@ have to be of the same type; we only require the elements of the vector
 to have an action on the elements of the matrix (this is not a typo -- normally,
 we would want matrices to have an action on vectors -- not in our work).
 
+TODO formal definitions.
+
+We start from bottom up!
+
+\noindent
+Theorem equalityFrobenius is stated as follows:
+\begin{lstlisting}
+theorem equalityFrobenius (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0)
+\end{lstlisting}
+Theorem equalityFrobenius\_lt is stated as follows:
+\begin{lstlisting}
+theorem equalityFrobenius_lt (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+Theorem equalityFarkas is stated as follows:
+\begin{lstlisting}
+theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+Theorem inequalityFarkas is stated as follows:
+\begin{lstlisting}
+theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+Theorem inequalityFarkas\_neg is stated as follows:
+\begin{lstlisting}
+theorem inequalityFarkas_neg [DecidableEq I] (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ -Aᵀ *ᵥ y ≤ 0 ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+Theorem coordinateFarkas is stated as follows:
+\begin{lstlisting}
+theorem coordinateFarkas {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
+    (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+Theorem fintypeFarkasBartl is stated as follows:
+\begin{lstlisting}
+theorem scalarFarkas {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
+    (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+Theorem scalarFarkas is stated as follows:
+\begin{lstlisting}
+theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
+    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
 TODO.
 
 
