@@ -327,11 +327,17 @@ extendedFarkas using equalityFarkas\_neg and some additional machinery.
 \medskip \noindent
 \textbf{Definition:}
 Let $I$ and $J$ be finite types.
-Let $R$ be a a partially ordered semiring.
-Let $A$ be a matrix of type $(I \times J) \r R$.
-Let $b$ be a vector of type $I \r R$.
-Let $c$ be a vector of type $J \r R$.
-We say that $P = (A, b, c)$ is a \textbf{linear program} over $R$.
+Let $F$ be a linearly ordered field.
+Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
+Let $b$ be a vector of type $I \r F_\infty$.
+Let $c$ be a vector of type $J \r F_\infty$.
+Assume that $b$ does not contain $\bot$.
+Assume that $c$ does not contain $\bot$.
+Assume that $A$ does not have $\bot$ and $\top$ in the same row.
+Assume that $A$ does not have $\bot$ and $\top$ in the same column.
+Assume that $A$ does not have $\top$ in any row where $b$ has $\top$.
+Assume that $A$ does not have $\bot$ in any column where $c$ has $\top$.
+We say that $P = (A, b, c)$ is a \textbf{linear program} over $F_\infty$.
 We say that its \textbf{constraints} are indexed by $I$.
 We say that its \textbf{variables} are indexed by $J$.
 We say that a nonnegative vector $x : J \r R$ is
