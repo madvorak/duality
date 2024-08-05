@@ -351,7 +351,7 @@ TODO state weakDuality and strongDuality.
 Additive semigroup is a structure on any type with addition where the addition is associative:
 \begin{lstlisting}
 class AddSemigroup (G : Type u) extends Add G where
-  protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+  protected add_assoc : ∀ a b c : G, (a + b) + c = a + (b + c)
 \end{lstlisting}
 Additive monoid is an additive semigroup with the zero element, thanks to which we can
 define a scalar multiplication by the natural numbers:
@@ -699,10 +699,22 @@ $$
 
 \section {Proving the (extended) strong LP duality}
 
+We note that it is intentional that both PRIM and DUAL are defined as
+minimization problems.
+
 TODO.
 
 
 \section {Related work}
+
+TODO presents an overcomplicated proof in Isabelle by analyzing
+the Simplex algorithm that already had been formally verified.
+It took them 30 pages to get to the basic Farkas; no generalization
+was provided.
+
+In Lean, it would be possible to prove Farkas for reals using the
+Hahn-Banach separation theorem. However, we do not yet know that
+the set of feasible solutions is closed.
 
 TODO.
 
