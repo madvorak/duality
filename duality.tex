@@ -275,7 +275,7 @@ We define an \textbf{extended} linearly ordered field $F_\infty$ as
 $F \cup \{ \bot, \top \}$ with the following properties.
 Let $p$ and $q$ be numbers from $F$.
 We have $\bot < p < \top$.
-We define addition and scalar action on $F_\infty$ as follows:
+We define addition, scalar action, and negation on $F_\infty$ as follows:
 \begin{center}
 	\begin{tabular}{ c || c | c | c | }
 		+ & $\bot$ & $q$ & $\top$  \\
@@ -295,6 +295,12 @@ We define addition and scalar action on $F_\infty$ as follows:
 		\hline
 		$p>0$ & $\bot$ & $p \cdot q$ & $\top$  \\ 
 		\hline
+	\end{tabular}
+	\qquad\qquad\qquad
+	\begin{tabular}{ c || c | c | c }
+	$-$ & $\bot$ & $q$ & $\top$  \\
+	\hline\hline
+	& $\top$ & $-q$ & $\bot$  
 	\end{tabular}
 \end{center}
 Informally speaking, $\top$ represents the positive infinity,
@@ -324,6 +330,10 @@ Note that extendedFarkas looks pretty much like equalityFarkas\_neg and,
 in certain sense, generalizes it. Indeed, in Section TODO, we prove
 extendedFarkas using equalityFarkas\_neg and some additional machinery.
 
+Next we define an extended notion of linear program, i.e.,
+linear programming over extended linearly ordered fields.
+The implicit intention is that the linear program is to be minimized.
+
 \medskip \noindent
 \textbf{Definition:}
 Let $I$ and $J$ be finite types.
@@ -331,10 +341,10 @@ Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
 Let $b$ be a vector of type $I \r F_\infty$.
 Let $c$ be a vector of type $J \r F_\infty$.
-Assume that $b$ does not contain $\bot$.
-Assume that $c$ does not contain $\bot$.
 Assume that $A$ does not have $\bot$ and $\top$ in the same row.
 Assume that $A$ does not have $\bot$ and $\top$ in the same column.
+Assume that $b$ does not contain $\bot$.
+Assume that $c$ does not contain $\bot$.
 Assume that $A$ does not have $\top$ in any row where $b$ has $\top$.
 Assume that $A$ does not have $\bot$ in any column where $c$ has $\top$.
 We say that $P = (A, b, c)$ is a \textbf{linear program} over $F_\infty$.
@@ -354,10 +364,37 @@ We say that $P$ is \textbf{bounded by} a finite value $r$ if and only if,
 for every value $p$ reached by $P$, we have $r \le p$.
 We say that $P$ is \textbf{unbounded} if and only if there is no finite value $r$
 such that $P$ is bounded by $r$.
-We says that we \textbf{dualize} $P$ when we map $(A, b, c)$ to $(-A^T, c, b)$.
-TODO optimum, opposites.
+We say that the linear program $(-A^T, c, b)$ is the \textbf{dual} of $P$.
 
-TODO state weakDuality and strongDuality.
+\medskip \noindent
+\textbf{Theorem (weakDuality):}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$.
+If $P$ reaches $p$ and the dual of $P$ reaches $q$,
+then $p + q \ge 0$.
+
+\medskip \noindent
+\textbf{Definition:}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$.
+We define the \textbf{optimum} of $P$ as follows.
+If $P$ is feasible and unbounded, its optimum is $\bot$.
+If $P$ is not feasible, its optimum is $\top$.
+In all other cases, we ask whether $P$ reaches a finite value $f$ such that
+$P$ is bounded by $f$. If so, its optimum is $f$.
+Otherwise, $P$ does not have optimum.\footnote{By the end of the paper, we will
+have proved that optimum always exists, i.e., it cannot be the case that the set of
+objective values reached by $P$ has a finite infimum that is not attained.
+However, because we do not have the theorem now, the optimum is defined as a partial function
+from linear programs to $F_\infty$.}
+
+\medskip \noindent
+\textbf{Theorem (strongDuality):}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$.
+If $P$ or its dual is feasible (at least one of them),
+then $P$ has optimum $p$ and the dual of $P$ has optimum $q$ such that
+$p = -q$ as defined for $F_\infty$.
 
 \section{Formalization}
 
