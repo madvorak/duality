@@ -339,8 +339,17 @@ a \textbf{solution} to $P$ if and only if $A \* x \le b$.
 We say that $P$ \textbf{reaches} an objective value $r$
 if and only if there exists $x$ such that $x$ is a solution to $P$
 and $c \* x = r$.
-
-TODO define feasibility and dualize.
+We say that $P$ is \textbf{feasible} if and only if $P$ reaches a finite\footnote{
+It would be perhaps more natural to say that $P$ reaches a value different
+from $\top$. However, since $\bot$ cannot be reached because of the way
+linear programming is defined, it is equivalent to our definition by
+reaching a finite value.} value.
+We say that $P$ is \textbf{bounded by} a finite value $r$ if and only if,
+for every value $p$ reached by $P$, we have $r \le p$.
+We say that $P$ is \textbf{unbounded} if and only if there is no finite value $r$
+such that $P$ is bounded by $r$.
+We says that we \textbf{dualize} $P$ when we map $(A, b, c)$ to $(-A^T, c, b)$.
+TODO optimum, opposites.
 
 TODO state weakDuality and strongDuality.
 
@@ -358,8 +367,8 @@ define a scalar multiplication by the natural numbers:
 \begin{lstlisting}
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul : ℕ → M → M
-  nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
-  nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
+  nsmul_zero : ∀ x : M, nsmul 0 x = 0 
+  nsmul_succ : ∀ (n : ℕ) (x : M), nsmul (n + 1) x = nsmul n x + x 
 \end{lstlisting}
 Subtractive monoid is an additive monoid that adds two more operations (unary and binary minus)
 that satisfy some basic properties:
