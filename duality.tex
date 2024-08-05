@@ -351,32 +351,31 @@ TODO state weakDuality and strongDuality.
 Additive semigroup is a structure on any type with addition where the addition is associative:
 \begin{lstlisting}
 class AddSemigroup (G : Type u) extends Add G where
-  protected add_assoc : ∀ a b c : G, (a + b) + c = a + (b + c)
+  add_assoc : ∀ a b c : G, (a + b) + c = a + (b + c)
 \end{lstlisting}
 Additive monoid is an additive semigroup with the zero element, thanks to which we can
 define a scalar multiplication by the natural numbers:
 \begin{lstlisting}
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
-  protected nsmul : ℕ → M → M
-  protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
-  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
+  nsmul : ℕ → M → M
+  nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 \end{lstlisting}
 Subtractive monoid is an additive monoid that adds two more operations (unary and binary minus)
 that satisfy some basic properties:
 \begin{lstlisting}
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
-  protected sub := SubNegMonoid.sub'
-  protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  protected zsmul : ℤ → G → G
-  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  protected zsmul_succ' (n : ℕ) (a : G) :
-    zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a := by intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
+  sub := SubNegMonoid.sub'
+  sub_eq_add_neg : ∀ a b : G, a - b = a + -b 
+  zsmul : ℤ → G → G
+  zsmul_zero' : ∀ a : G, zsmul 0 a = 0 
+  zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a
+  zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -(zsmul n.succ a)
 \end{lstlisting}
 Additive group is a subtractive monoid in which the unary minus acts as an inverse with respect to addition:
 \begin{lstlisting}
 class AddGroup (A : Type u) extends SubNegMonoid A where
-  protected add_left_neg : ∀ a : A, -a + a = 0
+  add_left_neg : ∀ a : A, -a + a = 0
 \end{lstlisting}
 Abelian group is defined as an additive group that is a commutative additive monoid at the same time (TODO AddCommMonoid):
 \begin{lstlisting}
@@ -389,9 +388,9 @@ class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 Division ring is a ring with a lot of extra requirements (TODOs DivInvMonoid, Nontrivial, NNRatCast, RatCast):
 \begin{lstlisting}
 class DivisionRing (α : Type*) extends Ring α, DivInvMonoid α, Nontrivial α, NNRatCast α, RatCast α where
-  protected mul_inv_cancel : ∀ (a : α), a ≠ 0 → a * a⁻¹ = 1
-  protected inv_zero : (0 : α)⁻¹ = 0
-  protected nnratCast := NNRat.castRec
+  mul_inv_cancel : ∀ (a : α), a ≠ 0 → a * a⁻¹ = 1
+  inv_zero : (0 : α)⁻¹ = 0
+  nnratCast := NNRat.castRec
 \end{lstlisting}
 We define a linearly ordered division ring as a division ring that is a linearly ordered ring at the same time (TODO all about order):
 \begin{lstlisting}
