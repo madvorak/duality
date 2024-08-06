@@ -7,8 +7,8 @@ import Mathlib.Tactic.Have
 import Duality.Basic
 
 
-class LinearOrderedDivisionRing (R : Type*) extends
-  LinearOrderedRing R, DivisionRing R
+class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, DivisionRing R
+
 
 lemma inv_neg_of_neg {R : Type*} [LinearOrderedDivisionRing R] {a : R} (ha : a < 0) : a⁻¹ < 0 :=
   lt_of_mul_lt_mul_left (by simp [ha.ne]) (neg_nonneg_of_nonpos ha.le)

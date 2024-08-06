@@ -2,8 +2,6 @@ import Duality.ExtendedFields
 import Duality.FarkasBasic
 
 
-variable {F : Type*} [LinearOrderedField F]
-
 -- Henrik Böving wrote this entire section:
 section notation_EF
 
@@ -14,11 +12,13 @@ macro_rules
 
 @[app_unexpander Extend]
 def unexpandExtend : Lean.PrettyPrinter.Unexpander
-  | `($(_) $F:ident) => `($F:ident∞)
-  | _ => throw ()
+| `($(_) $F:ident) => `($F:ident∞)
+| _ => throw ()
 
 end notation_EF
 
+
+variable {F : Type*} [LinearOrderedField F]
 
 section extras_EF
 
@@ -174,7 +174,7 @@ def Matrix.dotProd (v : I → α) (w : I → γ) : α := ∑ i : I, w i • v i
 
 infixl:72 " ᵥ⬝ " => Matrix.dotProd
 
-/-- `Matrix.mulWeig M w` is the heterogeneous analogue of the matrix-vector product `Matrix.mulVec M v`
+/-- `Matrix.mulWeig M w` is the heterogeneous analogue of the matrix-vector product `Matrix.mulVec M w`
     (mnemonic: "matrix times weights").
     Note that the order of arguments (also with the infix notation) is opposite than in the `SMul` it builds upon. -/
 def Matrix.mulWeig (M : Matrix I J α) (w : J → γ) (i : I) : α :=

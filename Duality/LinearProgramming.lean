@@ -70,7 +70,7 @@ noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
     if P.IsUnbounded then
       some none --some ⊥ -- unbounded means that the minimum is `⊥`
     else
-      if hf : ∃ f : F, P.Reaches (toE f) ∧ P.IsBoundedBy f then
+      if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
         some (toE hf.choose) -- the minimum is finite
       else
         none -- invalid finite value (infimum is not attained; later, we prove it cannot happen)

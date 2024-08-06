@@ -1,8 +1,7 @@
 /-
-Inspired by:
+This entire file is inspired by:
 https://github.com/leanprover-community/mathlib4/blob/333e2d79fdaee86489af73dee919bc4b66957a52/Mathlib/Data/Real/EReal.lean
 -/
-
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Field.Basic
 
@@ -11,8 +10,8 @@ import Mathlib.Algebra.Order.Field.Basic
     `⊥` (negative infinity) is stronger than `⊤` (positive infinity). -/
 def Extend (F : Type*) := WithBot (WithTop F)
 
-variable {F : Type*} [LinearOrderedField F]
 
+variable {F : Type*} [LinearOrderedField F]
 
 -- Henrik Böving helped me with this instance:
 instance : LinearOrderedAddCommMonoid (Extend F) :=
@@ -21,6 +20,7 @@ instance : LinearOrderedAddCommMonoid (Extend F) :=
 -- Henrik Böving helped me with this instance:
 instance : AddCommMonoidWithOne (Extend F) :=
   inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop F)))
+
 
 instance : ZeroLEOneClass (Extend F) := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop F)))
 
@@ -31,6 +31,7 @@ instance : BoundedOrder (Extend F) := inferInstanceAs (BoundedOrder (WithBot (Wi
 instance : DenselyOrdered (Extend F) := inferInstanceAs (DenselyOrdered (WithBot (WithTop F)))
 
 instance : DecidableRel ((· < ·) : Extend F → (Extend F) → Prop) := WithBot.decidableLT
+
 
 /-- The canonical inclusion from `F` to `Extend F` is registered as a coercion. -/
 @[coe] def toE : F → (Extend F) := some ∘ some
@@ -118,7 +119,7 @@ lemma zero_neq_top : (0 : Extend F) ≠ ⊤ :=
 
 @[simp]
 lemma top_neq_zero : (⊤ : Extend F) ≠ 0 :=
-  (coe_neq_top 0).symm
+  zero_neq_top.symm
 
 @[simp, norm_cast]
 lemma coe_add (x y : F) : toE (x + y) = toE x + toE y :=
@@ -183,7 +184,7 @@ lemma coe_add_top (x : F) : (x : Extend F) + ⊤ = ⊤ :=
 /-! ### Negation -/
 
 /-- Negation on `Extend F`. -/
-def neg : Extend F → (Extend F)
+def neg : Extend F → Extend F
 | ⊥ => ⊤
 | ⊤ => ⊥
 | (x : F) => toE (-x)
