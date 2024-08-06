@@ -1012,15 +1012,15 @@ theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none 
   else
     simp [ExtendedLP.optimum, hP]
 
-lemma ExtendedLP.strongDuality_of_dual_feas {P : ExtendedLP I J F} (hQ : P.dualize.IsFeasible) :
+lemma ExtendedLP.strongDuality_of_dual_feas {P : ExtendedLP I J F} (hP : P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
   rw [oppositesOpt_comm]
   nth_rw 2 [P.dualize_dualize]
-  exact P.dualize.strongDuality_of_prim_feas hQ
+  exact P.dualize.strongDuality_of_prim_feas hP
 
-theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (feas : P.IsFeasible ∨ P.dualize.IsFeasible) :
+theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum :=
-  feas.casesOn
+  hP.casesOn
     (P.strongDuality_of_prim_feas ·)
     (P.strongDuality_of_dual_feas ·)
 

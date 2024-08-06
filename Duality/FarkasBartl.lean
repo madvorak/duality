@@ -4,7 +4,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Have
-import Duality.Basic
+import Duality.Common
 
 
 class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, DivisionRing R
