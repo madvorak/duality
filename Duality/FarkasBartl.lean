@@ -1,6 +1,9 @@
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Have
 import Duality.Basic
 
 

@@ -1,9 +1,5 @@
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Matrix.Notation
--- TODO reduce imports
-import Mathlib.Tactic.Have
+import Mathlib.Algebra.Order.Group.Defs
 
 
 section finset_sums

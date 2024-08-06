@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Order.Sum
-import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.LinearAlgebra.Matrix.DotProduct
+import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Duality.FarkasBartl
 
 

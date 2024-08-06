@@ -6,8 +6,6 @@ https://github.com/leanprover-community/mathlib4/blob/333e2d79fdaee86489af73dee9
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Field.Basic
 
-noncomputable section
-
 
 /-- `Extend F` is the type of values in `F ∪ {⊥, ⊤}` where, informally speaking,
     `⊥` (negative infinity) is stronger than `⊤` (positive infinity). -/
