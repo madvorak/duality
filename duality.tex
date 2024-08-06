@@ -307,7 +307,8 @@ Informally speaking, $\top$ represents the positive infinity,
 $\bot$ represents the negative infinity, and we say that
 $\bot$ is ``stronger'' than $\top$ in~all arithmetic operations.
 The surprising parts are $\bot + \top = \bot$ and $0 \.\bullet \bot = \bot$.
-Because of that, $F_\infty$ is not a field.
+Because of them, $F_\infty$ is not a field.
+In fact, $F_\infty$ is not even a group. 
 However, $F_\infty$ is still a densely linearly ordered abelian monoid
 with characteristic zero.
 
@@ -406,7 +407,7 @@ class AddSemigroup (G : Type u) extends Add G where
   add_assoc : ∀ a b c : G, (a + b) + c = a + (b + c)
 \end{lstlisting}
 Additive monoid is an additive semigroup with the zero element, thanks to which we can
-define a scalar multiplication by the natural numbers:
+define a scalar multiplication by the natural numbers (TODO AddZeroClass):
 \begin{lstlisting}
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul : ℕ → M → M

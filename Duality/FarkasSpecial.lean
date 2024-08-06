@@ -18,41 +18,59 @@ def unexpandExtend : Lean.PrettyPrinter.Unexpander
 end notation_EF
 
 
+abbrev NNeg (F : Type*) [LinearOrderedField F] := { a : F // 0 ≤ a }
+
+-- Based on the notation above:
+section notation_NNeg
+
+syntax:max ident noWs "≥0" : term
+
+macro_rules
+| `($F:ident≥0) => `(NNeg $F)
+
+@[app_unexpander NNeg]
+def unexpandNNeg : Lean.PrettyPrinter.Unexpander
+| `($(_) $F:ident) => `($F:ident≥0)
+| _ => throw ()
+
+end notation_NNeg
+
+
 variable {F : Type*} [LinearOrderedField F]
 
 section extras_EF
 
-def EF.smulNN (c : { a : F // 0 ≤ a }) : F∞ → F∞
+def EF.smulNN (c : NNeg F) : F∞ → F∞
 | ⊥ => ⊥
 | ⊤ => if c = 0 then 0 else ⊤
 | (f : F) => toE (c.val * f)
 
-instance : SMulZeroClass { a : F // 0 ≤ a } F∞ where
+instance : SMulZeroClass F≥0 F∞ where
   smul := EF.smulNN
-  smul_zero (c : { a : F // 0 ≤ a }) := EF.coe_eq_coe_iff.mpr (mul_zero c.val)
+  smul_zero (c : F≥0) := EF.coe_eq_coe_iff.mpr (mul_zero c.val)
 
-lemma EF.pos_smul_top {c : { a : F // 0 ≤ a }} (hc : 0 < c) : c • (⊤ : F∞) = ⊤ := by
+lemma EF.pos_smul_top {c : F≥0} (hc : 0 < c) : c • (⊤ : F∞) = ⊤ := by
   show EF.smulNN c ⊤ = ⊤
   simp [EF.smulNN]
   exact hc.ne.symm
 
-lemma EF.smul_top_neq_bot (c : { a : F // 0 ≤ a }) : c • (⊤ : F∞) ≠ ⊥ := by
+lemma EF.smul_top_neq_bot (c : F≥0) : c • (⊤ : F∞) ≠ ⊥ := by
   show EF.smulNN c ⊤ ≠ ⊥
   by_cases hc0 : c = 0 <;> simp [EF.smulNN, hc0]
 
-lemma EF.smul_coe_neq_bot (c : { a : F // 0 ≤ a }) (f : F) : c • toE f ≠ (⊥ : F∞) :=
+lemma EF.smul_coe_neq_bot (c : F≥0) (f : F) : c • toE f ≠ (⊥ : F∞) :=
   EF.coe_neq_bot (c * f)
 
-lemma EF.smul_bot (c : { a : F // 0 ≤ a }) : c • (⊥ : F∞) = ⊥ :=
+lemma EF.smul_bot (c : F≥0) : c • (⊥ : F∞) = ⊥ :=
   rfl
 
-lemma EF.smul_nonbot_neq_bot (c : { a : F // 0 ≤ a }) {r : F∞} (hr : r ≠ ⊥) : c • r ≠ ⊥ := by
+lemma EF.smul_nonbot_neq_bot (c : F≥0) {r : F∞} (hr : r ≠ ⊥) : c • r ≠ ⊥ := by
   match r with
   | ⊥ => simp at hr
   | ⊤ => apply EF.smul_top_neq_bot
   | (f : F) => apply EF.smul_coe_neq_bot
 
-lemma EF.zero_smul_nonbot {r : F∞} (hr : r ≠ ⊥) : (0 : { a : F // 0 ≤ a }) • r = 0 := by
+lemma EF.zero_smul_nonbot {r : F∞} (hr : r ≠ ⊥) : (0 : F≥0) • r = 0 := by
   show EF.smulNN 0 r = 0
   simp [EF.smulNN]
   match r with
@@ -60,7 +78,7 @@ lemma EF.zero_smul_nonbot {r : F∞} (hr : r ≠ ⊥) : (0 : { a : F // 0 ≤ a 
   | ⊤ => rfl
   | (f : F) => rfl
 
-lemma EF.zero_smul_coe (f : F) : (0 : { a : F // 0 ≤ a }) • toE f = 0 :=
+lemma EF.zero_smul_coe (f : F) : (0 : F≥0) • toE f = 0 :=
   EF.zero_smul_nonbot (EF.coe_neq_bot f)
 
 
@@ -188,21 +206,21 @@ end hetero_matrix_products_defs
 section hetero_matrix_products_EF
 
 lemma Matrix.no_bot_dotProd_zero {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) :
-    v ᵥ⬝ (0 : I → { a : F // 0 ≤ a }) = (0 : F∞) :=
+    v ᵥ⬝ (0 : I → F≥0) = (0 : F∞) :=
   Finset.sum_eq_zero (fun (i : I) _ =>
     match hvi : v i with
     | ⊤ => show EF.smulNN 0 ⊤ = 0 by simp [EF.smulNN]
     | ⊥ => False.elim (hv i hvi)
     | (f : F) => EF.zero_smul_coe f)
 
-lemma Matrix.has_bot_dotProd_nneg {v : I → F∞} {i : I} (hvi : v i = ⊥) (w : I → { a : F // 0 ≤ a }) :
+lemma Matrix.has_bot_dotProd_nneg {v : I → F∞} {i : I} (hvi : v i = ⊥) (w : I → F≥0) :
     v ᵥ⬝ w = (⊥ : F∞) := by
   simp only [Matrix.dotProd, Finset.sum, Multiset.sum_eq_EF_bot_iff, Multiset.mem_map, Finset.mem_val, Finset.mem_univ, true_and]
   use i
   rw [hvi]
   rfl
 
-lemma Matrix.no_bot_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w : I → { a : F // 0 ≤ a }) :
+lemma Matrix.no_bot_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w : I → F≥0) :
     v ᵥ⬝ w ≠ (⊥ : F∞) := by
   simp only [Matrix.dotProd, Finset.sum]
   intro contr
@@ -214,7 +232,7 @@ lemma Matrix.no_bot_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w :
   | (f : F) => rw [hvi] at hi; exact EF.smul_coe_neq_bot (w i) f hi
 
 lemma Matrix.no_bot_has_top_dotProd_pos {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
-    (w : I → { a : F // 0 ≤ a }) (hwi : 0 < w i) :
+    (w : I → F≥0) (hwi : 0 < w i) :
     v ᵥ⬝ w = ⊤ := by
   apply Multiset.sum_eq_EF_top
   · rw [Multiset.mem_map]
@@ -230,19 +248,19 @@ lemma Matrix.no_bot_has_top_dotProd_pos {v : I → F∞} (hv : ∀ a, v a ≠ �
     exact EF.smul_nonbot_neq_bot (w b) (hv b) hb
 
 lemma Matrix.no_bot_has_top_dotProd_le {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
-    (w : I → { a : F // 0 ≤ a }) {f : F} (hq : v ᵥ⬝ w ≤ f) :
+    (w : I → F≥0) {f : F} (hq : v ᵥ⬝ w ≤ f) :
     w i ≤ 0 := by
   by_contra! contr
   rw [Matrix.no_bot_has_top_dotProd_pos hv hvi w contr, top_le_iff] at hq
   exact EF.coe_neq_top f hq
 
 lemma Matrix.no_bot_has_top_dotProd_nneg_le {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
-    (w : I → { a : F // 0 ≤ a }) {f : F} (hq : v ᵥ⬝ w ≤ f) :
+    (w : I → F≥0) {f : F} (hq : v ᵥ⬝ w ≤ f) :
     w i = 0 :=
   eq_of_le_of_le (Matrix.no_bot_has_top_dotProd_le hv hvi w hq) (w i).property
 
 lemma Matrix.dotProd_zero_le_zero (v : I → F∞) :
-    v ᵥ⬝ (0 : I → { a : F // 0 ≤ a }) ≤ (0 : F∞) := by
+    v ᵥ⬝ (0 : I → F≥0) ≤ (0 : F∞) := by
   if hv : ∀ i, v i ≠ ⊥ then
     rw [Matrix.no_bot_dotProd_zero hv]
   else
@@ -252,7 +270,7 @@ lemma Matrix.dotProd_zero_le_zero (v : I → F∞) :
     · exact hv.choose_spec
 
 lemma Matrix.mulWeig_zero_le_zero (M : Matrix I J F∞) :
-    M ₘ* (0 : J → { a : F // 0 ≤ a }) ≤ (0 : I → F∞) := by
+    M ₘ* (0 : J → F≥0) ≤ (0 : I → F∞) := by
   intro i
   apply Matrix.dotProd_zero_le_zero
 
@@ -278,7 +296,7 @@ theorem extendedFarkas [DecidableEq I]
     -- `A` must not have `⊥` on any row where `b` has `⊥`
     (hAb' : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
     --
-    (∃ x : J → { a : F // 0 ≤ a }, A ₘ* x ≤ b) ≠ (∃ y : I → { a : F // 0 ≤ a }, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0) := by
+    (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0) := by
     --
   if hbot : ∃ i : I, b i = ⊥ then
     obtain ⟨i, hi⟩ := hbot

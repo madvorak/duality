@@ -34,14 +34,14 @@ section extended_LP_definitions
 /-- Vector `x` is a solution to linear program `P` iff all entries of `x` are nonnegative and its
     multiplication by matrix `A` from the left yields a vector whose all entries are less or equal
     to corresponding entries of the vector `b`. -/
-def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → { a : F // 0 ≤ a }) : Prop :=
+def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
   P.A ₘ* x ≤ P.b
 
 /-- Linear program `P` reaches objective value `r` iff there is a solution `x` such that,
     when its entries are elementwise multiplied by the the coefficients `c` and summed up,
     the result is the value `r`. Note that `⊤` can be reached but `⊥` cannot. -/
 def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
-  ∃ x : J → { a : F // 0 ≤ a }, P.IsSolution x ∧ P.c ᵥ⬝ x = r
+  ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 
 /-- Linear program `P` is feasible iff `P` reaches a finite value. -/
 def ExtendedLP.IsFeasible (P : ExtendedLP I J F) : Prop :=
@@ -87,7 +87,7 @@ end extended_LP_definitions
 
 section weak_duality
 
-lemma EF.one_smul (r : F∞) : (1 : { a : F // 0 ≤ a }) • r = r := by
+lemma EF.one_smul (r : F∞) : (1 : F≥0) • r = r := by
   match r with
   | ⊥ => rfl
   | ⊤ =>
@@ -110,17 +110,17 @@ lemma EF.sub_nonpos_iff (r s : F∞) : r + (-s) ≤ 0 ↔ r ≤ s := by
 lemma EF.vec_sub_nonpos_iff (u v : I → F∞) : u + (-v) ≤ 0 ↔ u ≤ v := by
   constructor <;> intro huv i <;> simpa [EF.sub_nonpos_iff] using huv i
 
-lemma Matrix.sumElim_dotProd_sumElim (u : I → F∞) (v : J → F∞) (x : I → { a : F // 0 ≤ a }) (y : J → { a : F // 0 ≤ a }) :
+lemma Matrix.sumElim_dotProd_sumElim (u : I → F∞) (v : J → F∞) (x : I → F≥0) (y : J → F≥0) :
     Sum.elim u v ᵥ⬝ Sum.elim x y = u ᵥ⬝ x + v ᵥ⬝ y := by
   simp [Matrix.dotProd]
 
-lemma Matrix.fromRows_mulWeig {I₁ I₂ : Type*} (M₁ : Matrix I₁ J F∞) (M₂ : Matrix I₂ J F∞) (w : J → { a : F // 0 ≤ a }) :
+lemma Matrix.fromRows_mulWeig {I₁ I₂ : Type*} (M₁ : Matrix I₁ J F∞) (M₂ : Matrix I₂ J F∞) (w : J → F≥0) :
     Matrix.fromRows M₁ M₂ ₘ* w = Sum.elim (M₁ ₘ* w) (M₂ ₘ* w) := by
   ext i
   cases i <;> rfl
 
 lemma Matrix.fromColumns_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fintype J₂]
-    (M₁ : Matrix I J₁ F∞) (M₂ : Matrix I J₂ F∞) (w₁ : J₁ → { a : F // 0 ≤ a }) (w₂ : J₂ → { a : F // 0 ≤ a }) :
+    (M₁ : Matrix I J₁ F∞) (M₂ : Matrix I J₂ F∞) (w₁ : J₁ → F≥0) (w₂ : J₂ → F≥0) :
     Matrix.fromColumns M₁ M₂ ₘ* Sum.elim w₁ w₂ = M₁ ₘ* w₁ + M₂ ₘ* w₂ := by
   ext
   simp [Matrix.fromColumns, Matrix.mulWeig, Matrix.dotProd]
@@ -206,11 +206,11 @@ section strong_duality
 
 section nneg_vs_zero
 
-lemma eq_zero_of_zero_eq_val {k : { a : F // 0 ≤ a }} (hk : 0 = k.val) :
+lemma eq_zero_of_zero_eq_val {k : F≥0} (hk : 0 = k.val) :
     k = 0 :=
   Eq.symm (Subtype.eq hk)
 
-lemma pos_of_NN_not_zero {k : { a : F // 0 ≤ a }} (hk : ¬(k = 0)) :
+lemma pos_of_NN_not_zero {k : F≥0} (hk : ¬(k = 0)) :
     0 < k := by
   apply lt_of_le_of_ne k.property
   intro contr
@@ -220,14 +220,14 @@ end nneg_vs_zero
 
 section misc_EF_properties
 
-lemma EF.smul_nonpos {r : F∞} (hr : r ≤ 0) (k : { a : F // 0 ≤ a }) :
+lemma EF.smul_nonpos {r : F∞} (hr : r ≤ 0) (k : F≥0) :
     k • r ≤ 0 := by
   match r with
   | ⊥ => apply bot_le
   | ⊤ => simp at hr
   | (_ : F) => exact EF.coe_le_coe_iff.mpr (mul_nonpos_of_nonneg_of_nonpos k.property (coe_nonpos.mp hr))
 
-lemma EF.smul_lt_smul_left {k : { a : F // 0 ≤ a }} (hk : 0 < k) (r s : F∞) :
+lemma EF.smul_lt_smul_left {k : F≥0} (hk : 0 < k) (r s : F∞) :
     k • r < k • s ↔ r < s := by
   match s with
   | ⊥ =>
@@ -275,11 +275,11 @@ lemma EF.smul_lt_smul_left {k : { a : F // 0 ≤ a }} (hk : 0 < k) (r s : F∞) 
       rw [EF.coe_lt_coe_iff]
       exact mul_lt_mul_left hk
 
-lemma EF.smul_le_smul_left {k : { a : F // 0 ≤ a }} (hk : 0 < k) (r s : F∞) :
+lemma EF.smul_le_smul_left {k : F≥0} (hk : 0 < k) (r s : F∞) :
     k • r ≤ k • s ↔ r ≤ s := by
   convert neg_iff_neg (EF.smul_lt_smul_left hk s r) <;> exact Iff.symm not_lt
 
-lemma EF.smul_neg {k : { a : F // 0 ≤ a }} {r : F∞} (hkr : k = 0 → r ≠ ⊥ ∧ r ≠ ⊤) :
+lemma EF.smul_neg {k : F≥0} {r : F∞} (hkr : k = 0 → r ≠ ⊥ ∧ r ≠ ⊤) :
     k • (-r) = -(k • r) := by
   match r with
   | ⊥ =>
@@ -303,14 +303,14 @@ lemma EF.smul_neg {k : { a : F // 0 ≤ a }} {r : F∞} (hkr : k = 0 → r ≠ �
     show toE (k * (-f)) = toE (-(k * f))
     rw [mul_neg]
 
-lemma EF.pos_smul_neg {k : { a : F // 0 ≤ a }} (hk : 0 < k) (r : F∞) :
+lemma EF.pos_smul_neg {k : F≥0} (hk : 0 < k) (r : F∞) :
     k • (-r) = -(k • r) := by
   apply EF.smul_neg
   intro h0
   exfalso
   exact (h0 ▸ hk).false
 
-lemma EF.smul_smul {k : { a : F // 0 ≤ a }} (hk : 0 < k) (l : { a : F // 0 ≤ a }) (r : F∞) :
+lemma EF.smul_smul {k : F≥0} (hk : 0 < k) (l : F≥0) (r : F∞) :
     l • (k • r) = k • (l • r) := by
   match r with
   | ⊥ =>
@@ -329,7 +329,7 @@ lemma EF.smul_smul {k : { a : F // 0 ≤ a }} (hk : 0 < k) (l : { a : F // 0 ≤
   | (f : F) =>
     exact EF.coe_eq_coe_iff.mpr (mul_left_comm l.val k.val f)
 
-lemma EF.add_smul (k l : { a : F // 0 ≤ a }) (r : F∞) :
+lemma EF.add_smul (k l : F≥0) (r : F∞) :
     (k + l) • r = k • r + l • r := by
   match r with
   | ⊥ =>
@@ -354,7 +354,7 @@ lemma EF.add_smul (k l : { a : F // 0 ≤ a }) (r : F∞) :
     show toE ((k + l) * f) = toE (k * f) + toE (l * f)
     rw [←EF.coe_add, add_mul]
 
-lemma EF.smul_add {k : { a : F // 0 ≤ a }} (hk : 0 < k) (r s : F∞) :
+lemma EF.smul_add {k : F≥0} (hk : 0 < k) (r s : F∞) :
     k • (r + s) = k • r + k • s := by
   match r, s with
   | ⊥, _ =>
@@ -376,7 +376,7 @@ lemma EF.smul_add {k : { a : F // 0 ≤ a }} (hk : 0 < k) (r s : F∞) :
   | ⊤, ⊤ =>
     rw [EF.top_add_top, EF.pos_smul_top hk, EF.top_add_top]
 
-lemma EF.mul_smul (k l : { a : F // 0 ≤ a }) (r : F∞) :
+lemma EF.mul_smul (k l : F≥0) (r : F∞) :
     (k * l) • r = k • (l • r) := by
   match r with
   | ⊥ =>
@@ -401,21 +401,21 @@ lemma EF.mul_smul (k l : { a : F // 0 ≤ a }) (r : F∞) :
     rw [mul_assoc]
 
 lemma EF.one_smul_vec (v : J → F∞) :
-    (1 : { a : F // 0 ≤ a }) • v = v := by
+    (1 : F≥0) • v = v := by
   ext
   apply EF.one_smul
 
-lemma EF.smul_add_vec {k : { a : F // 0 ≤ a }} (hk : 0 < k) (v w : J → F∞) :
+lemma EF.smul_add_vec {k : F≥0} (hk : 0 < k) (v w : J → F∞) :
     k • (v + w) = k • v + k • w := by
   ext
   apply EF.smul_add hk
 
-lemma EF.mul_smul_vec (k l : { a : F // 0 ≤ a }) (v : J → F∞) :
+lemma EF.mul_smul_vec (k l : F≥0) (v : J → F∞) :
     (k * l) • v = k • (l • v) := by
   ext
   apply EF.mul_smul
 
-lemma EF.vec_smul_le_smul_left {k : { a : F // 0 ≤ a }} (hk : 0 < k) (u v : I → F∞) :
+lemma EF.vec_smul_le_smul_left {k : F≥0} (hk : 0 < k) (u v : I → F∞) :
     k • u ≤ k • v ↔ u ≤ v := by
   constructor <;> intro huv <;> intro i <;> specialize huv i
   · exact (EF.smul_le_smul_left hk _ _).mp huv
@@ -435,13 +435,13 @@ lemma Multiset.sum_neq_EF_top {s : Multiset F∞} (hs : ⊤ ∉ s) :
       | ⊤ => exact (ih (by simpa using hs) hm).elim
       | (_ : F) => simp [←EF.coe_add]
 
-lemma Multiset.smul_EF_sum {k : { a : F // 0 ≤ a }} (hk : 0 < k) (s : Multiset F∞) :
+lemma Multiset.smul_EF_sum {k : F≥0} (hk : 0 < k) (s : Multiset F∞) :
     (s.map (k • ·)).sum = k • s.sum := by
   induction s using Multiset.induction with
   | empty => simp
   | cons a m ih => simp [EF.smul_add hk, ←ih]
 
-lemma Finset.smul_EF_sum {k : { a : F // 0 ≤ a }} (hk : 0 < k) (v : J → F∞) :
+lemma Finset.smul_EF_sum {k : F≥0} (hk : 0 < k) (v : J → F∞) :
     ∑ j : J, k • v j = k • ∑ j : J, v j := by
   convert Multiset.smul_EF_sum hk (Finset.univ.val.map v)
   simp
@@ -450,21 +450,21 @@ end misc_EF_properties
 
 section dotProd_EF_properties
 
-lemma Matrix.dotProd_eq_bot {v : J → F∞} {w : J → { a : F // 0 ≤ a }} (hvw : v ᵥ⬝ w = ⊥) :
+lemma Matrix.dotProd_eq_bot {v : J → F∞} {w : J → F≥0} (hvw : v ᵥ⬝ w = ⊥) :
     ∃ j : J, v j = ⊥ := by
   by_contra! contr
   exact Matrix.no_bot_dotProd_nneg contr w hvw
 
-lemma Matrix.zero_dotProd (w : J → { a : F // 0 ≤ a }) : (0 : J → F∞) ᵥ⬝ w = 0 := by
+lemma Matrix.zero_dotProd (w : J → F≥0) : (0 : J → F∞) ᵥ⬝ w = 0 := by
   apply Finset.sum_eq_zero
   intro j _
   exact smul_zero (w j)
 
-lemma Matrix.dotProd_add (x : J → F∞) (v w : J → { a : F // 0 ≤ a }) :
+lemma Matrix.dotProd_add (x : J → F∞) (v w : J → F≥0) :
     x ᵥ⬝ (v + w) = x ᵥ⬝ v + x ᵥ⬝ w := by
   simp [Matrix.dotProd, EF.add_smul, Finset.sum_add_distrib]
 
-lemma Matrix.dotProd_smul {k : { a : F // 0 ≤ a }} (hk : 0 < k) (x : J → F∞) (v : J → { a : F // 0 ≤ a }) :
+lemma Matrix.dotProd_smul {k : F≥0} (hk : 0 < k) (x : J → F∞) (v : J → F≥0) :
     x ᵥ⬝ (k • v) = k • (x ᵥ⬝ v) := by
   show ∑ j : J, (k * v j) • x j = k • ∑ j : J, v j • x j
   rw [←Finset.smul_EF_sum hk]
@@ -472,7 +472,7 @@ lemma Matrix.dotProd_smul {k : { a : F // 0 ≤ a }} (hk : 0 < k) (x : J → F�
   ext
   apply EF.mul_smul
 
-lemma Matrix.no_top_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊤) (w : I → { a : F // 0 ≤ a }) :
+lemma Matrix.no_top_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊤) (w : I → F≥0) :
     v ᵥ⬝ w ≠ (⊤ : F∞) := by
   apply Multiset.sum_neq_EF_top
   rw [Multiset.mem_map]
@@ -494,16 +494,16 @@ lemma Matrix.EF_neg_neg (M : Matrix I J F∞) : -(-M) = M := by
   ext
   apply neg_neg
 
-lemma Matrix.zero_mulWeig (v : J → { a : F // 0 ≤ a }) : (0 : Matrix I J F∞) ₘ* v = 0 := by
+lemma Matrix.zero_mulWeig (v : J → F≥0) : (0 : Matrix I J F∞) ₘ* v = 0 := by
   ext
   simp [Matrix.mulWeig, Matrix.dotProd]
 
-lemma Matrix.mulWeig_add (M : Matrix I J F∞) (v w : J → { a : F // 0 ≤ a }) :
+lemma Matrix.mulWeig_add (M : Matrix I J F∞) (v w : J → F≥0) :
     M ₘ* (v + w) = M ₘ* v + M ₘ* w := by
   ext
   apply Matrix.dotProd_add
 
-lemma Matrix.mulWeig_smul {k : { a : F // 0 ≤ a }} (hk : 0 < k) (M : Matrix I J F∞) (v : J → { a : F // 0 ≤ a }) :
+lemma Matrix.mulWeig_smul {k : F≥0} (hk : 0 < k) (M : Matrix I J F∞) (v : J → F≥0) :
     M ₘ* (k • v) = k • (M ₘ* v) := by
   ext
   apply Matrix.dotProd_smul hk
@@ -544,7 +544,7 @@ lemma ExtendedLP.infeasible_of_unbounded {P : ExtendedLP I J F} (hP : P.IsUnboun
     linarith
 
 lemma ExtendedLP.unbounded_of_feasible_of_neg {P : ExtendedLP I J F} (hP : P.IsFeasible)
-    {x₀ : J → { a : F // 0 ≤ a }} (hx₀ : P.c ᵥ⬝ x₀ < 0) (hAx₀ : P.A ₘ* x₀ + (0 : { a : F // 0 ≤ a }) • (-P.b) ≤ 0) :
+    {x₀ : J → F≥0} (hx₀ : P.c ᵥ⬝ x₀ < 0) (hAx₀ : P.A ₘ* x₀ + (0 : F≥0) • (-P.b) ≤ 0) :
     P.IsUnbounded := by
   obtain ⟨e, xₚ, hxₚ, he⟩ := hP
   apply ExtendedLP.unbounded_of_reaches_le
@@ -569,7 +569,7 @@ lemma ExtendedLP.unbounded_of_feasible_of_neg {P : ExtendedLP I J F} (hP : P.IsF
       · apply div_pos_of_neg_of_neg
         · rwa [sub_neg]
         · rwa [←EF.coe_neg']
-      let k : { a : F // 0 ≤ a } := ⟨((s - e) / d), coef_pos.le⟩
+      let k : F≥0 := ⟨((s - e) / d), coef_pos.le⟩
       let k_pos : 0 < k := coef_pos
       refine ⟨s, ⟨xₚ + k • x₀, ?_, ?_⟩, by rfl⟩
       · intro i
