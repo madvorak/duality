@@ -70,10 +70,10 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 \section{Introduction}
 
-Fredholm (TODO citation) established that
+TODO (name?) established that
 a system of linear equalities has a solution if and only if
 we cannot obtain a contradiction by taking a linear combination of the equalities.
-We state their theorem as follows.
+We state his/her/their theorem as follows.
 
 \medskip \noindent
 \textbf{Theorem (equalityFredholm):}
@@ -303,6 +303,9 @@ We define addition, scalar action, and negation on $F_\infty$ as follows:
 	& $\top$ & $-q$ & $\bot$  
 	\end{tabular}
 \end{center}
+When we talk about elements of $F_\infty$,
+we say that values from $F$ are \textbf{finite}.
+
 Informally speaking, $\top$ represents the positive infinity,
 $\bot$ represents the negative infinity, and we say that
 $\bot$ is ``stronger'' than $\top$ in~all arithmetic operations.
@@ -339,18 +342,20 @@ The implicit intention is that the linear program is to be minimized.
 \textbf{Definition:}
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
-Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
-Let $b$ be a vector of type $I \r F_\infty$.
-Let $c$ be a vector of type $J \r F_\infty$.
-Assume that $A$ does not have $\bot$ and $\top$ in the same row.
-Assume that $A$ does not have $\bot$ and $\top$ in the same column.
-Assume that $b$ does not contain $\bot$.
-Assume that $c$ does not contain $\bot$.
-Assume that $A$ does not have $\top$ in any row where $b$ has $\top$.
-Assume that $A$ does not have $\bot$ in any column where $c$ has $\top$.
-We say that $P = (A, b, c)$ is a \textbf{linear program} over $F_\infty$.
-We say that its constraints are indexed by $I$.
-We say that its variables are indexed by $J$.
+Let $A$ be a matrix of type $(I \times J) \r F_\infty$,
+let $b$ be a vector of type $I \r F_\infty$,
+and $c$ be a vector of type $J \r F_\infty$
+such that the following six conditions hold:
+\begin{itemize}
+\item $A$ does not have $\bot$ and $\top$ in the same row
+\item $A$ does not have $\bot$ and $\top$ in the same column
+\item $b$ does not contain $\bot$
+\item $c$ does not contain $\bot$
+\item $A$ does not have $\top$ in any row where $b$ has $\top$
+\item $A$ does not have $\bot$ in any column where $c$ has $\top$
+\end{itemize}
+We say that $P = (A, b, c)$ is a \textbf{linear program} over $F_\infty$
+whose constraints are indexed by $I$ and variables are indexed by $J$.
 We say that a nonnegative vector $x : J \r R$ is
 a \textbf{solution} to $P$ if and only if $A \* x \le b$.
 We say that $P$ \textbf{reaches} an objective value $r$
@@ -384,18 +389,23 @@ If $P$ is not feasible, its optimum is $\top$.
 In all other cases, we ask whether $P$ reaches a finite value $r$ such that
 $P$ is bounded by $r$. If so, its optimum is $r$.
 Otherwise, $P$ does not have optimum.\footnote{By the end of the paper, we will
-have proved that optimum always exists, i.e., it cannot be the case that the set of
+have proved that optimum always exists, i.e., it cannot happen that the set of
 objective values reached by $P$ has a finite infimum that is not attained.
 However, because we do not have the theorem now, the optimum is defined as a partial function
 from linear programs to $F_\infty$.}
 
 \medskip \noindent
-\textbf{Theorem (strongDuality):}
+\textbf{Theorem (strongDuality):}\footnote{For simplicity,
+we rephrased the theorem without mentioning partial functions.
+Also note that it would be incorrect to say the following:
+$P$ has optimum~$p$, the dual of $P$ has optimum $q$, and $p + q = 0$.
+It would fail for unbounded linear programs because the arithmetics
+of $F_\infty$ defines $\top + \bot = \bot$.}
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
-then $P$ has optimum $p$ and the dual of $P$ has optimum $q$ such that
-$p = -q$ as defined for $F_\infty$.
+then there exists $p$ in $F_\infty$ such that
+$P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
 
 \section{Formalization}
 
@@ -500,9 +510,8 @@ we would want matrices to have an action on vectors -- not in our work).
 
 TODO formal definitions.
 
-We start from bottom up!
+\subsection{Results}
 
-\noindent
 Theorem equalityFredholm is stated as follows:
 \begin{lstlisting}
 theorem equalityFredholm (A : Matrix I J F) (b : I → F) :
@@ -611,12 +620,13 @@ Assume that, for all $y : W$, $\;A~y \ge 0$ implies $b~y \ge 0$.
 We claim there exists a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \bullet x_i = b~w $.
+TODO names like $A_0$ don't work well with the ``subscript notation'' on paper.
 
 \medskip \noindent
 Proof idea:
 Let $A_{<m}$ roughly mean $A \restriction \fin{m}$.
 To be more precise, $A_{<m}$ is a function that maps $(w : W)$ to
-$(A~w) \restriction \fin{m}$, so $A_{<m}$ is an $R$-linear map
+$(A~w) \restriction \fin{m}$, i.e., $A_{<m}$ is an $R$-linear map
 from $W$ to $(\fin{m} \r R)$ that behaves exactly like $A$ where
 it is defined.
 We distinguish two cases. If, for all $y : W$, the inequality
@@ -752,12 +762,150 @@ x = \begin{pmatrix}	1 \end{pmatrix}
 y = \begin{pmatrix}	0 \end{pmatrix}
 $$
 
-\section {Proving the (extended) strong LP duality}
+\section {Proving the extended strong LP duality}
 
-We note that it is intentional that both PRIM and DUAL are defined as
-minimization problems.
+We start with the weak duality and then move to the strong duality.
+We will use extendedFarkas in several places.
 
+\medskip \noindent
+\textbf{Theorem (weakDuality):}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$.
+If $P$ reaches $p$ and the dual of $P$ reaches $q$,
+then $p + q \ge 0$.
+(restated)
+
+\medskip \noindent
+Proof idea:
 TODO.
+
+\medskip \noindent
+\textbf{Lemma (infeasible\_of\_unbounded):}
+If a linear program $P$ is unbounded,
+the dual of $P$ cannot be feasible.
+
+\medskip \noindent
+Proof idea:
+TODO.
+
+\medskip \noindent
+\textbf{Lemma (unbounded\_of\_feasible\_of\_neg):}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$ that is feasible.
+Let $x_0$ be a nonnegative vector such that $c \cdot x_0 < 0$
+and $A \cdot x_0 + 0 \bullet (-b) \le 0$.
+We conclude that $P$ is unbounded.
+
+\medskip \noindent
+Proof idea:
+TODO.
+
+\medskip \noindent
+\textbf{Lemma (strongDuality\_aux):}
+Let $P$ be a linear program such that
+$P$ is feasible and the dual of $P$ is also feasible.
+There is a value $p$ reached by $P$ and
+a value $q$ reached by the dual of $P$ such
+that $p + q \le 0$.
+
+\medskip \noindent
+Proof idea:
+TODO.
+
+\medskip \noindent
+\textbf{Lemma (strongDuality\_of\_both\_feasible):}
+Let $P$ be a linear program such that
+$P$ is feasible and the dual of $P$ is also feasible.
+There is a finite value $r$ such that
+$P$ reaches $-r$ and the dual of $P$ reaches $r$.
+
+\medskip \noindent
+Proof idea:
+From strongDuality\_aux we have a value $p$ reached by $P$ and
+a value $q$ reached by the dual of $P$ such that $p + q \le 0$.
+We apply weakDuality to $p$ and $q$ to obtain $p + q \ge 0$.
+We set $r := q$.
+
+\medskip \noindent
+\textbf{Lemma (unbounded\_of\_feasible\_of\_infeasible):}
+Let $P$ be a linear program such that
+$P$ is feasible but the dual of $P$ is not feasible.
+We conclude that $P$ is unbounded.
+
+\medskip \noindent
+Proof idea:
+TODO.
+
+\medskip \noindent
+\textbf{Lemma (optimum\_unique):}
+Let $P$ be a linear program.
+Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
+Let $s$ be a valued reached by $P$ such that $P$ is bounded by $s$.
+We conclude $r = s$.
+
+\medskip \noindent
+Proof idea:
+TODO.
+
+\medskip \noindent
+\textbf{Lemma (optimum\_eq\_of\_reaches\_bounded):}
+Let $P$ be a linear program.
+Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
+We conclude that the optimum of $P$ is $r$.
+
+\medskip \noindent
+Proof idea:
+Apply the axiom of choice to the definition of optimum and use optimum\_unique.
+
+\medskip \noindent
+\textbf{Lemma (strongDuality\_of\_prim\_feas):}
+Let $P$ be a linear program that is feasible.
+The strong duality holds.
+
+\medskip \noindent
+Proof idea:
+TODO.
+
+\medskip \noindent
+\textbf{Theorem (optimum\_neq\_none):}
+Every linear program has optimum.
+
+\medskip \noindent
+Proof idea:
+If a linear program $P$ is feasible, the existence of optimum
+follows from strongDuality\_of\_prim\_feas.
+Otherwise, the optimum of $P$ is $\top$ by definition.
+
+\medskip \noindent
+\textbf{Lemma (dualize\_dualize):}
+Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
+
+\medskip \noindent
+Proof idea:
+$ -(-A^T)^T = A $
+
+\medskip \noindent
+\textbf{Lemma (strongDuality\_of\_dual\_feas):}
+Let $P$ be a linear program whose dual is feasible.
+The strong duality holds.
+
+\medskip \noindent
+Proof idea:
+Apply strongDuality\_of\_prim\_feas to the dual of $P$ and
+use dualize\_dualize.
+
+\medskip \noindent
+\textbf{Theorem (strongDuality):}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$.
+If $P$ or its dual is feasible (at least one of them),
+then there exists $p$ in $F_\infty$ such that
+$P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
+(restated)
+
+\medskip \noindent
+Proof idea:
+Use strongDuality\_of\_prim\_feas or strongDuality\_of\_dual\_feas.
 
 
 \section {Related work}
