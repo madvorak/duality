@@ -21,22 +21,18 @@ theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
   convert
     coordinateFarkas Aᵀ.mulVecLin ⟨⟨(b ⬝ᵥ ·), Matrix.dotProduct_add b⟩, (Matrix.dotProduct_smul · b)⟩
       using 3
-  · constructor
-    · intro ⟨hx, hAxb⟩
-      refine ⟨hx, ?_⟩
-      intro
+  · constructor <;> intro ⟨hx, hAx⟩ <;> refine ⟨hx, ?_⟩
+    · intro
       simp
-      rw [←hAxb]
+      rw [←hAx]
       finishit
-    · intro ⟨hx, hAx⟩
-      refine ⟨hx, ?_⟩
-      simp at hAx
+    · simp at hAx
       apply Matrix.dotProduct_eq
       intro w
       rw [←hAx w]
       finishit
 
-theorem equalityFredholm_lt (A : Matrix I J F) (b : I → F) :
+theorem basicLinearAlgebra_lt (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y < 0) := by
   convert equalityFarkas (Matrix.fromColumns A (-A)) b using 1
   · constructor
@@ -68,9 +64,9 @@ theorem equalityFredholm_lt (A : Matrix I J F) (b : I → F) :
       specialize hAyn i
       rwa [Matrix.transpose_neg, Matrix.neg_mulVec, Pi.zero_apply, Pi.neg_apply, Right.nonneg_neg_iff] at hAyn
 
-theorem equalityFredholm (A : Matrix I J F) (b : I → F) :
+theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0) := by
-  convert equalityFredholm_lt A b using 1
+  convert basicLinearAlgebra_lt A b using 1
   refine ⟨?_, by aesop⟩
   intro ⟨y, hAy, hby⟩
   if hlt : b ⬝ᵥ y < 0 then
