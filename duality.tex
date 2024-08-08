@@ -37,6 +37,7 @@
 	{↔}{{$\iff$}}1
 	{¬}{{$\neg$}}1
 	{∧}{{$\wedge$}}1
+	{∨}{{$\vee$}}1
 	{•}{$\bullet$}1
 	{·}{$\cdot$}1
 	{⬝}{$\cdot$}1
@@ -47,7 +48,14 @@
 	{∑}{{$\sum$}}1
 	{ᵀ}{{$^\texttt{T}$}}1
 	{ᵥ}{{$_v$}}1
+	{ₘ}{{$_m$}}1
 	{⁻¹}{{$^{-1}$}}1
+	{∞}{{$\infty$}}1
+	{⊤}{{$\top$}}1
+	{⊥}{{$\bot$}}1
+	{⟨}{{$\langle$}}1
+	{⟩}{{$\rangle$}}1
+	{∘}{{$\circ$}}1
 }
 
 
@@ -70,10 +78,10 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 \section{Introduction}
 
-TODO (name?) established that
+A basic knowledge from linear algebra is that
 a system of linear equalities has a solution if and only if
 we cannot obtain a contradiction by taking a linear combination of the equalities.
-We state his/her/their theorem as follows.
+We state this theorem as follows.
 
 \medskip \noindent
 \textbf{Theorem (equalityFredholm):}
@@ -472,6 +480,71 @@ instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : Lin
 \end{lstlisting}
 This instance is needed for the step from coordinateFarkas to equalityFarkas.
 
+\subsection{Extended linearly ordered fields}
+
+Given any type $F$, we construct $F \cup \{ \bot, \top \}$ as follows:
+\begin{lstlisting}
+def Extend (F : Type*) := WithBot (WithTop F)
+\end{lstlisting}
+From now on we assume that $F$ is a linearly ordered field:
+\begin{lstlisting}
+variable {F : Type*} [LinearOrderedField F]
+\end{lstlisting}
+The following instance defines how addition and comparison
+behaves on $F_\infty$ and automatically generates a proof
+that $F_\infty$ forms a linearly ordered abelian monoid:
+\begin{lstlisting}
+instance : LinearOrderedAddCommMonoid (Extend F) :=
+  inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop F)))
+\end{lstlisting}
+The following instance provides a proof that the constant
+$1$ behaves with respect to addition the way it should:
+\begin{lstlisting}
+instance : AddCommMonoidWithOne (Extend F) :=
+  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop F)))
+\end{lstlisting}
+The following instance provides a proof that $0 \le 1$ holds:
+\begin{lstlisting}
+instance : ZeroLEOneClass (Extend F) := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop F)))
+\end{lstlisting}
+The following instance provides a proof $F_\infty$ as a monoid
+has characteristic zero, i.e., you cannot obtain $0$ by summing
+up $1$ repeatedly:
+\begin{lstlisting}
+instance : CharZero (Extend F) := inferInstanceAs (CharZero (WithBot (WithTop F)))
+\end{lstlisting}
+The following instance provides a proof $F_\infty$ has
+a bounded order:
+\begin{lstlisting}
+instance : BoundedOrder (Extend F) := inferInstanceAs (BoundedOrder (WithBot (WithTop F)))
+\end{lstlisting}
+The following instance provides a proof $F_\infty$ is densely ordered:
+\begin{lstlisting}
+instance : DenselyOrdered (Extend F) := inferInstanceAs (DenselyOrdered (WithBot (WithTop F)))
+\end{lstlisting}
+The following instance provides a proof that $<$ is decidable on $F_\infty$
+if it is decidable on $F$:
+\begin{lstlisting}
+instance : DecidableRel ((· < ·) : Extend F → (Extend F) → Prop) := WithBot.decidableLT
+\end{lstlisting}
+The following definition embeds $F$ in $F_\infty$ and registers
+this canonical embedding as a type coercion:
+\begin{lstlisting}
+@[coe] def toE : F → (Extend F) := some ∘ some
+instance : Coe F (Extend F) := ⟨toE⟩
+\end{lstlisting}
+In the file \texttt{FarkasSpecial.lean} and everything downstream,
+we have the notation
+\begin{lstlisting}
+F∞
+\end{lstlisting}
+for $F_\infty$ and also the notation
+\begin{lstlisting}
+F≥0
+\end{lstlisting}
+for all nonnegative elements of $F$.
+TODO define scalar action and explain SMulZeroClass.
+
 \subsection{Vectors and stuff}
 
 We distinguish two types of vectors; implicit vectors and explicit vectors.
@@ -509,6 +582,82 @@ to have an action on the elements of the matrix (this is not a typo -- normally,
 we would want matrices to have an action on vectors -- not in our work).
 
 TODO formal definitions.
+
+\subsection{Linear programming}
+
+Extended linear programs are defined as follows:
+\begin{lstlisting}
+structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
+  /-- The left-hand-side matrix. -/
+  A : Matrix I J F∞
+  /-- The right-hand-side vector. -/
+  b : I → F∞
+  /-- The objective function coefficients. -/
+  c : J → F∞
+  /-- No `⊥` and `⊤` in the same row. -/
+  hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
+  /-- No `⊥` and `⊤` in the same column. -/
+  hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
+  /-- No `⊥` in the right-hand-side vector. -/
+  hbi : ¬∃ i : I, b i = ⊥
+  /-- No `⊥` in the objective function coefficients. -/
+  hcj : ¬∃ j : J, c j = ⊥
+  /-- No `⊤` in the row where the right-hand-side vector has `⊤`. -/
+  hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
+  /-- No `⊥` in the column where the objective function has `⊤`. -/
+  hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
+\end{lstlisting}
+Solution is defined as follows:
+\begin{lstlisting}
+def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
+  P.A ₘ* x ≤ P.b
+\end{lstlisting}
+Reaching a value is defined as follows:
+\begin{lstlisting}
+def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
+  ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
+\end{lstlisting}
+Feasibility is defined as follows:
+\begin{lstlisting}
+def ExtendedLP.IsFeasible (P : ExtendedLP I J F) : Prop :=
+  ∃ p : F, P.Reaches (toE p)
+\end{lstlisting}
+Being bounded by a value (from below -- we always minimize) is defined as follows:
+\begin{lstlisting}
+def ExtendedLP.IsBoundedBy (P : ExtendedLP I J F) (r : F) : Prop :=
+  ∀ p : F∞, P.Reaches p → r ≤ p
+\end{lstlisting}
+Being unbounded is defined as follows:
+\begin{lstlisting}
+def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
+  ¬∃ r : F, P.IsBoundedBy r
+\end{lstlisting}
+The following definition says how linear programs are dualized:
+\begin{lstlisting}
+def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
+  ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
+\end{lstlisting}
+The definition of optimum is, sadly, very complicated:
+\begin{lstlisting}
+noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
+  if P.IsFeasible then
+    if P.IsUnbounded then
+      some none --some ⊥ -- unbounded means that the minimum is `⊥`
+    else
+      if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
+        some (toE hf.choose) -- the minimum is finite
+      else
+        none -- invalid finite value (infimum is not attained)
+  else
+    some ⊤ -- infeasible means that the minimum is `⊤`
+\end{lstlisting}
+Finally, we define what opposite values are:
+\begin{lstlisting}
+def OppositesOpt : Option F∞ → Option F∞ → Prop
+| (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
+| _       , _        => False   -- namely `OppositesOpt none none = False`
+\end{lstlisting}
+
 
 \subsection{Results}
 
@@ -556,9 +705,22 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
     (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
 \end{lstlisting}
-TODO.
-
-Also TODO somehow politely say that the Mathlib's API for block matrices
+The existence of optimum (minimum) for every linear program is stated as follows:
+\begin{lstlisting}
+theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none
+\end{lstlisting}
+The weak duality theorem is stated as follows:
+\begin{lstlisting}
+theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I J F}
+  {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
+  0 ≤ p + q
+\end{lstlisting}
+The strong duality theorem is stated as follows:
+\begin{lstlisting}
+theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+  OppositesOpt P.optimum P.dualize.optimum
+\end{lstlisting}
+TODO somehow politely say that the Mathlib's API for block matrices
 is a mess and needs an overhaul.
 
 
@@ -777,7 +939,19 @@ then $p + q \ge 0$.
 
 \medskip \noindent
 Proof idea:
-TODO.
+There is a vector $x$ such that $A \* x \le b$ and $c \* x = p$.
+Apply extendedFarkas to the following matrix and vector:
+$$
+\begin{pmatrix}
+A \\
+c
+\end{pmatrix}
+\qquad \qquad
+\begin{pmatrix}
+b \\
+c \* x
+\end{pmatrix}
+$$
 
 \medskip \noindent
 \textbf{Lemma (infeasible\_of\_unbounded):}
@@ -786,7 +960,23 @@ the dual of $P$ cannot be feasible.
 
 \medskip \noindent
 Proof idea:
-TODO.
+Assume that $P$ is unbounded, but the dual of $P$ is feasible.
+Obtain contradiction using weakDuality.
+
+\medskip \noindent
+\textbf{Lemma (unbounded\_of\_reaches\_le):}
+Let $F$ be a linearly ordered field.
+Let $P$ be a linear program over $F_\infty$.
+Assume that for each $s$ in $F$ there exists
+$p$ in $F_\infty$ such that $P$ reaches $p$
+and $p \le s$.
+We conclude that $P$ is unbounded.
+
+\medskip \noindent
+Proof idea:
+It suffices to prove that for each $r$ in $F$ there exists
+$p'$ in $F_\infty$ such that $P$ reaches $p'$ and $p' < r$.
+Apply the assumption to $r\!-\!1$.
 
 \medskip \noindent
 \textbf{Lemma (unbounded\_of\_feasible\_of\_neg):}
@@ -798,7 +988,17 @@ We conclude that $P$ is unbounded.
 
 \medskip \noindent
 Proof idea:
-TODO.
+There is a nonnegative vector $x_p$ such that $A \* x_p \le b$ and
+$c \* x_p = e$ for some $e$ in $F_\infty$.
+We apply unbounded\_of\_feasible\_of\_neg.
+In case $e \le s$, we use $x_p$ and we are done.
+Otherwise, consider what $c \cdot x_0$ equals to.
+We cannot have $c \cdot x_0 = \bot$ because $c$ does not contain $\bot$.
+We cannot have $c \cdot x_0 = \top$ because $c \cdot x_0 < 0$.
+Hence $c \cdot x_0 = d$ for some $d$ in $F$.
+Observe that the fraction $\frac{s-e}{d}$ is
+well defined and it is positive.
+Use $x_p + \frac{s-e}{d} \bullet x_0$.
 
 \medskip \noindent
 \textbf{Lemma (strongDuality\_aux):}
