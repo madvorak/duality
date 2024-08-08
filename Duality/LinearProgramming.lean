@@ -68,7 +68,7 @@ open scoped Classical in
 noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
   if P.IsFeasible then
     if P.IsUnbounded then
-      some none --some ⊥ -- unbounded means that the minimum is `⊥`
+      some ⊥ -- unbounded means that the minimum is `⊥`
     else
       if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
         some (toE hf.choose) -- the minimum is finite

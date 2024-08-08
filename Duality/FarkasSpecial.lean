@@ -18,10 +18,9 @@ def unexpandExtend : Lean.PrettyPrinter.Unexpander
 end notation_EF
 
 
-abbrev NNeg (F : Type*) [LinearOrderedField F] := { a : F // 0 ≤ a }
+section nonnegative_subtype
 
--- Based on the notation above:
-section notation_NNeg
+abbrev NNeg (F : Type*) [LinearOrderedAddCommMonoid F] := { a : F // 0 ≤ a }
 
 syntax:max ident noWs "≥0" : term
 
@@ -33,14 +32,14 @@ def unexpandNNeg : Lean.PrettyPrinter.Unexpander
 | `($(_) $F:ident) => `($F:ident≥0)
 | _ => throw ()
 
-end notation_NNeg
+end nonnegative_subtype
 
 
 variable {F : Type*} [LinearOrderedField F]
 
 section extras_EF
 
-def EF.smulNN (c : NNeg F) : F∞ → F∞
+def EF.smulNN (c : F≥0) : F∞ → F∞
 | ⊥ => ⊥
 | ⊤ => if c = 0 then 0 else ⊤
 | (f : F) => toE (c.val * f)
@@ -280,8 +279,7 @@ end hetero_matrix_products_EF
 section extended_Farkas
 
 set_option maxHeartbeats 666666 in
-/-- Just like `inequalityFarkas_neg` but for `A` and `b` over extended rationals;
-    neither is a generalization of the other. -/
+/-- Just like `inequalityFarkas_neg` but for `A` and `b` over `F∞`. -/
 theorem extendedFarkas [DecidableEq I]
     -- The matrix (LHS)
     (A : Matrix I J F∞)
