@@ -372,20 +372,20 @@ theorem extendedFarkas [DecidableEq I]
           push_neg at where_top
           obtain ⟨t, ht⟩ := where_top
           have hxj : x j = 0
-          · have hbt : ∃ e : F, b t = e
-            · match hbtv : b t.val with
+          · obtain ⟨e, he⟩ : ∃ e : F, b t = e
+            · match hbt : b t.val with
               | (f : F) =>
                 exact ⟨_, rfl⟩
               | ⊥ =>
                 exfalso
                 apply hbot
                 use t
-                exact hbtv
+                exact hbt
               | ⊤ =>
                 exfalso
                 apply t.property.left
-                exact hbtv
-            exact Matrix.no_bot_has_top_dotProd_nneg_le (t.property.right) ht x (hbt.choose_spec ▸ ineqalities t.val)
+                exact hbt
+            exact Matrix.no_bot_has_top_dotProd_nneg_le (t.property.right) ht x (he ▸ ineqalities t.val)
           rw [hxj]
           apply EF.zero_smul_nonbot
           apply i'.property.right

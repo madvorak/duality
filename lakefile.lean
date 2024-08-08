@@ -2,14 +2,12 @@ import Lake
 open Lake DSL
 
 package duality {
-  moreServerOptions := #[⟨`autoImplicit, false⟩, ⟨`pp.structureInstances, false⟩, ⟨`linter.oldObtain, false⟩]
+  leanOptions := #[⟨`autoImplicit, false⟩, ⟨`pp.structureInstances, false⟩, ⟨`linter.oldObtain, false⟩]
 }
 
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"
+require "leanprover-community" / "mathlib" @ git "master"
 
 @[default_target]
 lean_lib Duality {
   globs := #[.submodules `Duality]
-  moreLeanArgs := #["-DautoImplicit=false"]
 }
