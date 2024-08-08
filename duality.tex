@@ -84,7 +84,7 @@ we cannot obtain a contradiction by taking a linear combination of the equalitie
 We state this theorem as follows.
 
 \medskip \noindent
-\textbf{Theorem (equalityFredholm):}
+\textbf{Theorem (basicLinearAlgebra):}
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -94,7 +94,7 @@ Exactly one of the following exists:
 \item vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y = 0$ and $b \* y \neq 0$
 \end{itemize}
-Geometric interpretation of equalityFredholm is straightforward.
+Geometric interpretation of basicLinearAlgebra is straightforward.
 The column vectors of $A$ generate a hyperplane in the
 $|I|$-dimensional Euclidean space that contains the origin.
 The point $b$ either lies in this hyperplane (in this case, the entries
@@ -110,11 +110,11 @@ This theorem can be given in much more general settings.
 In our paper, however, this is the only version we provide.
 This staple of linear algebra is not our main focus
 but a byproduct of the other theorems we prove.
-In particular, we obtain equalityFredholm as an immediate corollary
+In particular, we obtain basicLinearAlgebra as an immediate corollary
 of the following theorem.
 
 \medskip \noindent
-\textbf{Theorem (equalityFredholm\_lt):}
+\textbf{Theorem (basicLinearAlgebra\_lt):}
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -161,7 +161,7 @@ or there exists a hyperplane that contains the origin and that
 strictly separates $b$ from given cone
 (in this case, $y$ gives a normal vector of this hyperplane).
 
-We prove equalityFredholm\_lt by applying equalityFarkas to the matrix $(A~|-\!\! A)$.
+We prove basicLinearAlgebra\_lt by applying equalityFarkas to the matrix $(A~|-\!\! A)$.
 However, equalityFarkas will be proved later, from a more general theorem.
 
 Minkowski (TODO citation) similarly established that
@@ -661,14 +661,14 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 
 \subsection{Results}
 
-Theorem equalityFredholm is stated as follows:
+Theorem basicLinearAlgebra is stated as follows:
 \begin{lstlisting}
-theorem equalityFredholm (A : Matrix I J F) (b : I → F) :
+theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0)
 \end{lstlisting}
-Theorem equalityFredholm\_lt is stated as follows:
+Theorem basicLinearAlgebra\_lt is stated as follows:
 \begin{lstlisting}
-theorem equalityFredholm_lt (A : Matrix I J F) (b : I → F) :
+theorem basicLinearAlgebra_lt (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y < 0)
 \end{lstlisting}
 Theorem equalityFarkas is stated as follows:
