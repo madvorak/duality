@@ -417,9 +417,7 @@ lemma EF.mul_smul_vec (k l : F≥0) (v : J → F∞) :
 
 lemma EF.vec_smul_le_smul_left {k : F≥0} (hk : 0 < k) (u v : I → F∞) :
     k • u ≤ k • v ↔ u ≤ v := by
-  constructor <;> intro huv <;> intro i <;> specialize huv i
-  · exact (EF.smul_le_smul_left hk _ _).mp huv
-  · exact (EF.smul_le_smul_left hk _ _).mpr huv
+  simp [Pi.le_def, EF.smul_le_smul_left, hk]
 
 lemma Multiset.sum_neq_EF_top {s : Multiset F∞} (hs : ⊤ ∉ s) :
     s.sum ≠ ⊤ := by
