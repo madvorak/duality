@@ -497,41 +497,19 @@ that $F_\infty$ forms a linearly ordered abelian monoid:
 instance : LinearOrderedAddCommMonoid (Extend F) :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop F)))
 \end{lstlisting}
-The following instance provides a proof that the constant
-$1$ behaves with respect to addition the way it should:
-\begin{lstlisting}
-instance : AddCommMonoidWithOne (Extend F) :=
-  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop F)))
-\end{lstlisting}
-The following instance provides a proof that $0 \le 1$ holds:
-\begin{lstlisting}
-instance : ZeroLEOneClass (Extend F) := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop F)))
-\end{lstlisting}
-The following instance provides a proof $F_\infty$ as a monoid
-has characteristic zero, i.e., you cannot obtain $0$ by summing
-up $1$ repeatedly:
-\begin{lstlisting}
-instance : CharZero (Extend F) := inferInstanceAs (CharZero (WithBot (WithTop F)))
-\end{lstlisting}
-The following instance provides a proof $F_\infty$ has
-a bounded order:
-\begin{lstlisting}
-instance : BoundedOrder (Extend F) := inferInstanceAs (BoundedOrder (WithBot (WithTop F)))
-\end{lstlisting}
-The following instance provides a proof $F_\infty$ is densely ordered:
-\begin{lstlisting}
-instance : DenselyOrdered (Extend F) := inferInstanceAs (DenselyOrdered (WithBot (WithTop F)))
-\end{lstlisting}
-The following instance provides a proof that $<$ is decidable on $F_\infty$
-if it is decidable on $F$:
-\begin{lstlisting}
-instance : DecidableRel ((· < ·) : Extend F → (Extend F) → Prop) := WithBot.decidableLT
-\end{lstlisting}
 The following definition embeds $F$ in $F_\infty$ and registers
 this canonical embedding as a type coercion:
 \begin{lstlisting}
 @[coe] def toE : F → (Extend F) := some ∘ some
 instance : Coe F (Extend F) := ⟨toE⟩
+\end{lstlisting}
+Unary minus on $F_\infty$ is defined as follows:
+\begin{lstlisting}
+def neg : Extend F → Extend F
+| ⊥ => ⊤
+| ⊤ => ⊥
+| (x : F) => toE (-x)
+instance : Neg (Extend F) := ⟨EF.neg⟩
 \end{lstlisting}
 In the file \texttt{FarkasSpecial.lean} and everything downstream,
 we have the notation
@@ -895,8 +873,6 @@ x = \begin{pmatrix} 0 \end{pmatrix}
 y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\top$ in a row where $b$ has $\top$, it may happen that both $x$ and $y$ exist:
-%$x$ such that $A \* x \le b$ and 
-%$y$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$ exist:
 $$
 A =
 \begin{pmatrix}
@@ -990,7 +966,7 @@ We conclude that $P$ is unbounded.
 Proof idea:
 There is a nonnegative vector $x_p$ such that $A \* x_p \le b$ and
 $c \* x_p = e$ for some $e$ in $F_\infty$.
-We apply unbounded\_of\_feasible\_of\_neg.
+We apply unbounded\_of\_reaches\_le.
 In case $e \le s$, we use $x_p$ and we are done.
 Otherwise, consider what $c \cdot x_0$ equals to.
 We cannot have $c \cdot x_0 = \bot$ because $c$ does not contain $\bot$.
@@ -1106,6 +1082,80 @@ $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
 \medskip \noindent
 Proof idea:
 Use strongDuality\_of\_prim\_feas or strongDuality\_of\_dual\_feas.
+
+\subsection{Counterexample (first two conditions)}
+
+If $A$ has $\bot$ and $\top$ in the same column, the following may happen:
+$$
+A =
+\begin{pmatrix}
+	\bot \\
+	\top
+\end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
+\qquad \qquad
+c = \begin{pmatrix} 0 \end{pmatrix}
+$$
+If $A$ has $\bot$ and $\top$ in the same row, the following may happen:
+$$
+A =
+\begin{pmatrix}
+\top & \bot
+\end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix} 0 \end{pmatrix}
+\qquad \qquad
+c = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
+$$
+The two linear programs above are duals of each other.
+Yet the optimum of the former is $0$
+but the optimum of the latter is $\bot$.
+
+\subsection{Counterexample (middle two conditions)}
+
+The following linear program is a dual of itself:
+$$
+A =
+\begin{pmatrix}
+0
+\end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix}	\bot \end{pmatrix}
+\qquad \qquad
+c = \begin{pmatrix}	\bot \end{pmatrix}
+$$
+For strong duality to hold, the only permissible optimum would be $0$.
+The optimum of given program is $\top$ however.
+
+\subsection{Counterexample (last two conditions)}
+
+If $A$ has $\top$ in a row where $b$ has $\top$, the following may happen:
+$$
+A =
+\begin{pmatrix}
+	\top \\
+	-1
+\end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+\qquad \qquad
+c = \begin{pmatrix}	0 \end{pmatrix}
+$$
+If $A$ has $\bot$ in a column where $c$ has $\bot$, the following may happen:
+$$
+A =
+\begin{pmatrix}
+\bot & 1
+\end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix}	0 \end{pmatrix}
+\qquad \qquad
+c = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+$$
+The two linear programs above are duals of each other.
+Yet the optimum of the former is $0$
+but the optimum of the latter is $\bot$.
 
 
 \section {Related work}
