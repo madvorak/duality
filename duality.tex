@@ -860,11 +860,7 @@ y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\bot$ and $\top$ in the same column, it may happen that both $x$ and $y$ exist:
 $$
-A =
-\begin{pmatrix}
-	\bot \\
-	\top
-\end{pmatrix}
+A = \begin{pmatrix}	\bot \\	\top \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
 \qquad \qquad
@@ -874,11 +870,7 @@ y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\top$ in a row where $b$ has $\top$, it may happen that both $x$ and $y$ exist:
 $$
-A =
-\begin{pmatrix}
-	\top \\
-	-1
-\end{pmatrix}
+A = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
 \qquad \qquad
@@ -888,10 +880,7 @@ y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\bot$ in a row where $b$ has $\bot$, it may happen that both $x$ and $y$ exist:
 $$
-A =
-\begin{pmatrix}
-	\bot
-\end{pmatrix}
+A = \begin{pmatrix}	\bot \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix}	\bot \end{pmatrix}
 \qquad \qquad
@@ -900,7 +889,7 @@ x = \begin{pmatrix}	1 \end{pmatrix}
 y = \begin{pmatrix}	0 \end{pmatrix}
 $$
 
-\section {Proving the extended strong LP duality}
+\section {Extended strong LP duality}
 
 We start with the weak duality and then move to the strong duality.
 We will use extendedFarkas in several places.
@@ -1087,11 +1076,7 @@ Use strongDuality\_of\_prim\_feas or strongDuality\_of\_dual\_feas.
 
 If $A$ has $\bot$ and $\top$ in the same column, the following may happen:
 $$
-A =
-\begin{pmatrix}
-	\bot \\
-	\top
-\end{pmatrix}
+A = \begin{pmatrix}	\bot \\	\top \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
 \qquad \qquad
@@ -1099,10 +1084,7 @@ c = \begin{pmatrix} 0 \end{pmatrix}
 $$
 If $A$ has $\bot$ and $\top$ in the same row, the following may happen:
 $$
-A =
-\begin{pmatrix}
-\top & \bot
-\end{pmatrix}
+A = \begin{pmatrix} \top & \bot \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix} 0 \end{pmatrix}
 \qquad \qquad
@@ -1114,19 +1096,25 @@ but the optimum of the latter is $\bot$.
 
 \subsection{Counterexample (middle two conditions)}
 
-The following linear program is a dual of itself:
+If $b$ contain $\bot$, the following may happen:
 $$
-A =
-\begin{pmatrix}
-0
-\end{pmatrix}
+A = \begin{pmatrix}	\bot \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix}	\bot \end{pmatrix}
 \qquad \qquad
-c = \begin{pmatrix}	\bot \end{pmatrix}
+c = \begin{pmatrix} 0 \end{pmatrix}
 $$
-For strong duality to hold, the only permissible optimum would be $0$.
-The optimum of given program is $\top$ however.
+If $c$ contain $\bot$, the following may happen:
+$$
+A = \begin{pmatrix}	\top \end{pmatrix}
+\qquad \qquad
+b = \begin{pmatrix}	0 \end{pmatrix}
+\qquad \qquad
+c = \begin{pmatrix} \bot \end{pmatrix}
+$$
+The two linear programs above are duals of each other.
+Yet the optimum of the former is $0$
+but the optimum of the latter is $\bot$.
 
 \subsection{Counterexample (last two conditions)}
 
@@ -1142,12 +1130,9 @@ b = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
 \qquad \qquad
 c = \begin{pmatrix}	0 \end{pmatrix}
 $$
-If $A$ has $\bot$ in a column where $c$ has $\bot$, the following may happen:
+If $A$ has $\bot$ in a column where $c$ has $\top$, the following may happen:
 $$
-A =
-\begin{pmatrix}
-\bot & 1
-\end{pmatrix}
+A = \begin{pmatrix} \bot & 1 \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix}	0 \end{pmatrix}
 \qquad \qquad
