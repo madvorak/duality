@@ -108,7 +108,7 @@ from where all column vectors of $A$ get projected.
 
 This theorem can be given in much more general settings.
 In our paper, however, this is the only version we provide.
-This staple of linear algebra is not our main focus
+This special case of the Fredholm alternative is not our main focus
 but a byproduct of the other theorems we prove.
 In particular, we obtain basicLinearAlgebra as an immediate corollary
 of the following theorem.
@@ -839,7 +839,7 @@ We need to do the following steps in given order:
 \item If $b$ contains $\bot$, then $A \* x \le b$ cannot be satisfied,
 but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
 \item Assume there is no $\bot$ in $b$. Use inequalityFarkas\_neg.
-In either case, extend $x$ or $y$ with zeros on	all deleted positions.
+In either case, extend $x$ or $y$ with zeros on all deleted positions.
 \end{enumerate}
 
 \subsection{Counterexamples}
@@ -852,7 +852,7 @@ A =
 	0 & -1
 \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	0 \\ -1 \end{pmatrix}
+b = \begin{pmatrix} 0 \\ -1 \end{pmatrix}
 \qquad \qquad
 x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 \qquad \qquad
@@ -860,9 +860,9 @@ y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\bot$ and $\top$ in the same column, it may happen that both $x$ and $y$ exist:
 $$
-A = \begin{pmatrix}	\bot \\	\top \end{pmatrix}
+A = \begin{pmatrix} \bot \\ \top \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
+b = \begin{pmatrix} -1 \\ 0 \end{pmatrix}
 \qquad \qquad
 x = \begin{pmatrix} 0 \end{pmatrix}
 \qquad \qquad
@@ -870,23 +870,23 @@ y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\top$ in a row where $b$ has $\top$, it may happen that both $x$ and $y$ exist:
 $$
-A = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+A = \begin{pmatrix} \top \\ -1 \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+b = \begin{pmatrix} \top \\ -1 \end{pmatrix}
 \qquad \qquad
-x = \begin{pmatrix}	1 \end{pmatrix}
+x = \begin{pmatrix} 1 \end{pmatrix}
 \qquad \qquad
 y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
 If $A$ has $\bot$ in a row where $b$ has $\bot$, it may happen that both $x$ and $y$ exist:
 $$
-A = \begin{pmatrix}	\bot \end{pmatrix}
+A = \begin{pmatrix} \bot \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	\bot \end{pmatrix}
+b = \begin{pmatrix} \bot \end{pmatrix}
 \qquad \qquad
-x = \begin{pmatrix}	1 \end{pmatrix}
+x = \begin{pmatrix} 1 \end{pmatrix}
 \qquad \qquad
-y = \begin{pmatrix}	0 \end{pmatrix}
+y = \begin{pmatrix} 0 \end{pmatrix}
 $$
 
 \section {Extended strong LP duality}
@@ -1076,9 +1076,9 @@ Use strongDuality\_of\_prim\_feas or strongDuality\_of\_dual\_feas.
 
 If $A$ has $\bot$ and $\top$ in the same column, the following may happen:
 $$
-A = \begin{pmatrix}	\bot \\	\top \end{pmatrix}
+A = \begin{pmatrix} \bot \\ \top \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
+b = \begin{pmatrix} -1 \\ 0 \end{pmatrix}
 \qquad \qquad
 c = \begin{pmatrix} 0 \end{pmatrix}
 $$
@@ -1088,7 +1088,7 @@ A = \begin{pmatrix} \top & \bot \end{pmatrix}
 \qquad \qquad
 b = \begin{pmatrix} 0 \end{pmatrix}
 \qquad \qquad
-c = \begin{pmatrix}	-1 \\ 0 \end{pmatrix}
+c = \begin{pmatrix} -1 \\ 0 \end{pmatrix}
 $$
 The two linear programs above are duals of each other.
 Yet the optimum of the former is $0$
@@ -1096,19 +1096,19 @@ but the optimum of the latter is $\bot$.
 
 \subsection{Counterexample (middle two conditions)}
 
-If $b$ contain $\bot$, the following may happen:
+If $b$ contains $\bot$, the following may happen:
 $$
-A = \begin{pmatrix}	\bot \end{pmatrix}
+A = \begin{pmatrix} \bot \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	\bot \end{pmatrix}
+b = \begin{pmatrix} \bot \end{pmatrix}
 \qquad \qquad
 c = \begin{pmatrix} 0 \end{pmatrix}
 $$
-If $c$ contain $\bot$, the following may happen:
+If $c$ contains $\bot$, the following may happen:
 $$
-A = \begin{pmatrix}	\top \end{pmatrix}
+A = \begin{pmatrix} \top \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	0 \end{pmatrix}
+b = \begin{pmatrix} 0 \end{pmatrix}
 \qquad \qquad
 c = \begin{pmatrix} \bot \end{pmatrix}
 $$
@@ -1120,23 +1120,19 @@ but the optimum of the latter is $\bot$.
 
 If $A$ has $\top$ in a row where $b$ has $\top$, the following may happen:
 $$
-A =
-\begin{pmatrix}
-	\top \\
-	-1
-\end{pmatrix}
+A = \begin{pmatrix} \top \\ -1 \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+b = \begin{pmatrix} \top \\ -1 \end{pmatrix}
 \qquad \qquad
-c = \begin{pmatrix}	0 \end{pmatrix}
+c = \begin{pmatrix} 0 \end{pmatrix}
 $$
 If $A$ has $\bot$ in a column where $c$ has $\top$, the following may happen:
 $$
 A = \begin{pmatrix} \bot & 1 \end{pmatrix}
 \qquad \qquad
-b = \begin{pmatrix}	0 \end{pmatrix}
+b = \begin{pmatrix} 0 \end{pmatrix}
 \qquad \qquad
-c = \begin{pmatrix}	\top \\	-1 \end{pmatrix}
+c = \begin{pmatrix} \top \\ -1 \end{pmatrix}
 $$
 The two linear programs above are duals of each other.
 Yet the optimum of the former is $0$

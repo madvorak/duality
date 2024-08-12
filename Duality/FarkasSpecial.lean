@@ -20,7 +20,7 @@ end notation_EF
 
 section nonnegative_subtype
 
-abbrev NNeg (F : Type*) [LinearOrderedAddCommMonoid F] := { a : F // 0 ≤ a }
+abbrev NNeg (F : Type*) [OrderedAddCommMonoid F] := { a : F // 0 ≤ a }
 
 syntax:max ident noWs "≥0" : term
 

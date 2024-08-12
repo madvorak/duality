@@ -58,6 +58,6 @@ lemma le_of_nneg_add {α : Type*} [OrderedAddCommGroup α] {a b c : α} (habc : 
 
 macro "change " h:ident " to " t:term : tactic => `(tactic| change $t at $h:ident)
 
-macro "aeply" P:term : tactic => `(tactic| intro <;> apply $P <;> aesop)
+macro "aeply" t:term : tactic => `(tactic| intro <;> apply $t <;> aesop)
 
 end uncategorized_stuff
