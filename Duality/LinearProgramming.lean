@@ -80,7 +80,7 @@ noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
 /-- `OppositesOpt p q` essentially says `none ≠ p = -q`. -/
 def OppositesOpt : Option F∞ → Option F∞ → Prop
 | (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
-| _       , _        => False   -- namely `OppositesOpt none none = False`
+| _       , _        => False   -- namely `OppositesOpt none none` is `False`
 
 end extended_LP_definitions
 
@@ -965,7 +965,7 @@ lemma oppositesOpt_comm (p q : Option F∞) : OppositesOpt p q ↔ OppositesOpt 
 
 variable [DecidableEq I] [DecidableEq J]
 
-lemma ExtendedLP.strongDuality_of_prim_feas {P : ExtendedLP I J F} (hP : P.IsFeasible) :
+lemma ExtendedLP.strongDuality_of_prim_feasible {P : ExtendedLP I J F} (hP : P.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
   if hQ : P.dualize.IsFeasible then
     obtain ⟨r, hPr, hQr⟩ := P.strongDuality_of_both_feasible hP hQ
@@ -1006,21 +1006,21 @@ lemma ExtendedLP.strongDuality_of_prim_feas {P : ExtendedLP I J F} (hP : P.IsFea
 theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none := by
   if hP : P.IsFeasible then
     intro contr
-    simpa [contr, OppositesOpt] using P.strongDuality_of_prim_feas hP
+    simpa [contr, OppositesOpt] using P.strongDuality_of_prim_feasible hP
   else
     simp [ExtendedLP.optimum, hP]
 
-lemma ExtendedLP.strongDuality_of_dual_feas {P : ExtendedLP I J F} (hP : P.dualize.IsFeasible) :
+lemma ExtendedLP.strongDuality_of_dual_feasible {P : ExtendedLP I J F} (hP : P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
   rw [oppositesOpt_comm]
   nth_rw 2 [P.dualize_dualize]
-  exact P.dualize.strongDuality_of_prim_feas hP
+  exact P.dualize.strongDuality_of_prim_feasible hP
 
 theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum :=
   hP.casesOn
-    (P.strongDuality_of_prim_feas ·)
-    (P.strongDuality_of_dual_feas ·)
+    (P.strongDuality_of_prim_feasible ·)
+    (P.strongDuality_of_dual_feasible ·)
 
 end extended_LP_optima
 
