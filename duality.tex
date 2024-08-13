@@ -112,6 +112,48 @@ Exactly one of the following exists:
 %to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
 %$(I \times I) \r F$.
 
+\medskip \noindent
+\textbf{Theorem (StandardLP.strongDuality):}
+Let $I$ and $J$ be finite types.
+Let $F$ be a linearly ordered field.
+Let $A$ be a matrix of type $(I \times J) \r F$.
+Let $b$ be a vector of type $I \r F$.
+Let $c$ be a vector of type $J \r F$.
+We claim that
+$$ \min \{ c \* x ~|~ x \ge 0 \aand A \* x \le b \}
+=- \min \{ b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \}
+$$
+holds if at least one of the systems has a solution
+(very roughly paraphrased).
+
+
+\subsection{Structure of this paper}
+
+In Section 1.1, we generalize equalityFarkas to a broader
+linear-algebraic setting.
+In Section 1.2, we generalize inequalityFarkas and
+StandardLP.strongDuality to structures that allow
+infinite values in certain places.
+In Section 2, we comment on the formalization process.
+In Section 3, we prove the theorem from Section 1.1,
+from which be obtain equalityFarkas as a corollary.
+In Section 4, we prove the extension of inequalityFarkas.
+In Section 5, we prove the strong duality theorem from
+Section 1.2, from which be obtain
+StandardLP.strongDuality as a corollary.
+
+Repository \texttt{https://github.com/madvorak/duality}
+contains full version of all definitions, statements,
+and proofs. They are written in a formal language called
+Lean 4, which provides a guarantee that every step of
+every proof follows from valid logical axioms.\footnote{
+The only axioms used in this project are
+propext, Classical.choice, and Quot.sound, which you can
+check by the \texttt{\#print axioms} command.}
+This paper attempts to be an accurate description of
+the \texttt{duality} project.
+However, in case of any discrepancy, the code shall prevail.
+
 
 \subsection{Generalizations}
 
@@ -174,7 +216,7 @@ $b~y < 0$ uses the linear order\footnote{In case $V$ has finite dimension, you c
 order elements of $V$ lexicographically.} on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
-We prove fintypeFarkasBartl in Section TODO, which is where the heavy lifting comes.
+We prove fintypeFarkasBartl in Section 3, which is where the heavy lifting comes.
 
 
 \subsection{Extensions}
@@ -287,7 +329,7 @@ such that $P$ is bounded by $r$.
 We say that the linear program $(-A^T, c, b)$ is the \textbf{dual} of $P$.
 
 \medskip \noindent
-\textbf{Theorem (weakDuality):}
+\textbf{Theorem (ExtendedLP.weakDuality):}
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
@@ -309,7 +351,7 @@ However, because we do not have the theorem now, the optimum is defined as a par
 from linear programs to $F_\infty$.}
 
 \medskip \noindent
-\textbf{Theorem (strongDuality):}\footnote{For simplicity,
+\textbf{Theorem (ExtendedLP.strongDuality):}\footnote{For simplicity,
 we rephrased the theorem without mentioning partial functions.
 Also note that it would be incorrect to say the following:
 $P$ has optimum~$p$, the dual of $P$ has optimum $q$, and $p + q = 0$.
