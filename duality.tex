@@ -130,8 +130,8 @@ Let $A$ be a matrix of type $(I \times J) \r F$.
 Let $b$ be a vector of type $I \r F$.
 Let $c$ be a vector of type $J \r F$.
 Then
-$$ \min \{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
-=- \min \{\, b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \,\}
+$$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+=- \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \,\}
 $$
 holds if at least one of the systems has a solution
 (very roughly paraphrased --- this is not how our theorem is stated).
@@ -678,6 +678,7 @@ $ \sum_{j : \fin{n}}\; (A~w)_j \bullet x_j = b~w $
 \end{itemize}
 The only difference is that finFarkasBartl uses $\fin{n} = \{ 0, \dots, n\!-\!1 \}$
 instead of an arbitrary (unordered) finite type $J$.
+\pagebreak[2]
 
 \medskip \noindent
 Proof idea:
