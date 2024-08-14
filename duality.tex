@@ -79,6 +79,17 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 \section{Introduction}
 
+We do not use set theory.
+We write everything in type theory.
+Juxtaposition never denotes multiplication.
+Juxtaposition is always function application.
+We often talk about linearly ordered fields.
+The two main examples are rationals and reals.
+The paper starts with famous corollaries and
+then proceeds to state more general theorems.
+Proofs are postponed to respective sections.
+Theorems come with names instead of numbers.
+
 There are two famous theorems characterizing that a system of linear inequalities
 has a solution if and only if we cannot obtain a contradiction
 by taking a linear combination of the inequalities.
@@ -119,11 +130,11 @@ Let $A$ be a matrix of type $(I \times J) \r F$.
 Let $b$ be a vector of type $I \r F$.
 Let $c$ be a vector of type $J \r F$.
 Then
-$$ \min \{ c \* x ~|~ x \ge 0 \aand A \* x \le b \}
-=- \min \{ b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \}
+$$ \min \{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+=- \min \{\, b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \,\}
 $$
 holds if at least one of the systems has a solution
-(very roughly paraphrased).
+(very roughly paraphrased --- this is not how our theorem is stated).
 
 
 \subsection{Structure of this paper}
@@ -209,8 +220,7 @@ $ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
-$b~y < 0$ uses the linear order\footnote{In case $V$ has finite dimension, you can
-order elements of $V$ lexicographically.} on $V$.
+$b~y < 0$ uses the linear order on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
 We prove fintypeFarkasBartl in Section 3, which is where the heavy lifting comes.
