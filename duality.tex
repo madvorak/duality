@@ -59,9 +59,9 @@
 }
 
 
-\title{Duality theory in linear optimization and its extensions\,---\,formally verified}
+\title{Duality theory in linear optimization and its extensions\:---\:formally verified}
 \author{Martin Dvorak, Vladimir Kolmogorov}
-\date{}
+\date{2024}
 \maketitle
 
 
@@ -71,15 +71,15 @@ a contradiction by taking a linear combination of the inequalities.
 We state and formally prove several Farkas-like theorems in Lean 4.
 Furthermore, we consider a linearly ordered field extended with two special elements denoted by $\bot$ and $\top$
 where $\bot$ is below every element and $\top$ is above every element.
-We define $\bot + a = \bot = a + \bot$ of all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
-For multiplication, we define $\bot \cdot c = \bot = c \cdot \bot$ for every $c \ge 0$ but
-$\top \cdot d = \top = d \cdot \top$ only for $d > 0$ because $\top \cdot 0 = 0 = 0 \cdot \top$.
+We define $\bot + a = \bot = a + \bot$ for all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
+Instead of multiplication, we define scalar action $c \bullet \bot = \bot$ for every $c \ge 0$ but we define
+$d \bullet \top = \top$ only for $d > 0$ because $0 \bullet \top = 0$.
 We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
 
 
 \section{Introduction}
 
-There are two main theorems characterizing that a system of linear inequalities
+There are two famous theorems characterizing that a system of linear inequalities
 has a solution if and only if we cannot obtain a contradiction
 by taking a linear combination of the inequalities.
 TODO cite Farkas.
@@ -95,7 +95,7 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-TODO cite Minkowski.
+TODO cite Minkowski?
 
 \medskip \noindent
 \textbf{Theorem (inequalityFarkas):}
@@ -108,9 +108,8 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-%We prove inequalityFarkas by applying equalityFarkas 
-%to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
-%$(I \times I) \r F$.
+TODO cite John von Neumann?
+(any maybe Oskar Morgenstern and maybe George Dantzig and maybe Albert W. Tucker?)
 
 \medskip \noindent
 \textbf{Theorem (StandardLP.strongDuality):}
@@ -119,7 +118,7 @@ Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
 Let $b$ be a vector of type $I \r F$.
 Let $c$ be a vector of type $J \r F$.
-We claim that
+Then
 $$ \min \{ c \* x ~|~ x \ge 0 \aand A \* x \le b \}
 =- \min \{ b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \}
 $$
@@ -139,7 +138,7 @@ In Section 3, we prove the theorem from Section 1.1,
 from which be obtain equalityFarkas as a corollary.
 In Section 4, we prove the extension of inequalityFarkas.
 In Section 5, we prove the strong duality theorem from
-Section 1.2, from which be obtain
+Section 1.2, from which we obtain
 StandardLP.strongDuality as a corollary.
 
 Repository \texttt{https://github.com/madvorak/duality}
@@ -160,6 +159,7 @@ However, in case of any discrepancy, the code shall prevail.
 The next theorem generalizes equalityFarkas to structures where
 multiplication does not have to be commutative.
 Furthermore, it supports infinitely many equations.
+\pagebreak[2]
 
 \medskip \noindent
 \textbf{Theorem (coordinateFarkas):}
@@ -192,16 +192,14 @@ $ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
 \end{itemize}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
 a linearly ordered $R$-module $V$ whose order respects order on $R$.
-This result origins from TODO.
+This result origins from TODO cite Bartl.
 
 \medskip \noindent
 \textbf{Theorem (fintypeFarkasBartl):}
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $V$ be a linearly ordered $R$-module\footnote{We furthermore require 
-monotonicity of scalar multiplication by nonnegative elements on the left.
-This assumption will be implicit in later occurrences.}.
+Let $V$ be a linearly ordered $R$-module.
 Let $A$ be an $R$-linear map from $W$ to $(J \r R)$.
 Let $b$ be an $R$-linear map from $W$ to $V$.
 Exactly one of the following exists:
@@ -210,8 +208,7 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-In the last branch, $A~y \ge 0$ uses the partial order\footnote{The order on $(J \r R)$ is
-always the coordinate-wise application of $R$'s linear order.} on $(J \r R)$ whereäs
+In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
 $b~y < 0$ uses the linear order\footnote{In case $V$ has finite dimension, you can
 order elements of $V$ lexicographically.} on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
@@ -287,8 +284,9 @@ Exactly one of the following exists:
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
 Note that extendedFarkas looks pretty much like equalityFarkas\_neg and,
-in certain sense, generalizes it. Indeed, in Section TODO, we prove
+in certain sense, generalizes it. Indeed, in Section 4, we prove
 extendedFarkas using equalityFarkas\_neg and some additional machinery.
+TODO rephrase without mentioning equalityFarkas\_neg.
 
 Next we define an extended notion of linear program, i.e.,
 linear programming over extended linearly ordered fields.
@@ -896,7 +894,7 @@ Let $P$ be a linear program over $F_\infty$.
 Assume that for each $s$ in $F$ there exists
 $p$ in $F_\infty$ such that $P$ reaches $p$
 and $p \le s$.
-We conclude that $P$ is unbounded.
+Then $P$ is unbounded.
 
 \medskip \noindent
 Proof idea:
@@ -910,7 +908,7 @@ Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$ that is feasible.
 Let $x_0$ be a nonnegative vector such that $c \cdot x_0 < 0$
 and $A \cdot x_0 + 0 \bullet (-b) \le 0$.
-We conclude that $P$ is unbounded.
+Then $P$ is unbounded.
 
 \medskip \noindent
 Proof idea:
@@ -956,7 +954,7 @@ We set $r := q$.
 \textbf{Lemma (unbounded\_of\_feasible\_of\_infeasible):}
 Let $P$ be a linear program such that
 $P$ is feasible but the dual of $P$ is not feasible.
-We conclude that $P$ is unbounded.
+Then $P$ is unbounded.
 
 \medskip \noindent
 Proof idea:
@@ -967,7 +965,7 @@ TODO.
 Let $P$ be a linear program.
 Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
 Let $s$ be a valued reached by $P$ such that $P$ is bounded by $s$.
-We conclude $r = s$.
+Then $r = s$.
 
 \medskip \noindent
 Proof idea:
@@ -977,7 +975,7 @@ TODO.
 \textbf{Lemma (optimum\_eq\_of\_reaches\_bounded):}
 Let $P$ be a linear program.
 Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
-We conclude that the optimum of $P$ is $r$.
+Then the optimum of $P$ is $r$.
 
 \medskip \noindent
 Proof idea:
