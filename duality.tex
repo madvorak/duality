@@ -31,6 +31,7 @@
 	{σ}{{$\sigma$}}1
 	{τ}{{$\tau$}}1
 	{α}{{$\alpha$}}1
+	{γ}{{$\gamma$}}1
 	{≠}{{$\neq$}}1
 	{≤}{{$\leq$}}1
 	{≥}{{$\geq$}}1
@@ -134,7 +135,7 @@ $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 =- \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \,\}
 $$
 holds if at least one of the systems has a solution
-(very roughly paraphrased --- this is not how our theorem is stated).
+(very roughly paraphrased\:---\:this is not how our theorem is stated).
 
 
 \subsection{Structure of this paper}
@@ -157,7 +158,7 @@ contains full version of all definitions, statements,
 and proofs. They are written in a formal language called
 Lean 4, which provides a guarantee that every step of
 every proof follows from valid logical axioms.\footnote{
-The only axioms used in this project are
+The only axioms used in our proofs are
 propext, Classical.choice, and Quot.sound, which you can
 check by the \texttt{\#print axioms} command.}
 This paper attempts to be an accurate description of
@@ -479,7 +480,7 @@ F≥0
 for all nonnegative elements of $F$.
 TODO define scalar action and explain SMulZeroClass.
 
-\subsection{Vectors and stuff}
+\subsection{Vectors and matrices}
 
 We distinguish two types of vectors; implicit vectors and explicit vectors.
 Implicit vectors are members of a vector space; they don't have any internal structure.
@@ -512,10 +513,99 @@ This is why commutativity of addition is necessary for the definition to be vali
 On the other hand, we don't assume any property of multiplication in the
 definition of multiplication between matrices and vectors; they don't even
 have to be of the same type; we only require the elements of the vector
-to have an action on the elements of the matrix (this is not a typo -- normally,
-we would want matrices to have an action on vectors -- not in our work).
+to have an action on the elements of the matrix (this is not a typo\:---\:normally,
+we would want matrices to have an action on vectors\:---\:not in our work).
 
-TODO formal definitions.
+\subsubsection{Mathlib definitions versus our definitions}
+
+Mathlib defines dot product (i.e., a product of an explicit vector with an explicit vector) as follows:
+\begin{lstlisting}
+def Matrix.dotProduct [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
+  ∑ i, v i * w i
+\end{lstlisting}
+Mathlib defines a product of a matrix with an explicit vector as follows:
+\begin{lstlisting}
+def Matrix.mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) : m → α
+  | i => (fun j => M i j) ⬝ᵥ v
+\end{lstlisting}
+Mildly confusingly, \texttt{m} and \texttt{n} are type variables here, not natural numbers.
+Note that, when multiplying two vectors,
+the left vector is not transposed\:---\:a vector is not
+defined as a special case of matrix, and transposition is not
+defined as an operation on explicit vectors, only on matrices.
+
+Infix notation for these two operations is defined as follows
+(the keyword \texttt{infixl} when defining an operator $\circ$ means that
+\hbox{\texttt{x $\circ$ y $\circ$ z}} gets parsed as \texttt{(x $\circ$ y) $\circ$ z}
+whether or not it makes sense, whereäs the keyword \texttt{infixr} when defining an operator $\circ$ means that %lb
+\hbox{\texttt{A $\circ$ B $\circ$ v}} gets parsed as \texttt{A $\circ$ (B $\circ$ v)}
+whether or not it makes sense):
+\begin{lstlisting}
+scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
+scoped infixr:73 " *ᵥ " => Matrix.mulVec
+\end{lstlisting}
+These definitions are sufficient for stating results based on linearly ordered fields.
+However, our results from Section 1.3 require a more general notion of multiplication
+between matrices and vectors.
+They are defined in the section hetero\_matrix\_products\_defs as follows:
+\begin{lstlisting}
+variable {α γ : Type*} [AddCommMonoid α] [SMul γ α]
+
+def Matrix.dotProd (v : I → α) (w : I → γ) : α :=
+  ∑ i : I, w i • v i
+infixl:72 " ᵥ⬝ " => Matrix.dotProd
+
+def Matrix.mulWeig (M : Matrix I J α) (w : J → γ) (i : I) : α :=
+  M i ᵥ⬝ w
+infixr:73 " ₘ* " => Matrix.mulWeig
+\end{lstlisting}
+We start by declaring that $\alpha$ and $\gamma$ are types from
+any universe (not necessarily both from the same universe).
+We require that $\alpha$ forms an abelian monoid and that
+$\gamma$ has a scalar action on $\alpha$. In this setting,
+we can instantiate $\alpha$ with $F_\infty$ and $\gamma$
+with $F$ for any linearly ordered field $F$.
+
+For explicit vectors
+$v : I \r \alpha$ and $w : I \r \gamma$, we define
+their product of type $\alpha$ as follows.
+Every element of $v$ gets multiplied from left by
+an element of $w$ on the same index.
+Then we sum them all together (in unspecified order).
+For a matrix $M : (I \times J) \r \alpha$ and
+a vector $w : J \r \gamma$, we define
+their product of type $I \r \alpha$ as a function
+that takes an index $i$ and outputs the dot product
+between the $i$-th row of $M$ and the vector $w$.
+
+Beware that the arguments (both in the function definition and
+in the infix notation) come in the opposite order from how
+scalar action is written. We recommend a mnemonic 
+``vector times weights'' for $v \* w$ and
+``matrix times weights'' for $M \* w$ where
+arguments come in alphabetical order.
+
+In the infix notation, you can distinguish between the standard
+Mathlib definitions and our definitions by observing that Mathlib
+operators put the letter $_v$ to the right of the symbol whereäs
+our operators put a letter to the left of the symbol.
+
+We find it unfortunate that the Mathlib name of \texttt{dotProduct}
+is prefixed by the \texttt{Matrix} namespace.
+While \texttt{Matrix.mulVec} allows for the use of dot notation
+in places where infix notation is not used, the full name
+\texttt{Matrix.dotProduct} only clutters the code.
+Even though we don't like it, we decided to namespace our definitions
+in the same way for consistency.
+
+Since we have new definitions, we have to rebuild all API (a lot of lemmas)
+for \texttt{Matrix.dotProd} and \texttt{Matrix.mulWeig} from scratch.
+This process was very tiresome. We decided not to develop a full reusable
+library, but prove only those lemmas we wanted to use in our project.
+For similar reasons, we did not generalize the Mathlib definition of
+``vector times matrix'', as ``matrix times vector'' was all we needed.
+It was still a lot of lemmas.
+
 
 \subsection{Linear programming}
 
