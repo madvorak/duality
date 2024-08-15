@@ -1,0 +1,31 @@
+digraph G {
+
+  finFarkasBartl -> fintypeFarkasBartl -> scalarFarkas -> coordinateFarkas -> equalityFarkas -> basicLinearAlgebra_lt -> basicLinearAlgebra 
+
+  equalityFarkas -> inequalityFarkas -> inequalityFarkas_neg -> extendedFarkas -> "ExtendedLP.weakDuality"
+  
+  "ExtendedLP.strongDuality_aux" -> "ExtendedLP.strongDuality_of_both_feasible" -> "ExtendedLP.strongDuality_of_prim_feasible"
+  
+  extendedFarkas -> "ExtendedLP.strongDuality_aux"
+  
+  extendedFarkas -> "ExtendedLP.unbounded_of_feasible_of_infeasible"
+  
+  "ExtendedLP.weakDuality" -> "ExtendedLP.infeasible_of_unbounded" -> "ExtendedLP.strongDuality_aux"
+  
+  "ExtendedLP.weakDuality" -> "ExtendedLP.strongDuality_of_both_feasible"
+  
+  "ExtendedLP.weakDuality" -> "ExtendedLP.strongDuality_of_prim_feasible" -> "ExtendedLP.strongDuality_of_dual_feasible" -> "ExtendedLP.strongDuality"
+  
+  "ExtendedLP.strongDuality_of_prim_feasible" -> "ExtendedLP.strongDuality" -> "StandardLP.strongDuality"
+  
+  "ExtendedLP.unbounded_of_feasible_of_infeasible" -> "ExtendedLP.strongDuality_of_prim_feasible" -> "ExtendedLP.optimum_neq_none" -> "StandardLP.optimum_neq_none"
+  
+  "ExtendedLP.unbounded_of_feasible_of_neg" -> "ExtendedLP.strongDuality_aux"
+  
+  "ExtendedLP.unbounded_of_feasible_of_neg" -> "ExtendedLP.unbounded_of_feasible_of_infeasible"
+  
+  "fintypeFarkasBartl" [style=filled, fillcolor=yellow]
+  
+  "ExtendedLP.strongDuality" [style=filled, fillcolor=yellow]
+
+}
