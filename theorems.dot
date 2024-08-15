@@ -27,5 +27,19 @@ digraph G {
   "fintypeFarkasBartl" [style=filled, fillcolor=yellow]
   
   "ExtendedLP.strongDuality" [style=filled, fillcolor=yellow]
+  
+  "ExtendedLP.infeasible_of_unbounded" [color=grey, fontcolor=grey]
+  
+  "ExtendedLP.strongDuality_aux" [color=grey, fontcolor=grey]
+  
+  "ExtendedLP.strongDuality_of_both_feasible" [color=grey, fontcolor=grey]
+  
+  "ExtendedLP.strongDuality_of_prim_feasible" [color=grey, fontcolor=grey]
+  
+  "ExtendedLP.strongDuality_of_dual_feasible" [color=grey, fontcolor=grey]
+  
+  "ExtendedLP.unbounded_of_feasible_of_neg" [color=grey, fontcolor=grey]
+  
+  "ExtendedLP.unbounded_of_feasible_of_infeasible" [color=grey, fontcolor=grey]
 
 }
