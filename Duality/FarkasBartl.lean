@@ -110,7 +110,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
   if
     is_easy : ∀ y : W, 0 ≤ chop A y → 0 ≤ b y
   then
-    obtain ⟨x, hx, hbx⟩ := ih (chop A) b is_easy
+    obtain ⟨x, hx, hxb⟩ := ih (chop A) b is_easy
     use (fun i : Fin m.succ => if hi : i.val < m then x ⟨i.val, hi⟩ else 0)
     constructor
     · intro i
@@ -122,7 +122,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     · intro w
       simp_rw [smul_dite, smul_zero]
       rw [Finset.sum_dite, Finset.sum_const_zero, add_zero]
-      convert hbx w using 1
+      convert hxb w using 1
       symm
       apply finishing_piece
   else
