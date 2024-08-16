@@ -163,7 +163,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     · simpa using hbA
     have hbAb : ∀ w : W, 0 ≤ (chop A - (A · j • chop A y)) w → 0 ≤ (b - (A · j • b y)) w
     · simpa using hbbA
-    obtain ⟨x', hx', hbx'⟩ := ih (auxLinMaps A y) (auxLinMap A b y) hbAb
+    obtain ⟨x', hx', hxb'⟩ := ih (auxLinMaps A y) (auxLinMap A b y) hbAb
     use (fun i : Fin m.succ => if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, chop A y i • x' i)
     constructor
     · intro i
@@ -180,7 +180,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
         simpa [hi] using (Finset.sum_nonpos (fun i _ => smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i))).trans hby
     · intro w
       have key : ∑ i : Fin m, (chop A w i - A w j * chop A y i) • x' i = b w - A w j • b y
-      · simpa using hbx' w
+      · simpa using hxb' w
       rw [←add_eq_of_eq_sub key]
       simp_rw [smul_dite]
       rw [Finset.sum_dite, filter_yielding_singleton_attach_sum]

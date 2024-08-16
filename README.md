@@ -10,7 +10,7 @@ Instead of multiplication, we define scalar action $c \bullet \bot = \bot$ for e
 $d \bullet \top = \top$ only for $d > 0$ because $0 \bullet \top = 0$.
 We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
 
-![AI-generated image](AI-generated.jpg)
+![AI-generated image](nonLean/AI-generated.jpg)
 
 ## Main results
 
@@ -19,4 +19,4 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 ## Technical report
 
-[work in progress](https://github.com/madvorak/duality/blob/main/duality.pdf)
+[work in progress](https://github.com/madvorak/duality/blob/main/nonLean/duality.pdf)
