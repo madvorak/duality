@@ -108,6 +108,10 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
+\begin{lstlisting}
+theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
 TODO cite Minkowski?
 
 \medskip \noindent
@@ -121,6 +125,10 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
+\begin{lstlisting}
+theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
 TODO cite John von Neumann?
 (any maybe Oskar Morgenstern and maybe George Dantzig and maybe Albert W. Tucker?)
 
@@ -136,35 +144,11 @@ $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 =- \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \,\}
 $$
 holds if at least one of the systems has a solution
-(very roughly paraphrased\:---\:this is not how our theorem is stated).
-
-
-\subsection{Structure of this paper}
-
-In Section 1.1, we generalize equalityFarkas to a broader
-linear-algebraic setting.
-In Section 1.2, we generalize inequalityFarkas and
-StandardLP.strongDuality to structures that allow
-infinite values in certain places.
-In Section 2, we comment on the formalization process.
-In Section 3, we prove the theorem from Section 1.1,
-from which be obtain equalityFarkas as a corollary.
-In Section 4, we prove the extension of inequalityFarkas.
-In Section 5, we prove the strong duality theorem from
-Section 1.2, from which we obtain
-StandardLP.strongDuality as a corollary.
-
-Repository \texttt{https://github.com/madvorak/duality}
-contains full version of all definitions, statements,
-and proofs. They are written in a formal language called
-Lean 4, which provides a guarantee that every step of
-every proof follows from valid logical axioms.\footnote{
-The only axioms used in our proofs are
-propext, Classical.choice, and Quot.sound, which you can
-check by the \texttt{\#print axioms} command.}
-This paper attempts to be an accurate description of
-the \texttt{duality} project.
-However, in case of any discrepancy, the code shall prevail.
+(very roughly paraphrased).
+\begin{lstlisting}
+theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+    OppositesOpt P.optimum P.dualize.optimum
+\end{lstlisting}
 
 
 \subsection{Generalizations}
@@ -187,6 +171,11 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
 \item vector $y : I \r R$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
+\begin{lstlisting}
+theorem coordinateFarkas {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
+    (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
 In the next generalization, we replace the partially ordered module $I \r R$ by
 a general $R$-module $W$.
 
@@ -203,6 +192,11 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
+\begin{lstlisting}
+theorem scalarFarkas {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
+    (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
 a linearly ordered $R$-module $V$ whose order respects order on $R$.
 This result origins from TODO cite Bartl.
@@ -221,6 +215,12 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
+\begin{lstlisting}
+theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
+    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
 In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
 $b~y < 0$ uses the linear order on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
@@ -295,10 +295,14 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
-Note that extendedFarkas looks pretty much like equalityFarkas\_neg and,
-in certain sense, generalizes it. Indeed, in Section 4, we prove
-extendedFarkas using equalityFarkas\_neg and some additional machinery.
-TODO rephrase without mentioning equalityFarkas\_neg.
+\begin{lstlisting}
+theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
+    (hA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
+    (hAT : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
+    (hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤)
+    (hAb' : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
+    (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0)
+\end{lstlisting}
 
 Next we define an extended notion of linear program, i.e.,
 linear programming over extended linearly ordered fields.
@@ -344,6 +348,11 @@ Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
 then $p + q \ge 0$.
+\begin{lstlisting}
+theorem ExtendedLP.weakDuality {P : ExtendedLP I J F}
+  {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
+  0 ≤ p + q
+\end{lstlisting}
 
 \medskip \noindent
 \textbf{Definition:}
@@ -360,6 +369,11 @@ objective values reached by $P$ has a finite infimum that is not attained.
 However, because we do not have the theorem now, the optimum is defined as a partial function
 from linear programs to $F_\infty$.}
 
+%The existence of optimum (minimum) for every linear program is stated as follows:
+%\begin{lstlisting}
+%theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none
+%\end{lstlisting}
+
 \medskip \noindent
 \textbf{Theorem (ExtendedLP.strongDuality):}\footnote{For simplicity,
 we rephrased the theorem without mentioning partial functions.
@@ -372,8 +386,36 @@ Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
 then there exists $p$ in $F_\infty$ such that
 $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
+\begin{lstlisting}
+theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+  OppositesOpt P.optimum P.dualize.optimum
+\end{lstlisting}
 
-\section{Formalization}
+
+\subsection{Structure of this paper}
+
+In Section 2, we explain all underlying definitions and
+comment on the formalization process.
+In Section 3, we prove fintypeFarkasBartl (stated in Section 1.1),
+from which be obtain equalityFarkas as a corollary.
+In Section 4, we prove extendedFarkas (stated in Section 1.2).
+In Section 5, we prove ExtendedLP.strongDuality
+(stated in Section 1.2), from which we obtain
+StandardLP.strongDuality as a corollary.
+
+Repository \texttt{https://github.com/madvorak/duality}
+contains full version of all definitions, statements,
+and proofs. They are written in a formal language called
+Lean 4, which provides a guarantee that every step of
+every proof follows from valid logical axioms.\footnote{
+The only axioms used in our proofs are
+propext, Classical.choice, and Quot.sound, which you can
+check by the \texttt{\#print axioms} command.}
+This paper attempts to be an accurate description of
+the \texttt{duality} project.
+However, in case of any discrepancy, the code shall prevail.
+
+\section{Preliminaries}
 
 \subsection{We start with a review of algebraic typeclasses that our project depends on}
 
@@ -667,7 +709,7 @@ The definition of optimum is, sadly, very complicated:
 noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
   if P.IsFeasible then
     if P.IsUnbounded then
-      some none --some ⊥ -- unbounded means that the minimum is `⊥`
+      some ⊥ -- unbounded means that the minimum is `⊥`
     else
       if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
         some (toE hf.choose) -- the minimum is finite
@@ -682,71 +724,6 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
 | _       , _        => False   -- namely `OppositesOpt none none = False`
 \end{lstlisting}
-
-
-\subsection{Results}
-
-Theorem basicLinearAlgebra is stated as follows:
-\begin{lstlisting}
-theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0)
-\end{lstlisting}
-Theorem basicLinearAlgebra\_lt is stated as follows:
-\begin{lstlisting}
-theorem basicLinearAlgebra_lt (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y < 0)
-\end{lstlisting}
-Theorem equalityFarkas is stated as follows:
-\begin{lstlisting}
-theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
-\end{lstlisting}
-Theorem inequalityFarkas is stated as follows:
-\begin{lstlisting}
-theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
-\end{lstlisting}
-Theorem inequalityFarkas\_neg is stated as follows:
-\begin{lstlisting}
-theorem inequalityFarkas_neg [DecidableEq I] (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ -Aᵀ *ᵥ y ≤ 0 ∧ b ⬝ᵥ y < 0)
-\end{lstlisting}
-Theorem coordinateFarkas is stated as follows:
-\begin{lstlisting}
-theorem coordinateFarkas {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
-    (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
-    (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0)
-\end{lstlisting}
-Theorem scalarFarkas is stated as follows:
-\begin{lstlisting}
-theorem scalarFarkas {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
-    (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
-    (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
-\end{lstlisting}
-Theorem fintypeFarkasBartl is stated as follows:
-\begin{lstlisting}
-theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
-    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
-    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
-\end{lstlisting}
-The existence of optimum (minimum) for every linear program is stated as follows:
-\begin{lstlisting}
-theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none
-\end{lstlisting}
-The weak duality theorem is stated as follows:
-\begin{lstlisting}
-theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I J F}
-  {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
-  0 ≤ p + q
-\end{lstlisting}
-The strong duality theorem is stated as follows:
-\begin{lstlisting}
-theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
-  OppositesOpt P.optimum P.dualize.optimum
-\end{lstlisting}
-TODO somehow politely say that the Mathlib's API for block matrices
-is a mess and needs an overhaul.
 
 
 \section {Proving the Farkas-Bartl theorem}
@@ -1238,6 +1215,10 @@ and for proving them formally.
 \section{Appendix: dependencies between theorems}
 
 \includegraphics[width=0.9\textwidth]{theorems.png}
+
+Theorems are in black. Selected lemmas are in gray.
+What we consider to be the main theorems are
+denoted by yellow background.
 
 
 \end{document}
