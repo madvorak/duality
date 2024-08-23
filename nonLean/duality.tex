@@ -439,11 +439,11 @@ Additive group is a subtractive monoid in which the unary minus acts as a left i
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 \end{lstlisting}
-Similarly, a group is a division monoid in which the inverse operation acts as a left inverse with respect to multiplication:
-\begin{lstlisting}
-class Group (G : Type u) extends DivInvMonoid G where
-  inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
-\end{lstlisting}
+%Similarly, a group is a division monoid in which the inverse operation acts as a left inverse with respect to multiplication:
+%\begin{lstlisting}
+%class Group (G : Type u) extends DivInvMonoid G where
+%  inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
+%\end{lstlisting}
 Abelian magma is a structure on any type that has commutative addition:
 \begin{lstlisting}
 class AddCommMagma (G : Type u) extends Add G where
@@ -505,6 +505,13 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast_zero : natCast 0 = 0
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
+\end{lstlisting}
+Additive group with one is an additive monoid with one and additive group at the same time:
+\begin{lstlisting}
+class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
+  intCast := Int.castDef
+  intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n 
+  intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) 
 \end{lstlisting}
 Non-associative-semiring is a non-unital-non-associative-semiring that has a well-behaved multiplication
 by both zero and one and forms an abelian monoid with one:
@@ -577,6 +584,10 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
 Linearly ordered ring is a strictly ordered ring where every two elements are comparable:
 \begin{lstlisting}
 class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
+\end{lstlisting}
+Linearly ordered commutative ring is a linearly ordered ring and commutative monoid at the same time:
+\begin{lstlisting}
+class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 \end{lstlisting}
 We define a linearly ordered division ring as a division ring that is a linearly ordered ring at the same time:
 \begin{lstlisting}
