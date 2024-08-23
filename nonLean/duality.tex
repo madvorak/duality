@@ -376,6 +376,7 @@ a linearly ordered field is and what a linearly ordered division ring is.
 We need these two algebraic structures for stating our main results.
 This section mainly documents existing Mathlib definitions.
 We also highlight custom definitions added to our project only.
+TODO LinearOrderedAddCommGroup!
 
 \subsection{We start with a review of algebraic typeclasses that our project depends on}
 
@@ -473,10 +474,10 @@ Abelian group is an additive group and an abelian monoid at the same time:
 \begin{lstlisting}
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 \end{lstlisting}
-Similarly, a commutative group is as an additive group that is a commutative additive monoid at the same time:
-\begin{lstlisting}
-class CommGroup (G : Type u) extends Group G, CommMonoid G
-\end{lstlisting}
+%Similarly, a commutative group is as an additive group that is a commutative additive monoid at the same time:
+%\begin{lstlisting}
+%class CommGroup (G : Type u) extends Group G, CommMonoid G
+%\end{lstlisting}
 Distrib is a structure on any type with addition and multiplication where
 both left distributivity and right distributivity hold:
 \begin{lstlisting}
@@ -848,10 +849,6 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 \subsection{Main corollaries}
 
 \begin{lstlisting}
-theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0)
-\end{lstlisting}
-\begin{lstlisting}
 theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
 \end{lstlisting}
@@ -997,6 +994,11 @@ finite types.
 
 \section {Extended Farkas theorem}
 
+We prove inequalityFarkas by applying equalityFarkas 
+to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
+$(I \times I) \r F$.
+
+\medskip \noindent
 \textbf{Theorem (inequalityFarkas\_neg):}
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.

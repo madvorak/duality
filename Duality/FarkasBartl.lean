@@ -9,9 +9,24 @@ import Duality.Common
 
 class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, DivisionRing R
 
+class TotalPreorderedAddCommGroup (α : Type*) extends AddCommGroup α, Preorder α, IsTotal α LE.le where
+  add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+
+--instance TotalPreorderedAddCommGroup.toNegZeroClass (α : Type*) [TotalPreorderedAddCommGroup α] : NegZeroClass α := inferInstance
+
+--instance TotalPreorderedAddCommGroup.toAddMonoid (α : Type*) [TotalPreorderedAddCommGroup α] : AddMonoid α := inferInstance
+
+--instance TotalPreorderedAddCommGroup.toZero' {α : Type*} [TotalPreorderedAddCommGroup α] : Zero α := AddMonoid.toZero
+
+instance LinearOrder.isTotalPreorder (α : Type*) [LinearOrder α] : IsTotalPreorder α LE.le := inferInstance
+
+instance LinearOrderedAddCommGroup.toTotalPreorderedAddCommGroup (α : Type*) [LinearOrderedAddCommGroup α] :
+    TotalPreorderedAddCommGroup α := by
+  constructor
+  simp [add_le_add_iff_left]
 
 lemma inv_neg_of_neg {R : Type*} [LinearOrderedDivisionRing R] {a : R} (ha : a < 0) : a⁻¹ < 0 :=
-  lt_of_mul_lt_mul_left (by simp [ha.ne]) (neg_nonneg_of_nonpos ha.le)
+   lt_of_mul_lt_mul_left (by simp [ha.ne]) (neg_nonneg_of_nonpos ha.le)
 
 private def chop {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W] [Module R W]
     (A : W →ₗ[R] Fin m.succ → R) :
@@ -100,8 +115,20 @@ private lemma finishing_piece {m : ℕ} [Semiring R]
   intros
   rfl
 
+lemma _not_le [TotalPreorderedAddCommGroup V] {u v : V} (huv : ¬(u ≤ v)) : v < u := by
+  sorry
+
+lemma _not_lt [TotalPreorderedAddCommGroup V] {u v : V} (huv : ¬(u < v)) : v ≤ u := by
+  sorry
+
+lemma _not_le_iff [TotalPreorderedAddCommGroup V] {u v : V} : ¬(u ≤ v) ↔ v < u := by
+  sorry
+
+lemma _not_lt_iff [TotalPreorderedAddCommGroup V] {u v : V} : ¬(u < v) ↔ v ≤ u := by
+  sorry
+
 lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    [TotalPreorderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
     (ih : ∀ A₀ : W →ₗ[R] Fin m → R, ∀ b₀ : W →ₗ[R] V,
       (∀ y₀ : W, 0 ≤ A₀ y₀ → 0 ≤ b₀ y₀) →
         (∃ x₀ : Fin m → V, 0 ≤ x₀ ∧ ∀ w₀ : W, ∑ i₀ : Fin m, A₀ w₀ i₀ • x₀ i₀ = b₀ w₀))
@@ -140,7 +167,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
             hij ▸ contr
           else
             (impossible_index hi hij).elim
-        )).trans_lt hby'
+        )).trans_lt (_not_le hby')
       ).false
     have hAy : A y j = 1
     · convert inv_mul_cancel hAy'.ne
@@ -175,9 +202,9 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
         · exact (inv_neg_of_neg hAy').le
         have hay : chop A y ≤ 0
         · simpa [y] using smul_nonpos_of_nonpos_of_nonneg hAy'' hay'
-        have hby : 0 ≤ b y
-        · simpa [y] using smul_nonneg_of_nonpos_of_nonpos hAy'' hby'.le
-        simpa [hi] using (Finset.sum_nonpos (fun i _ => smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i))).trans hby
+        sorry/-have hby : (@OfNat.ofNat V 0 (@Zero.toOfNat0 V AddMonoid.toZero)) ≤ b y
+        · simpa [y] using smul_nonpos_of_nonpos_of_nonneg hAy'' (_not_le hby').le
+        simpa [hi] using (Finset.sum_nonpos (fun i _ => smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i))).trans hby-/
     · intro w
       have key : ∑ i : Fin m, (chop A w i - A w j * chop A y i) • x' i = b w - A w j • b y
       · simpa using hxb' w
@@ -192,12 +219,17 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
       apply add_comm_sub
 
 theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    [TotalPreorderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
     (A : W →ₗ[R] Fin n → R) (b : W →ₗ[R] V) :
     (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   apply neq_of_iff_neg
   push_neg
-  refine ⟨fun ⟨x, hx, hb⟩ y hy => hb y ▸ Finset.sum_nonneg (fun i _ => smul_nonneg (hy i) (hx i)), ?_⟩
+  simp_rw [_not_lt_iff]
+  constructor
+  · intro ⟨x, hx, hb⟩ y hy
+    rw [←hb]
+    apply Finset.sum_nonneg (N := V)
+  --refine ⟨fun ⟨x, hx, hb⟩ y hy => hb y ▸ (Finset.sum_nonneg (fun i _ => smul_nonneg (hy i) (hx i))), ?_⟩
   induction n generalizing b with -- note that `A` is "generalized" automatically
   | zero =>
     have A_tauto (w : W) : 0 ≤ A w
@@ -208,13 +240,13 @@ theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
     intro hAb
     refine ⟨0, le_refl 0, fun w : W => ?_⟩
     simp_rw [Pi.zero_apply, smul_zero, Finset.sum_const_zero]
-    apply eq_of_le_of_le (hAb w (A_tauto w))
-    simpa using hAb (-w) (A_tauto (-w))
+    sorry/-apply eq_of_le_of_le (hAb w (A_tauto w))
+    simpa using hAb (-w) (A_tauto (-w))-/
   | succ m ih =>
     exact industepFarkasBartl ih
 
-theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+theorem fintypeFarkasBartl' {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    [TotalPreorderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
     (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
     (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   convert
@@ -243,6 +275,12 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     · simpa using hAy ((Fintype.equivFin J).invFun j)
     · simpa using hAy ((Fintype.equivFin J).toFun j)
 
+theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
+    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) :=
+  fintypeFarkasBartl' A b
+
 theorem scalarFarkas {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
     (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
     (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) :=
@@ -252,3 +290,37 @@ theorem coordinateFarkas {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
     (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0) :=
   scalarFarkas A b
+
+
+
+class TotalPreorderedRing (R : Type*) extends StrictOrderedRing R, IsTotalPreorder R LE.le
+
+class TotalPreorderedDivisionRing (R : Type*) extends TotalPreorderedRing R, DivisionRing R
+
+instance TotalPreorderedDivisionRing.toPosMulReflectLT {R : Type*} [TotalPreorderedDivisionRing R] :
+    PosMulReflectLT R := by
+  constructor
+  intro ⟨x, hx⟩ y z hxyz
+  change hxyz to x * y < x * z
+  cases total_of LE.le y z with
+  | inl hyz =>
+    cases hyz.lt_or_eq with
+    | inl hy => exact hy
+    | inr hz =>
+      exfalso
+      rw [hz] at hxyz
+      exact hxyz.false
+  | inr hzy =>
+    exfalso
+    exact (hxyz.trans_le (mul_le_mul_of_nonneg_left hzy hx)).false
+
+lemma llll [TotalPreorderedDivisionRing R] {a b : R} (hab : ¬(b < a)) : a ≤ b := by
+  cases total_of LE.le a b with
+  | inl ha => exact ha
+  | inr hb =>
+    if hba : b = a then
+      exact le_of_eq hba.symm
+    else
+      exfalso
+      apply hab
+      apply lt_of_le_of_ne hb hba
