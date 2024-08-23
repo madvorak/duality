@@ -424,13 +424,32 @@ Additive semigroup is a structure on any type with addition where the addition i
 class AddSemigroup (G : Type u) extends Add G where
   add_assoc : ∀ a b c : G, (a + b) + c = a + (b + c)
 \end{lstlisting}
-Additive monoid is an additive semigroup with the zero element, thanks to which we can
-define a scalar multiplication by the natural numbers (TODO AddZeroClass):
+Similarly, semigroup is a structure on any type with multiplication where the multiplication is associative:
 \begin{lstlisting}
+class Semigroup (G : Type u) extends Mul G where
+  mul_assoc : ∀ a b c : G, (a * b) * c = a * (b * c)
+\end{lstlisting}
+Additive monoid is an additive semigroup with the ``zero'' element that is neutral with respect to addition
+from both left and right, thanks to which we can define a scalar multiplication by the natural numbers:
+\begin{lstlisting}
+class AddZeroClass (M : Type u) extends Zero M, Add M where
+  zero_add : ∀ a : M, 0 + a = a
+  add_zero : ∀ a : M, a + 0 = a
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul : ℕ → M → M
   nsmul_zero : ∀ x : M, nsmul 0 x = 0 
   nsmul_succ : ∀ (n : ℕ) (x : M), nsmul (n + 1) x = nsmul n x + x 
+\end{lstlisting}
+Similarly, monoid is a semigroup with the ``one'' element that is neutral with respect to multiplication
+from both left and right, thanks to which we can define a power to natural numbers:
+\begin{lstlisting}
+class MulOneClass (M : Type u) extends One M, Mul M where
+  one_mul : ∀ a : M, 1 * a = a
+  mul_one : ∀ a : M, a * 1 = a
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+  npow : ℕ → M → M 
+  npow_zero : ∀ x : M, npow 0 x = 1 
+  npow_succ : ∀ (n : ℕ) (x : M), npow (n + 1) x = npow n x * x 
 \end{lstlisting}
 Subtractive monoid is an additive monoid that adds two more operations (unary and binary minus)
 that satisfy some basic properties:
@@ -443,31 +462,166 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a
   zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -(zsmul n.succ a)
 \end{lstlisting}
-Additive group is a subtractive monoid in which the unary minus acts as an inverse with respect to addition:
+Similarly, division monoid is a monoid that adds two more operations (inverse and divide)
+that satisfy some basic properties:
+\begin{lstlisting}
+class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
+  div := DivInvMonoid.div'
+  div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ 
+  zpow : ℤ → G → G
+  zpow_zero' : ∀ a : G, zpow 0 a = 1 
+  zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a  * a
+  zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ 
+\end{lstlisting}
+Additive group is a subtractive monoid in which the unary minus acts as a left inverse with respect to addition:
 \begin{lstlisting}
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 \end{lstlisting}
-Abelian group is defined as an additive group that is a commutative additive monoid at the same time (TODO AddCommMonoid):
+Similarly, a group is a division monoid in which the inverse operation acts as a left inverse with respect to multiplication:
+\begin{lstlisting}
+class Group (G : Type u) extends DivInvMonoid G where
+  inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
+\end{lstlisting}
+Abelian magma is a structure on any type that has commutative addition:
+\begin{lstlisting}
+class AddCommMagma (G : Type u) extends Add G where
+  add_comm : ∀ a b : G, a + b = b + a
+\end{lstlisting}
+Similarly, commutative magma is a structure on any type that has commutative multiplication:
+\begin{lstlisting}
+class CommMagma (G : Type u) extends Mul G where
+  mul_comm : ∀ a b : G, a * b = b * a
+\end{lstlisting}
+Abelian semigroup is an abelian magma and an additive semigroup at the same time:
+\begin{lstlisting}
+class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G
+\end{lstlisting}
+Similarly, commutative semigroup is a commutative magma and a semigroup at the same time:
+\begin{lstlisting}
+class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G
+\end{lstlisting}
+Abelian monoid is an additive monoid and an abelian semigroup at the same time:
+\begin{lstlisting}
+class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
+\end{lstlisting}
+Similarly, commutative monoid is a monoid and a commutative semigroup at the same time:
+\begin{lstlisting}
+class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+\end{lstlisting}
+Abelian group is an additive group and an abelian monoid at the same time:
 \begin{lstlisting}
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 \end{lstlisting}
-Ring is defined as a semiring that is an abelian group at the same time and has 1 that behaves well (TODO Semiring):
+Similarly, a commutative group is as an additive group that is a commutative additive monoid at the same time:
+\begin{lstlisting}
+class CommGroup (G : Type u) extends Group G, CommMonoid G
+\end{lstlisting}
+Distrib is a structure on any type with addition and multiplication where
+both left distributivity and right distributivity hold:
+\begin{lstlisting}
+class Distrib (R : Type*) extends Mul R, Add R where
+  left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
+  right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
+\end{lstlisting}
+Non-unital-non-associative-semiring is an abelian monoid with distributive multiplication and well-behaved zero:
+\begin{lstlisting}
+class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
+  zero_mul : ∀ a : M₀, 0 * a = 0
+  mul_zero : ∀ a : M₀, a * 0 = 0
+class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
+\end{lstlisting}
+Non-unital-semiring is a non-unital-non-associative-semiring that forms a semigroup with zero:
+\begin{lstlisting}
+class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
+class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
+\end{lstlisting}
+Additive monoid with one and abelian monoid with one are defined defined from additive monoid
+and abelian monoid, equipped with the symbol ``one'' and embedding of natural numbers:
+\begin{lstlisting}
+class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
+  natCast := Nat.unaryCast
+  natCast_zero : natCast 0 = 0
+  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 
+class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
+\end{lstlisting}
+Non-associative-semiring is a non-unital-non-associative-semiring that has a well-behaved multiplication
+by both zero and one and forms an abelian monoid with one:
+\begin{lstlisting}
+class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
+class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
+  AddCommMonoidWithOne α
+\end{lstlisting}
+Semiring is the combination of non-unital-semiring and non-associative-semiring that forms a monoid with zero:
+\begin{lstlisting}
+class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
+class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+\end{lstlisting}
+Ring is a semiring and an abelian group at the same time that has ``one'' that behaves well:
 \begin{lstlisting}
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 \end{lstlisting}
-Division ring is a ring with a lot of extra requirements (TODOs DivInvMonoid, Nontrivial, NNRatCast, RatCast):
+Commutative ring is a ring (guarantees commutative addition) and a commutative monoid (guarantees commutative multiplication)
+at the same time.
 \begin{lstlisting}
+class CommRing (α : Type u) extends Ring α, CommMonoid α
+\end{lstlisting}
+Division ring is a ring whose multiplication forms a division monoid, zero is inverse to itself, and
+(TODO explain NNRatCast and RatCast; give a link to the article that explains why $0^{-1}\!=\!0$ is OK):
+\begin{lstlisting}
+class Nontrivial (α : Type*) : Prop where
+  exists_pair_ne : ∃ x y : α, x ≠ y
 class DivisionRing (α : Type*) extends Ring α, DivInvMonoid α, Nontrivial α, NNRatCast α, RatCast α where
   mul_inv_cancel : ∀ (a : α), a ≠ 0 → a * a⁻¹ = 1
   inv_zero : (0 : α)⁻¹ = 0
   nnratCast := NNRat.castRec
 \end{lstlisting}
-We define a linearly ordered division ring as a division ring that is a linearly ordered ring at the same time (TODO all about order):
+Field is a commutative ring and a division ring at the same time:
+\begin{lstlisting}
+class Field (K : Type u) extends CommRing K, DivisionRing K
+\end{lstlisting}
+Preorder is a reflexive \& transitive relation on any structure with binary relational symbols $\le$ and $<$
+where the strict comparison $a < b$ is equivalent to $a \le b \aand \neg (b \le a)$:
+\begin{lstlisting}
+class Preorder (α : Type u) extends LE α, LT α where
+  le_refl : ∀ a : α, a ≤ a
+  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  lt := fun a b => a ≤ b ∧ ¬b ≤ a
+  lt_iff_le_not_le : ∀ a b : α, a < b  ↔  a ≤ b ∧ ¬b ≤ a 
+\end{lstlisting}
+Partial order is a reflexive \& antisymmetric \& transitive relation:
+\begin{lstlisting}
+class PartialOrder (α : Type u) extends Preorder α where
+  le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
+\end{lstlisting}
+Linear order is a partial order where every two elements are comparable (sometimes called total order);
+technical details are omitted:
+\begin{lstlisting}
+class LinearOrder (α : Type u) extends PartialOrder α, (...) :=
+  le_total (a b : α) : a ≤ b ∨ b ≤ a
+  (...)
+\end{lstlisting}
+Ordered abelian group is an abelian group with partial order that respects addition:
+\begin{lstlisting}
+class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
+  add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+\end{lstlisting}
+Strictly ordered ring is a nontrivial ring whose addition behaves as an ordered abelian group
+where zero is less or equal to one and the product of two strictly positive elements is strictly positive:
+\begin{lstlisting}
+class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
+  zero_le_one : 0 ≤ (1 : α)
+  mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
+\end{lstlisting}
+Linearly ordered ring is a strictly ordered ring where every two elements are comparable:
+\begin{lstlisting}
+class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
+\end{lstlisting}
+We define a linearly ordered division ring as a division ring that is a linearly ordered ring at the same time:
 \begin{lstlisting}
 class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, DivisionRing R
 \end{lstlisting}
-Linearly ordered field is defined as a linearly ordered commutative ring that is a field at the same time (TODO Field):
+Linearly ordered field is defined in Mathlib as a linearly ordered commutative ring that is a field at the same time:
 \begin{lstlisting}
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 \end{lstlisting}
@@ -649,6 +803,9 @@ For similar reasons, we did not generalize the Mathlib definition of
 ``vector times matrix'', as ``matrix times vector'' was all we needed.
 It was still a lot of lemmas.
 
+\subsection{Modules and how to order them}
+
+TODO
 
 \subsection{Linear programming}
 
