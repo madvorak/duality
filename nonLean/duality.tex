@@ -74,8 +74,8 @@ We state and formally prove several Farkas-like theorems in Lean 4.
 Furthermore, we consider a linearly ordered field extended with two special elements denoted by $\bot$ and $\top$
 where $\bot$ is below every element and $\top$ is above every element.
 We define $\bot + a = \bot = a + \bot$ for all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
-Instead of multiplication, we define scalar action $c \bullet \bot = \bot$ for every $c \ge 0$ but we define
-$d \bullet \top = \top$ only for $d > 0$ because $0 \bullet \top = 0$.
+Instead of multiplication, we define scalar action $c \cdot \bot = \bot$ for every $c \ge 0$ but we define
+$d \cdot \top = \top$ only for $d > 0$ because $0 \cdot \top = 0$.
 We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
 
 
@@ -108,10 +108,6 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-\begin{lstlisting}
-theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
-\end{lstlisting}
 TODO cite Minkowski?
 
 \medskip \noindent
@@ -125,10 +121,6 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-\begin{lstlisting}
-theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
-    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
-\end{lstlisting}
 TODO cite John von Neumann?
 (any maybe Oskar Morgenstern and maybe George Dantzig and maybe Albert W. Tucker?)
 
@@ -145,10 +137,6 @@ $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 $$
 holds if at least one of the systems has a solution
 (very roughly paraphrased).
-\begin{lstlisting}
-theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
-    OppositesOpt P.optimum P.dualize.optimum
-\end{lstlisting}
 
 
 \subsection{Generalizations}
@@ -156,7 +144,6 @@ theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P
 The next theorem generalizes equalityFarkas to structures where
 multiplication does not have to be commutative.
 Furthermore, it supports infinitely many equations.
-\pagebreak[2]
 
 \medskip \noindent
 \textbf{Theorem (coordinateFarkas):}
@@ -168,14 +155,9 @@ Let $b$ be an $R$-linear map from from $(I \r R)$ to $R$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector $x : J \r R$ such that, for all $w : I \r R$, we have
-$ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
+$ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : I \r R$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-\begin{lstlisting}
-theorem coordinateFarkas {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
-    (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
-    (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0)
-\end{lstlisting}
 In the next generalization, we replace the partially ordered module $I \r R$ by
 a general $R$-module $W$.
 
@@ -189,14 +171,9 @@ Let $b$ be an $R$-linear map from from $W$ to $R$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector $x : J \r R$ such that, for all $w : W$, we have
-$ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
+$ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-\begin{lstlisting}
-theorem scalarFarkas {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
-    (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
-    (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
-\end{lstlisting}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
 a linearly ordered $R$-module $V$ whose order respects order on $R$.
 This result origins from TODO cite Bartl.
@@ -212,15 +189,9 @@ Let $b$ be an $R$-linear map from $W$ to $V$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector family $x : J \r V$ such that, for all $w : W$, we have
-$ \sum_{j : J}\; (A~w)_j \bullet x_j = b~w $
+$ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-\begin{lstlisting}
-theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
-    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
-    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
-\end{lstlisting}
 In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
 $b~y < 0$ uses the linear order on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
@@ -254,7 +225,7 @@ We define addition, scalar action, and negation on $F_\infty$ as follows:
 	\end{tabular}
 	\qquad\qquad\qquad
 	\begin{tabular}{ c || c | c | c | }
-		$\bullet$ & $\bot$ & $q$ & $\top$  \\
+		$\cdot$ & $\bot$ & $q$ & $\top$  \\
 		\hline\hline
 		$0$ & $\bot$ & $0$ & $0$  \\ 
 		\hline
@@ -274,7 +245,7 @@ we say that values from $F$ are \textbf{finite}.
 Informally speaking, $\top$ represents the positive infinity,
 $\bot$ represents the negative infinity, and we say that
 $\bot$ is ``stronger'' than $\top$ in~all arithmetic operations.
-The surprising parts are $\bot + \top = \bot$ and $0 \.\bullet \bot = \bot$.
+The surprising parts are $\bot + \top = \bot$ and $0 \.\cdot \bot = \bot$.
 Because of them, $F_\infty$ is not a field.
 In fact, $F_\infty$ is not even a group. 
 However, $F_\infty$ is still a densely linearly ordered abelian monoid
@@ -295,15 +266,6 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
-\begin{lstlisting}
-theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
-    (hA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
-    (hAT : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
-    (hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤)
-    (hAb' : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
-    (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0)
-\end{lstlisting}
-
 Next we define an extended notion of linear program, i.e.,
 linear programming over extended linearly ordered fields.
 The implicit intention is that the linear program is to be minimized.
@@ -348,11 +310,6 @@ Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
 then $p + q \ge 0$.
-\begin{lstlisting}
-theorem ExtendedLP.weakDuality {P : ExtendedLP I J F}
-  {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
-  0 ≤ p + q
-\end{lstlisting}
 
 \medskip \noindent
 \textbf{Definition:}
@@ -386,10 +343,6 @@ Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
 then there exists $p$ in $F_\infty$ such that
 $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
-\begin{lstlisting}
-theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
-  OppositesOpt P.optimum P.dualize.optimum
-\end{lstlisting}
 
 
 \subsection{Structure of this paper}
@@ -402,6 +355,7 @@ In Section 4, we prove extendedFarkas (stated in Section 1.2).
 In Section 5, we prove ExtendedLP.strongDuality
 (stated in Section 1.2), from which we obtain
 StandardLP.strongDuality as a corollary.
+TODO autogenerate correct section numbers.
 
 Repository \texttt{https://github.com/madvorak/duality}
 contains full version of all definitions, statements,
@@ -416,6 +370,12 @@ the \texttt{duality} project.
 However, in case of any discrepancy, the code shall prevail.
 
 \section{Preliminaries}
+
+There are many layers of definitions that are built before say what
+a linearly ordered field is and what a linearly ordered division ring is.
+We need these two algebraic structures for stating our main results.
+This section mainly documents existing Mathlib definitions.
+We also highlight custom definitions added to our project only.
 
 \subsection{We start with a review of algebraic typeclasses that our project depends on}
 
@@ -441,7 +401,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul_succ : ∀ (n : ℕ) (x : M), nsmul (n + 1) x = nsmul n x + x 
 \end{lstlisting}
 Similarly, monoid is a semigroup with the ``one'' element that is neutral with respect to multiplication
-from both left and right, thanks to which we can define a power to natural numbers:
+from both left and right, thanks to which we can define a power to the natural numbers:
 \begin{lstlisting}
 class MulOneClass (M : Type u) extends One M, Mul M where
   one_mul : ∀ a : M, 1 * a = a
@@ -581,12 +541,12 @@ Field is a commutative ring and a division ring at the same time:
 class Field (K : Type u) extends CommRing K, DivisionRing K
 \end{lstlisting}
 Preorder is a reflexive \& transitive relation on any structure with binary relational symbols $\le$ and $<$
-where the strict comparison $a < b$ is equivalent to $a \le b \aand \neg (b \le a)$:
+where the strict comparison $a < b$ is equivalent to $a \le b \aand \neg (b \le a)$ given by the relation $\le$
+which is not necessarily antisymmetric:
 \begin{lstlisting}
 class Preorder (α : Type u) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
-  lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_le : ∀ a b : α, a < b  ↔  a ≤ b ∧ ¬b ≤ a 
 \end{lstlisting}
 Partial order is a reflexive \& antisymmetric \& transitive relation:
@@ -597,7 +557,7 @@ class PartialOrder (α : Type u) extends Preorder α where
 Linear order is a partial order where every two elements are comparable (sometimes called total order);
 technical details are omitted:
 \begin{lstlisting}
-class LinearOrder (α : Type u) extends PartialOrder α, (...) :=
+class LinearOrder (α : Type u) extends PartialOrder α, (...)
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   (...)
 \end{lstlisting}
@@ -736,7 +696,7 @@ Infix notation for these two operations is defined as follows
 \hbox{\texttt{x $\circ$ y $\circ$ z}} gets parsed as \texttt{(x $\circ$ y) $\circ$ z}
 whether or not it makes sense, whereäs the keyword \texttt{infixr} when defining an operator $\circ$ means that %lb
 \hbox{\texttt{A $\circ$ B $\circ$ v}} gets parsed as \texttt{A $\circ$ (B $\circ$ v)}
-whether or not it makes sense):
+whether or not it makes sense; numbers 72 and 73 determine precedence):
 \begin{lstlisting}
 scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
@@ -861,7 +821,7 @@ The following definition says how linear programs are dualized:
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
 \end{lstlisting}
-The definition of optimum is, sadly, very complicated:
+The definition of optimum is, sadly, very complicated (TODO explain this shit):
 \begin{lstlisting}
 noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
   if P.IsFeasible then
@@ -883,6 +843,49 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 \end{lstlisting}
 
 
+\section{Formal statements of selected results}
+
+\subsection{Main corollaries}
+
+\begin{lstlisting}
+theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0)
+\end{lstlisting}
+\begin{lstlisting}
+theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+\begin{lstlisting}
+theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
+\begin{lstlisting}
+theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+    OppositesOpt P.optimum P.dualize.optimum
+\end{lstlisting}
+
+\subsection{Main results}
+
+\begin{lstlisting}
+theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
+    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+\begin{lstlisting}
+theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
+    (hA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
+    (hAT : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
+    (hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤)
+    (hAb' : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
+    (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0)
+\end{lstlisting}
+\begin{lstlisting}
+theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+  OppositesOpt P.optimum P.dualize.optimum
+\end{lstlisting}
+
+
 \section {Proving the Farkas-Bartl theorem}
 
 We prove finFarkasBartl and, in the end, we obtain fintypeFarkasBartl as corollary.
@@ -898,19 +901,18 @@ Let $b$ be an $R$-linear map from $W$ to $V$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector family $x : \fin{n} \r V$ such that, for all $w : W$, we have
-$ \sum_{j : \fin{n}}\; (A~w)_j \bullet x_j = b~w $
+$ \sum_{j : \fin{n}}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 The only difference is that finFarkasBartl uses $\fin{n} = \{ 0, \dots, n\!-\!1 \}$
 instead of an arbitrary (unordered) finite type $J$.
-\pagebreak[2]
 
 \medskip \noindent
 Proof idea:
 We first prove that both cannot exist at the same time.
 Assume we have $x$ and $y$ of said properties.
 We plug $y$ for $w$ and obtain
-$ \sum_{j : \fin{n}}\; (A~y)_j \bullet x_j = b~y $.
+$ \sum_{j : \fin{n}}\; (A~y)_j \cdot x_j = b~y $.
 On the left-hand side, we have a sum of nonnegative vectors,
 which contradicts $b~y < 0$.
 \smallskip
@@ -935,13 +937,13 @@ for all $R$-linear maps $A_0 : W \r (\fin{m} \r R)$
 and $b_0 : W \r V$, the formula
 ``$\forall y_0 : W \st A_0~y_0 \ge 0 \implies b_0~y_0 \ge 0$''
 implies existence of a nonnegative vector family $x_0 : \fin{m} \r V$ such that,
-for all $w_0 : W$, $ \sum_{i : \fin{m}}\; (A_0~w_0)_i \bullet (x_0)_i = b_0~w_0 $.
+for all $w_0 : W$, $ \sum_{i : \fin{m}}\; (A_0~w_0)_i \cdot (x_0)_i = b_0~w_0 $.
 Let $A$ be an $R$-linear map from $W$ to $(\fin{m\!+\!1} \r R)$.
 Let $b$ be an $R$-linear map from $W$ to~$V$.
 Assume that, for all $y : W$, $\;A~y \ge 0$ implies $b~y \ge 0$.
 We claim there exists a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
-$ \sum_{i : \fin{m+1}}\; (A~w)_i \bullet x_i = b~w $.
+$ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
 TODO names like $A_0$ don't work well with the ``subscript notation'' on paper.
 
 \medskip \noindent
@@ -956,33 +958,33 @@ $A_{<m}~y \ge 0$ implies $b~y \ge 0$, then plug $A_{<m}$
 for $A_0$, obtain $x_0$, and construct a vector family $x$ such that
 $x_m = 0$ and otherwise $x$ copies $x_0$. We easily check that
 $x$ is nonnegative and that
-$ \sum_{i : \fin{m+1}}\; (A~w)_i \bullet x_i = b~w $ holds.
+$ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $ holds.
 
 In the second case, we have $y'$ such that $A_{<m}~y' \ge 0$
 holds but $b~y' < 0$ also holds. We realize that $(A~y')_m < 0$.
-We now declare $y := (A~y')_m \bullet y'$ and observe
+We now declare $y := (A~y')_m \cdot y'$ and observe
 $(A~y)_m = 1$. We establish the following facts (proofs are omitted):
 \begin{itemize}
-\item for all $w : W$, we have $A~(w - ((A~w)_m \bullet y)) = 0$
-\item for all $w : W$, the inequality $A_{<m}~(w - ((A~w)_m \bullet y)) \ge 0$
-implies $b~(w - ((A~w)_m \bullet y)) \ge 0$
-\item for all $w : W$, the inequality $A_{<m}~w - A_{<m}~((A~w)_m \bullet y) \ge 0$
-implies $b~w - b~((A~w)_m \bullet y) \ge 0$
-\item for all $w : W$, the inequality $(A_{<m} - (z \mapsto (A~z)_m \bullet (A_{<m}~y)))~w \ge 0$
-implies $(b - (z \mapsto (A~z)_m \bullet (b~y)))~w \ge 0$
+\item for all $w : W$, we have $A~(w - ((A~w)_m \cdot y)) = 0$
+\item for all $w : W$, the inequality $A_{<m}~(w - ((A~w)_m \cdot y)) \ge 0$
+implies $b~(w - ((A~w)_m \cdot y)) \ge 0$
+\item for all $w : W$, the inequality $A_{<m}~w - A_{<m}~((A~w)_m \cdot y) \ge 0$
+implies $b~w - b~((A~w)_m \cdot y) \ge 0$
+\item for all $w : W$, the inequality $(A_{<m} - (z \mapsto (A~z)_m \cdot (A_{<m}~y)))~w \ge 0$
+implies $(b - (z \mapsto (A~z)_m \cdot (b~y)))~w \ge 0$
 \end{itemize}
 We observe that
-$A_0 := A_{<m} - (z \mapsto (A~z)_m \bullet (A_{<m}~y))$
+$A_0 := A_{<m} - (z \mapsto (A~z)_m \cdot (A_{<m}~y))$
 and
-$b_0 := b - (z \mapsto (A~z)_m \bullet (b~y))$
+$b_0 := b - (z \mapsto (A~z)_m \cdot (b~y))$
 are $R$-linear maps.
 Thanks to the last fact, we can apply induction hypothesis to $A_0$ and $b_0$.
 We obtain a nonnegative vector family $x'$ such that,
-for all $w_0 : W$, $ \sum_{i : \fin{m}} (A_0\;w_0)_i \bullet x'_i = b_0\;w_0 $.
+for all $w_0 : W$, $ \sum_{i : \fin{m}} (A_0\;w_0)_i \cdot x'_i = b_0\;w_0 $.
 It remains to construct a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
-$ \sum_{i : \fin{m+1}}\; (A~w)_i \bullet x_i = b~w $.
-We choose $x_m = b~y - \sum_{i : \fin{m}} (A_{<m}~y)_i \bullet x'_i$
+$ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
+We choose $x_m = b~y - \sum_{i : \fin{m}} (A_{<m}~y)_i \cdot x'_i$
 and otherwise $x$ copies $x'$. We check that our $x$ has the required
 properties. Qed.
 
@@ -1113,6 +1115,7 @@ c \* x
 \end{pmatrix}
 $$
 
+
 \medskip \noindent
 \textbf{Lemma (infeasible\_of\_unbounded):}
 If a linear program $P$ is unbounded,
@@ -1143,7 +1146,7 @@ Apply the assumption to $r\!-\!1$.
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$ that is feasible.
 Let $x_0$ be a nonnegative vector such that $c \cdot x_0 < 0$
-and $A \cdot x_0 + 0 \bullet (-b) \le 0$.
+and $A \cdot x_0 + 0 \cdot (-b) \le 0$.
 Then $P$ is unbounded.
 
 \medskip \noindent
@@ -1158,7 +1161,7 @@ We cannot have $c \cdot x_0 = \top$ because $c \cdot x_0 < 0$.
 Hence $c \cdot x_0 = d$ for some $d$ in $F$.
 Observe that the fraction $\frac{s-e}{d}$ is
 well defined and it is positive.
-Use $x_p + \frac{s-e}{d} \bullet x_0$.
+Use $x_p + \frac{s-e}{d} \cdot x_0$.
 
 \medskip \noindent
 \textbf{Lemma (strongDuality\_aux):}
@@ -1170,6 +1173,20 @@ that $p + q \le 0$.
 
 \medskip \noindent
 Proof idea:
+Apply extendedFarkas to the following matrix and vector:
+$$
+\begin{pmatrix}
+	A & 0 \\
+	0 & -A^T \\
+	b & c
+\end{pmatrix}
+\qquad \qquad
+\begin{pmatrix}
+	b \\
+	c \\
+	0
+\end{pmatrix}
+$$
 TODO.
 
 \medskip \noindent
@@ -1376,6 +1393,8 @@ and for proving them formally.
 Theorems are in black. Selected lemmas are in gray.
 What we consider to be the main theorems are
 denoted by yellow background.
+
+TODO yellow extendedFarkas.
 
 
 \end{document}
