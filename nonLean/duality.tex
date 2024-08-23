@@ -372,11 +372,11 @@ However, in case of any discrepancy, the code shall prevail.
 \section{Preliminaries}
 
 There are many layers of definitions that are built before say what
-a linearly ordered field is and what a linearly ordered division ring is.
-We need these two algebraic structures for stating our main results.
+a linearly ordered field is, what a linearly ordered division ring is,
+and what linearly ordered abelian group is.
+We need these three algebraic structures for stating our main results.
 This section mainly documents existing Mathlib definitions.
 We also highlight custom definitions added to our project only.
-TODO LinearOrderedAddCommGroup!
 
 \subsection{We start with a review of algebraic typeclasses that our project depends on}
 
@@ -562,13 +562,6 @@ Partial order is a reflexive \& antisymmetric \& transitive relation:
 class PartialOrder (α : Type u) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 \end{lstlisting}
-Linear order is a partial order where every two elements are comparable (sometimes called total order);
-technical details are omitted:
-\begin{lstlisting}
-class LinearOrder (α : Type u) extends PartialOrder α, (...)
-  le_total (a b : α) : a ≤ b ∨ b ≤ a
-  (...)
-\end{lstlisting}
 Ordered abelian group is an abelian group with partial order that respects addition:
 \begin{lstlisting}
 class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
@@ -580,6 +573,17 @@ where zero is less or equal to one and the product of two strictly positive elem
 class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
   zero_le_one : 0 ≤ (1 : α)
   mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
+\end{lstlisting}
+Linear order is a partial order where every two elements are comparable (sometimes called total order);
+technical details are omitted:
+\begin{lstlisting}
+class LinearOrder (α : Type u) extends PartialOrder α, (...)
+  le_total (a b : α) : a ≤ b ∨ b ≤ a
+  (...)
+\end{lstlisting}
+Linearly ordered abelian group is an ordered abelian group whose order is linear:
+\begin{lstlisting}
+class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 \end{lstlisting}
 Linearly ordered ring is a strictly ordered ring where every two elements are comparable:
 \begin{lstlisting}
