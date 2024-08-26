@@ -13,6 +13,8 @@
 
 \newcommand{\fin}[1]{[\.#1\.]}
 
+\newcommand{\sekt}[1]{Section~\ref{#1}}
+
 \DeclareMathOperator{\aand}{\;\wedge\;}
 \DeclareMathOperator{\st}{,\;}
 \DeclareMathOperator{\ex}{\,\exists}
@@ -83,6 +85,7 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 
 \section{Introduction}
+\label{introduction}
 
 We do not use set theory.
 We write everything in type theory.
@@ -143,6 +146,7 @@ holds if at least one of the systems has a solution
 
 
 \subsection{Generalizations}
+\label{generalizations}
 
 The next theorem generalizes equalityFarkas to structures where
 multiplication does not have to be commutative.
@@ -178,8 +182,10 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
-a linearly ordered $R$-module $V$ whose order respects order on $R$.
-This result origins from TODO cite Bartl. TODO where did PosSMulMono go?!
+a linearly ordered $R$-module $V$ whose order respects order on $R$ (the
+relationship between order on $R$ and order on $V$ will be left implicit
+in all upcoming informal statements; for a formal definition, see the end of
+\sekt{modules}). This result origins from TODO cite Bartl.
 
 \medskip \noindent
 \textbf{Theorem (fintypeFarkasBartl):}
@@ -199,10 +205,11 @@ In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
 $b~y < 0$ uses the linear order on $V$.
 Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
-We prove fintypeFarkasBartl in Section 3, which is where the heavy lifting comes.
+We prove fintypeFarkasBartl in \sekt{bartl}, which is where the heavy lifting comes.
 
 
 \subsection{Extensions}
+\label{extensions}
 
 Until now, we have talked about known results.
 What follows is a new extension of the theory.
@@ -350,19 +357,20 @@ $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
 
 \subsection{Structure of this paper}
 
-In Section 2, we explain all underlying definitions and
+In \sekt{preliminaries}, we explain all underlying definitions and
 comment on the formalization process;
 following the philosophy of (TODO cite How to believe a formal proof)
 we review almost all the declarations needed for the reader to believe
 our results, leaving out many declarations that were used in order
 to prove the results.
-In Section 3, we prove fintypeFarkasBartl (stated in Section 1.1),
+In \sekt{statements}, we formally state theorems from \sekt{introduction}
+using definitions from \sekt{preliminaries}.
+In \sekt{bartl}, we prove fintypeFarkasBartl (stated in \sekt{generalizations}),
 from which be obtain equalityFarkas as a corollary.
-In Section 4, we prove extendedFarkas (stated in Section 1.2).
-In Section 5, we prove ExtendedLP.strongDuality
-(stated in Section 1.2), from which we obtain
+In \sekt{extended}, we prove extendedFarkas (stated in \sekt{extensions}).
+In \sekt{duality}, we prove ExtendedLP.strongDuality
+(stated in \sekt{extensions}), from which we obtain
 StandardLP.strongDuality as a corollary.
-TODO autogenerate correct section numbers.
 
 Repository \texttt{https://github.com/madvorak/duality}
 contains full version of all definitions, statements,
@@ -377,6 +385,7 @@ the \texttt{duality} project.
 However, in case of any discrepancy, the code shall prevail.
 
 \section{Preliminaries}
+\label{preliminaries}
 
 There are many layers of definitions that are built before say what
 a linearly ordered field is, what a linearly ordered division ring is,
@@ -723,8 +732,8 @@ scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 \end{lstlisting}
 These definitions are sufficient for stating results based on linearly ordered fields.
-However, our results from Section 1.3 require a more general notion of multiplication
-between matrices and vectors.
+However, our results from \sekt{extensions} require a more general notion of
+multiplication between matrices and vectors.
 They are defined in the section hetero\_matrix\_products\_defs as follows:
 \begin{lstlisting}
 variable {α γ : Type*} [AddCommMonoid α] [SMul γ α]
@@ -785,6 +794,7 @@ For similar reasons, we did not generalize the Mathlib definition of
 It was still a lot of lemmas.
 
 \subsection{Modules and how to order them}
+\label{modules}
 
 Given types $\alpha$ and $\beta$ such that $\alpha$ has a scalar action on $\beta$
 and $\alpha$ forms a monoid, Mathlib defines multiplicative action where
@@ -921,6 +931,7 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 
 
 \section{Formal statements of selected results}
+\label{statements}
 
 \subsection{Main corollaries}
 
@@ -960,6 +971,7 @@ theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P
 
 
 \section {Proving the Farkas-Bartl theorem}
+\label{bartl}
 
 We prove finFarkasBartl and, in the end, we obtain fintypeFarkasBartl as corollary.
 
@@ -1069,6 +1081,7 @@ finite types.
 
 
 \section {Extended Farkas theorem}
+\label{extended}
 
 We prove inequalityFarkas by applying equalityFarkas 
 to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
@@ -1164,7 +1177,9 @@ x = \begin{pmatrix} 1 \end{pmatrix}
 y = \begin{pmatrix} 0 \end{pmatrix}
 $$
 
+
 \section {Extended strong LP duality}
+\label{duality}
 
 We start with the weak duality and then move to the strong duality.
 We will use extendedFarkas in several places.
@@ -1465,7 +1480,7 @@ and for proving them formally.
 
 \section{Appendix: algebraic hierarchy up to LinearOrderedField in Mathlib}
 
-\includegraphics[width=0.9\textwidth]{algebraic_hierarchy.png}
+\includegraphics[width=\textwidth]{algebraic_hierarchy.png}
 
 
 \section{Appendix: dependencies between theorems}
