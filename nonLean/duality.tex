@@ -655,6 +655,12 @@ def neg : Extend F → Extend F
 | (x : F) => toE (-x)
 instance : Neg (Extend F) := ⟨EF.neg⟩
 \end{lstlisting}
+Line-by-line, we see that:
+\begin{itemize}
+\item negating $\bot$ gives $\top$
+\item negating $\top$ gives $\bot$
+\item negating any finite value $x$ by gives $-x$ converted to the type $F_\infty$
+\end{itemize}
 In the file \texttt{FarkasSpecial.lean} and everything downstream,
 we have the notation
 \begin{lstlisting}
@@ -665,7 +671,24 @@ for $F_\infty$ and also the notation
 F≥0
 \end{lstlisting}
 for all nonnegative elements of $F$.
-TODO explain SMulZeroClass and our instance.
+We define a scalar action of the nonnegative elements
+on $F_\infty$ as follows:
+\begin{lstlisting}
+def EF.smulNN (c : F≥0) : F∞ → F∞
+| ⊥ => ⊥
+| ⊤ => if c = 0 then 0 else ⊤
+| (f : F) => toE (c.val * f)
+\end{lstlisting}
+Line-by-line, we see that:
+\begin{itemize}
+\item multiplying $\bot$ by anything from the left gives $\bot$
+\item multiplying $\top$ by $0$ from the left gives $0$;
+multiplying $\top$ by a strictly positive element from the left gives $\top$
+\item multiplying any finite value $f$ by a coefficient $c$ from the left
+gives $c \* f$ as it should, converted to the type $F_\infty$
+\end{itemize}
+Scalar action on $F_\infty$ by negative elements from the left is undefined.
+Multiplication between two elements of $F_\infty$ is also undefined.
 
 \subsection{Vectors and matrices}
 
@@ -1483,10 +1506,10 @@ Despite these difficulties, we find Lean 4 to be an extremely
 valuable tool for elegant expressions of mathematical formulas
 and for proving them formally.
 
-\section{Appendix: algebraic hierarchy up to LinearOrderedField in Mathlib}
 
-\includegraphics[width=\textwidth]{algebraic_hierarchy.png}
-
+%\section{Appendix: algebraic hierarchy up to LinearOrderedField in Mathlib}
+%
+%\includegraphics[width=\textwidth]{algebraic_hierarchy.png}
 
 \section{Appendix: dependencies between theorems}
 
