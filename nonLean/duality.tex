@@ -665,18 +665,23 @@ for $F_\infty$ and also the notation
 F≥0
 \end{lstlisting}
 for all nonnegative elements of $F$.
-TODO define scalar action and explain SMulZeroClass.
+TODO explain SMulZeroClass and our instance.
 
 \subsection{Vectors and matrices}
 
 We distinguish two types of vectors; implicit vectors and explicit vectors.
-Implicit vectors are members of a vector space; they don't have any internal structure.
-Explicit vectors are functions from coordinates to values.
-The set of coordinates needn't be ordered.
+Implicit vectors (called just ``vectors'') are members of a vector space;
+they do not have any internal structure
+(in the informal text, we use the word ``vectors'' somewhat loosely;
+it can refer to members of any module).
+Explicit vectors are functions from coordinates to values (again, we use the word
+``explicit vector`` (or just ``vector'' when it is clear from context that our vector
+is a map) not only when they form a vector space).
+The type of coordinates need not be ordered.
 Matrices live next to explicit vectors. They are also functions; they take a row index
 and a column index and they output a value at the given spot.
 Neither the row indices nor the column vertices are required to form an ordered set.
-That's why multiplication between matrices and vectors is defined only in structures
+That is why multiplication between matrices and vectors is defined only in structures
 where addition forms a commutative semigroup. Consider the following example:
 $$
 \begin{pmatrix}
@@ -692,13 +697,13 @@ $$
 	? \\ \_
 \end{pmatrix}
 $$
-We don't know whether the value at the question mark is equal to
-$ (1 \* 7 + 2 \* 8) + 3 \* 9 $ or to
-$ (2 \* 8 + 1 \* 7) + 3 \* 9 $ or to
+We do not know whether the value at the question mark is equal to
+$ 1 \* 7 + 2 \* 8 + 3 \* 9 $ or to
+$ 2 \* 8 + 1 \* 7 + 3 \* 9 $ or to
 any other ordering of summands.
 This is why commutativity of addition is necessary for the definition to be valid.
-On the other hand, we don't assume any property of multiplication in the
-definition of multiplication between matrices and vectors; they don't even
+On the other hand, we do not assume any property of multiplication in the
+definition of multiplication between matrices and vectors; they do not even
 have to be of the same type; we only require the elements of the vector
 to have an action on the elements of the matrix (this is not a typo\:---\:normally,
 we would want matrices to have an action on vectors\:---\:not in our work).
@@ -782,7 +787,7 @@ is prefixed by the \texttt{Matrix} namespace.
 While \texttt{Matrix.mulVec} allows for the use of dot notation
 in places where infix notation is not used, the full name
 \texttt{Matrix.dotProduct} only clutters the code.
-Even though we don't like it, we decided to namespace our definitions
+Even though we do not like it, we decided to namespace our definitions
 in the same way for consistency.
 
 Since we have new definitions, we have to rebuild all API (a lot of lemmas)
@@ -1029,7 +1034,7 @@ Assume that, for all $y : W$, $\;A~y \ge 0$ implies $b~y \ge 0$.
 We claim there exists a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
-TODO names like $A_0$ don't work well with the ``subscript notation'' on paper.
+TODO names like $A_0$ do not work well with the ``subscript notation'' on paper.
 
 \medskip \noindent
 Proof idea:
