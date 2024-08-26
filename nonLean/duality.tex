@@ -477,10 +477,6 @@ Abelian group is an additive group and an abelian monoid at the same time:
 \begin{lstlisting}
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 \end{lstlisting}
-%Similarly, a commutative group is as an additive group that is a commutative additive monoid at the same time:
-%\begin{lstlisting}
-%class CommGroup (G : Type u) extends Group G, CommMonoid G
-%\end{lstlisting}
 Distrib is a structure on any type with addition and multiplication where
 both left distributivity and right distributivity hold:
 \begin{lstlisting}
@@ -501,7 +497,9 @@ class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S�
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 \end{lstlisting}
 Additive monoid with one and abelian monoid with one are defined defined from additive monoid
-and abelian monoid, equipped with the symbol ``one'' and embedding of natural numbers:
+and abelian monoid, equipped with the symbol ``one'' and embedding of natural numbers
+(please ignore the difference between \texttt{Type u} and \texttt{Type*} as it is the same thing
+for all our purposes):
 \begin{lstlisting}
 class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast := Nat.unaryCast
@@ -577,7 +575,7 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   zero_le_one : 0 ≤ (1 : α)
   mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 \end{lstlisting}
-Linear order is a partial order where every two elements are comparable (sometimes called total order);
+Linear order (sometimes called total order) is a partial order where every two elements are comparable;
 technical details are omitted:
 \begin{lstlisting}
 class LinearOrder (α : Type u) extends PartialOrder α, (...)
@@ -823,7 +821,7 @@ in a theorem statement by
 [Field R] [AddCommGroup M] [Module R M]
 \end{lstlisting}
 we require \texttt{M} to be a vector space over \texttt{R}. We do not need to extend
-Module in order to define a vector space.
+Module in order to define what a vector space is.
 
 In our case, to state the theorem fintypeFarkasBartl,
 we need $R$ to be a linearly ordered division ring,
@@ -834,7 +832,7 @@ The following list of requirements is almost correct:
 [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W] [LinearOrderedAddCommGroup V] [Module R V]
 \end{lstlisting}
 The only missing assumption is the relationship between how $R$ is ordered and how $V$ is ordered.
-For that, we use another mixin, defined as follows:
+For that, we use another mixin, defined in Mathlib as follows:
 \begin{lstlisting}
 class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] : Prop where
   elim {a : α} (ha : 0 ≤ a) {b₁ b₂ : β} (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
