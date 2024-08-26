@@ -5,7 +5,9 @@
 \usepackage{amsfonts}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{array}
 \pagenumbering{gobble}
+
 
 \renewcommand{\.}{\hskip .75pt}
 
@@ -21,6 +23,14 @@
 
 \let\r=\rightarrow
 \let\*=\cdot
+
+\makeatletter
+\newcommand{\thickhline}{%
+	\noalign {\ifnum 0=`}\fi \hrule height 1.5pt
+	\futurelet \reserved@a \@xhline
+}
+\newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1.5pt\hskip\tabcolsep}}
+\makeatother
 
 \begin{document}
 
@@ -221,11 +231,12 @@ We define an \textbf{extended} linearly ordered field $F_\infty$ as
 $F \cup \{ \bot, \top \}$ with the following properties.
 Let $p$ and $q$ be numbers from $F$.
 We have $\bot < p < \top$.
-We define addition, scalar action, and negation on $F_\infty$ as follows:
+We define addition, negation, and scalar action on $F_\infty$ as follows:
 \begin{center}
-	\begin{tabular}{ c || c | c | c | }
+	\begin{tabular}{ | c " c | c | c | }
+		\hline
 		+ & $\bot$ & $q$ & $\top$  \\
-		\hline\hline
+		\thickhline
 		$\bot$ & $\bot$ & $\bot$ & $\bot$  \\ 
 		\hline
 		$p$ & $\bot$ & $p\!+\!q$ & $\top$  \\ 
@@ -234,19 +245,22 @@ We define addition, scalar action, and negation on $F_\infty$ as follows:
 		\hline
 	\end{tabular}
 	\qquad\qquad\qquad
-	\begin{tabular}{ c || c | c | c | }
+	\begin{tabular}{ | c " c | c | c | }
+		\hline
+		$-$ & $\bot$ & $q$ & $\top$  \\
+		\thickhline
+		$=$ & $\top$ & $-q$ & $\bot$ \\
+		\hline
+	\end{tabular}
+	\qquad\qquad\qquad
+	\begin{tabular}{ | c " c | c | c | }
+		\hline
 		$\cdot$ & $\bot$ & $q$ & $\top$  \\
-		\hline\hline
+		\thickhline
 		$0$ & $\bot$ & $0$ & $0$  \\ 
 		\hline
 		$p>0$ & $\bot$ & $p \cdot q$ & $\top$  \\ 
 		\hline
-	\end{tabular}
-	\qquad\qquad\qquad
-	\begin{tabular}{ c || c | c | c }
-	$-$ & $\bot$ & $q$ & $\top$  \\
-	\hline\hline
-	& $\top$ & $-q$ & $\bot$  
 	\end{tabular}
 \end{center}
 When we talk about elements of $F_\infty$,
