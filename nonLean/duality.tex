@@ -195,7 +195,8 @@ In the most general theorem, stated below, we replace certain occurrences of $R$
 a linearly ordered $R$-module $V$ whose order respects order on $R$ (the
 relationship between order on $R$ and order on $V$ will be left implicit
 in all upcoming informal statements; for a formal definition, see the end of
-\sekt{modules}). This result origins from TODO cite Bartl.
+\sekt{modules}). This result origins from TODO cite Bartl and our proof follows
+TODO cite Bartl.
 
 \medskip \noindent
 \textbf{Theorem (fintypeFarkasBartl):}
@@ -443,7 +444,8 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow_succ : ∀ (n : ℕ) (x : M), npow (n + 1) x = npow n x * x 
 \end{lstlisting}
 Subtractive monoid is an additive monoid that adds two more operations (unary and binary minus)
-that satisfy some basic properties:
+that satisfy some basic properties (please note that ``adding minus itself gives zero''
+is not required yet; that will be required e.g.~in an additive group):
 \begin{lstlisting}
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   sub := SubNegMonoid.sub'
@@ -454,7 +456,8 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -(zsmul n.succ a)
 \end{lstlisting}
 Similarly, division monoid is a monoid that adds two more operations (inverse and divide)
-that satisfy some basic properties:
+that satisfy some basic properties (please note that ``multiplication by an inverse gives one''
+is not required yet; that will be required e.g.~in a group):
 \begin{lstlisting}
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   div := DivInvMonoid.div'
@@ -511,14 +514,15 @@ class Distrib (R : Type*) extends Mul R, Add R where
   left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
   right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 \end{lstlisting}
-Non-unital-non-associative-semiring is an abelian monoid with distributive multiplication and well-behaved zero:
+Nonunital-nonassociative-semiring is an abelian monoid with distributive multiplication and well-behaved zero:
 \begin{lstlisting}
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   zero_mul : ∀ a : M₀, 0 * a = 0
   mul_zero : ∀ a : M₀, a * 0 = 0
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 \end{lstlisting}
-Non-unital-semiring is a non-unital-non-associative-semiring that forms a semigroup with zero:
+Nonunital-semiring is a nonunital-nonassociative-semiring that forms a semigroup with zero (i.e., the
+semiring requirement makes it associative):
 \begin{lstlisting}
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
@@ -541,14 +545,14 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n 
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) 
 \end{lstlisting}
-Non-associative-semiring is a non-unital-non-associative-semiring that has a well-behaved multiplication
-by both zero and one and forms an abelian monoid with one:
+Nonassociative-semiring is a nonunital-nonassociative-semiring that has a well-behaved multiplication
+by both zero and one and forms an abelian monoid with one (i.e., the unit is finally defined):
 \begin{lstlisting}
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
   AddCommMonoidWithOne α
 \end{lstlisting}
-Semiring is the combination of non-unital-semiring and non-associative-semiring that forms a monoid with zero:
+Semiring is the combination of nonunital-semiring and nonassociative-semiring that forms a monoid with zero:
 \begin{lstlisting}
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
@@ -562,8 +566,9 @@ at the same time.
 \begin{lstlisting}
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 \end{lstlisting}
-Division ring is a ring whose multiplication forms a division monoid, zero is inverse to itself, and
-(TODO explain NNRatCast and RatCast; give a link to the article that explains why $0^{-1}\!=\!0$ is OK):
+Division ring is a nontrivial ring whose multiplication forms a division monoid, whose nonzero elements have
+multiplicative inverses, whose zero is inverse to itself
+(if you find the equality $0^{-1}\!=\!0$ disturbing, read TODO that explains it), and embeds rational numbers:
 \begin{lstlisting}
 class Nontrivial (α : Type*) : Prop where
   exists_pair_ne : ∃ x y : α, x ≠ y
@@ -578,7 +583,7 @@ class Field (K : Type u) extends CommRing K, DivisionRing K
 \end{lstlisting}
 Preorder is a reflexive \& transitive relation on any structure with binary relational symbols $\le$ and $<$
 where the strict comparison $a < b$ is equivalent to $a \le b \aand \neg (b \le a)$ given by the relation $\le$
-which is not necessarily antisymmetric:
+which is neither required to be symmetric nor required to be antisymmetric:
 \begin{lstlisting}
 class Preorder (α : Type u) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
@@ -699,7 +704,7 @@ Line-by-line, we see that:
 \item multiplying $\top$ by $0$ from the left gives $0$;
 multiplying $\top$ by a strictly positive element from the left gives $\top$
 \item multiplying any finite value $f$ by a coefficient $c$ from the left
-gives $c \* f$ as it should, converted to the type $F_\infty$
+gives $c \* f$ converted to the type $F_\infty$
 \end{itemize}
 Scalar action on $F_\infty$ by negative elements from the left is undefined.
 Multiplication between two elements of $F_\infty$ is also undefined.
@@ -717,8 +722,8 @@ is a map) not only when they form a vector space).
 The type of coordinates need not be ordered.
 Matrices live next to explicit vectors. They are also functions; they take a row index
 and a column index and they output a value at the given spot.
-Neither the row indices nor the column vertices are required to form an ordered set.
-That is why multiplication between matrices and vectors is defined only in structures
+Neither the row indices nor the column vertices are required to form an ordered type.
+This is why multiplication between matrices and vectors is defined only in structures
 where addition forms a commutative semigroup. Consider the following example:
 $$
 \begin{pmatrix}
@@ -768,7 +773,7 @@ Infix notation for these two operations is defined as follows
 \hbox{\texttt{x $\circ$ y $\circ$ z}} gets parsed as \texttt{(x $\circ$ y) $\circ$ z}
 whether or not it makes sense, whereäs the keyword \texttt{infixr} when defining an operator $\circ$ means that %lb
 \hbox{\texttt{A $\circ$ B $\circ$ v}} gets parsed as \texttt{A $\circ$ (B $\circ$ v)}
-whether or not it makes sense; numbers 72 and 73 determine precedence):
+whether or not it makes sense; the numbers 72 and 73 determine precedence):
 \begin{lstlisting}
 scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
@@ -901,23 +906,14 @@ underline by red.
 Extended linear programs are defined as follows:
 \begin{lstlisting}
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
-  /-- The left-hand-side matrix. -/
   A : Matrix I J F∞
-  /-- The right-hand-side vector. -/
   b : I → F∞
-  /-- The objective function coefficients. -/
   c : J → F∞
-  /-- No `⊥` and `⊤` in the same row. -/
   hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
-  /-- No `⊥` and `⊤` in the same column. -/
   hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
-  /-- No `⊥` in the right-hand-side vector. -/
   hbi : ¬∃ i : I, b i = ⊥
-  /-- No `⊥` in the objective function coefficients. -/
   hcj : ¬∃ j : J, c j = ⊥
-  /-- No `⊤` in the row where the right-hand-side vector has `⊤`. -/
   hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
-  /-- No `⊥` in the column where the objective function has `⊤`. -/
   hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
 \end{lstlisting}
 Solution is defined as follows:
@@ -945,7 +941,9 @@ Being unbounded is defined as follows:
 def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
   ¬∃ r : F, P.IsBoundedBy r
 \end{lstlisting}
-The following definition says how linear programs are dualized:
+The following definition says how linear programs are dualized (the first three parts
+define the dual program; the rest generates proofs that our six conditions stay satisfied
+after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aesop} TODO cite):
 \begin{lstlisting}
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
