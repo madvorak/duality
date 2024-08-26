@@ -32,6 +32,7 @@
 	{σ}{{$\sigma$}}1
 	{τ}{{$\tau$}}1
 	{α}{{$\alpha$}}1
+	{β}{{$\beta$}}1
 	{γ}{{$\gamma$}}1
 	{≠}{{$\neq$}}1
 	{≤}{{$\leq$}}1
@@ -47,12 +48,14 @@
 	{ℤ}{{$\mathbb{Z}$}}1
 	{ₗ}{{$_l$}}1
 	{₀}{{$_0$}}1
-	{∑}{{$\sum$}}1
-	{ᵀ}{{$^\texttt{T}$}}1
+	{₁}{{$_1$}}1
+	{₂}{{$_2$}}1
 	{ᵥ}{{$_v$}}1
 	{ₘ}{{$_m$}}1
 	{⁻¹}{{$^{-1}$}}1
 	{∞}{{$\infty$}}1
+	{∑}{{$\sum$}}1
+	{ᵀ}{{$^\texttt{T}$}}1
 	{⊤}{{$\top$}}1
 	{⊥}{{$\bot$}}1
 	{⟨}{{$\langle$}}1
@@ -176,7 +179,7 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \end{itemize}
 In the most general theorem, stated below, we replace certain occurrences of $R$ by
 a linearly ordered $R$-module $V$ whose order respects order on $R$.
-This result origins from TODO cite Bartl.
+This result origins from TODO cite Bartl. TODO where did PosSMulMono go?!
 
 \medskip \noindent
 \textbf{Theorem (fintypeFarkasBartl):}
@@ -781,7 +784,63 @@ It was still a lot of lemmas.
 
 \subsection{Modules and how to order them}
 
-TODO
+Given types $\alpha$ and $\beta$ such that $\alpha$ has a scalar action on $\beta$
+and $\alpha$ forms a monoid, Mathlib defines multiplicative action where
+$1$ of type $\alpha$ gives the identity action and multiplication in the monoid
+associates with the scalar action:
+\begin{lstlisting}
+class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
+  one_smul : ∀ b : β, (1 : α) • b = b
+  mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
+\end{lstlisting}
+For a distributive multiplicative action, we furthermore require the latter type
+to form an additive monoid and two more properties are required; multiplying the zero
+gives the zero, and the multiplicative action is distributive with respect to the addition:
+\begin{lstlisting}
+class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+  smul_zero : ∀ a : M, a • (0 : A) = 0
+  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+\end{lstlisting}
+We can finally review the definition of a module. Here the former type must form a semiring
+and the latter type abelian monoid. Module requires a distributive multiplicative action and
+two additional properties; addition in the semiring distributes with the multiplicative action,
+and multiplying by the zero from the semiring gives a zero in the abelian monoid:
+\begin{lstlisting}
+class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends DistribMulAction R M where
+  add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
+  zero_smul : ∀ x : M, (0 : R) • x = 0
+\end{lstlisting}
+Note the the class Module does not extend the class Semiring; it requires Semiring as an argument.
+The abelian monoid is also required separately in the definition. We call such a class ``mixin''.
+Thanks to this design, we do not need to define superclasses of Module in order to require
+``more than a module''. Instead, we use superclasses in the respective arguments, i.e.,
+``more than a semiring'' and/or ``more than an abelian monoid''. For example, if we replace
+\begin{lstlisting}
+[Semiring R] [AddCommMonoid M] [Module R M]
+\end{lstlisting}
+in a theorem statement by
+\begin{lstlisting}
+[Field R] [AddCommGroup M] [Module R M]
+\end{lstlisting}
+we require \texttt{M} to be a vector space over \texttt{R}. We do not need to extend
+Module in order to define a vector space.
+
+In our case, to state the theorem fintypeFarkasBartl,
+we need $R$ to be a linearly ordered division ring,
+we need $W$ to be an $R$-module, and
+we need $V$ to be a linearly ordered $R$-module.
+The following list of requirements is almost correct:
+\begin{lstlisting}
+[LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W] [LinearOrderedAddCommGroup V] [Module R V]
+\end{lstlisting}
+The only missing assumption is the relationship between how $R$ is ordered and how $V$ is ordered.
+For that, we use another mixin, defined as follows:
+\begin{lstlisting}
+class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] : Prop where
+  elim {a : α} (ha : 0 ≤ a) {b₁ b₂ : β} (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
+\end{lstlisting}
+We encourage the reader to try and delete various assumptions and see which parts of the proofs
+underline by red.
 
 \subsection{Linear programming}
 
