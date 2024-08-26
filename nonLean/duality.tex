@@ -351,7 +351,11 @@ $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
 \subsection{Structure of this paper}
 
 In Section 2, we explain all underlying definitions and
-comment on the formalization process.
+comment on the formalization process;
+following the philosophy of (TODO cite How to believe a formal proof)
+we review almost all the declarations needed for the reader to believe
+our results, leaving out many declarations that were used in order
+to prove the results.
 In Section 3, we prove fintypeFarkasBartl (stated in Section 1.1),
 from which be obtain equalityFarkas as a corollary.
 In Section 4, we prove extendedFarkas (stated in Section 1.2).
@@ -1458,6 +1462,10 @@ where Lean 4 is not yet helpful is the search for counterexamples.
 Despite these difficulties, we find Lean 4 to be an extremely
 valuable tool for elegant expressions of mathematical formulas
 and for proving them formally.
+
+\section{Appendix: algebraic hierarchy up to LinearOrderedField in Mathlib}
+
+\includegraphics[width=0.9\textwidth]{algebraic_hierarchy.png}
 
 
 \section{Appendix: dependencies between theorems}
