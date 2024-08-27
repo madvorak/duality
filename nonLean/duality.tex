@@ -1094,7 +1094,7 @@ for all $R$-linear maps $\bar{A} : W \r (\fin{m} \r R)$
 and $\bar{b} : W \r V$, the formula
 ``$\forall \bar{y} : W \st \bar{A}~\bar{y} \ge 0 \implies \bar{b}~\bar{y} \ge 0$''
 implies existence of a nonnegative vector family $\bar{x} : \fin{m} \r V$ such that,
-for all $\bar{w} : W$, $ \sum_{i : \fin{m}}\; (\bar{A}~\bar{w})_i \cdot (\bar{x})_i = \bar{b}~\bar{w} $.
+for all $\bar{w} : W$, $ \sum_{i : \fin{m}}\; (\bar{A}~\bar{w})_i \cdot \bar{x}_i = \bar{b}~\bar{w} $.
 Let $A$ be an $R$-linear map from $W$ to $(\fin{m\!+\!1} \r R)$.
 Let $b$ be an $R$-linear map from $W$ to~$V$.
 Assume that, for all $y : W$, $\;A~y \ge 0$ implies $b~y \ge 0$.
@@ -1136,7 +1136,7 @@ $\bar{b} := b - (z \mapsto (A~z)_m \cdot (b~y))$
 are $R$-linear maps.
 Thanks to the last fact, we can apply induction hypothesis to $\bar{A}$ and $\bar{b}$.
 We obtain a nonnegative vector family $x'$ such that,
-for all $\bar{w} : W$, $ \sum_{i : \fin{m}} (\bar{A}\;\bar{w})_i \cdot x'_i = \bar{b}\;\bar{w} $.
+for all $\bar{w} : W$, $ \sum_{i : \fin{m}} (\bar{A}~\bar{w})_i \cdot x'_i = \bar{b}~\bar{w} $.
 It remains to construct a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
@@ -1316,7 +1316,7 @@ Then $P$ is unbounded.
 \medskip \noindent
 Proof idea:
 There is a nonnegative vector $x_p$ such that $A \* x_p \le b$ and
-$c \* x_p = e$ for some $e$ in $F_\infty$.
+$c \* x_p = e$ for some $e$ in $F$.
 We apply unbounded\_of\_reaches\_le.
 In case $e \le s$, we use $x_p$ and we are done.
 Otherwise, consider what $c \cdot x_0$ equals to.
@@ -1373,7 +1373,7 @@ and $b \* y + c \* x < 0$.
 If $z > 0$, we finish the proof using $p := z^{-1} \* c \* x$
 and $q := z^{-1} \* b \* y$ (and we do not care that this case
 cannot happen in reality).
-It remain to prove that $z=0$ cannot happen.
+It remains to prove that $z=0$ cannot happen.
 At least one of $b \* y$ or $c \* x$ must be strictly negative.
 If $c \* x < 0$, we apply unbounded\_of\_feasible\_of\_neg to
 $P$, which (using infeasible\_of\_unbounded) contradicts
