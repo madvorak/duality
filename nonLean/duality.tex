@@ -916,12 +916,13 @@ structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
   hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
 \end{lstlisting}
-Solution is defined as follows:
+Vector $x$ made of finite nonnegative values is a solution if and only if $A \* x \le b$
+holds:
 \begin{lstlisting}
 def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
   P.A ₘ* x ≤ P.b
 \end{lstlisting}
-Reaching a value is defined as follows:
+Reaching a value $r$ is defined as follows:
 \begin{lstlisting}
 def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
@@ -931,7 +932,7 @@ Feasibility is defined as follows:
 def ExtendedLP.IsFeasible (P : ExtendedLP I J F) : Prop :=
   ∃ p : F, P.Reaches (toE p)
 \end{lstlisting}
-Being bounded by a value (from below -- we always minimize) is defined as follows:
+Being bounded by a value $r$ (from below -- we always minimize) is defined as follows:
 \begin{lstlisting}
 def ExtendedLP.IsBoundedBy (P : ExtendedLP I J F) (r : F) : Prop :=
   ∀ p : F∞, P.Reaches p → r ≤ p
@@ -942,32 +943,63 @@ def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
   ¬∃ r : F, P.IsBoundedBy r
 \end{lstlisting}
 The following definition says how linear programs are dualized (the first three parts
-define the dual program; the rest generates proofs that our six conditions stay satisfied
+define the dual program's $A, b, c$; the rest generates proofs that our six conditions stay satisfied
 after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aesop} TODO cite):
 \begin{lstlisting}
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
 \end{lstlisting}
-The definition of optimum is, sadly, very complicated (TODO explain this shit):
+The definition of optimum is, sadly, very complicated:
 \begin{lstlisting}
 noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
   if P.IsFeasible then
     if P.IsUnbounded then
-      some ⊥ -- unbounded means that the minimum is `⊥`
+      some ⊥ 
     else
       if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
-        some (toE hf.choose) -- the minimum is finite
+        some (toE hf.choose)
       else
-        none -- invalid finite value (infimum is not attained)
+        none
   else
-    some ⊤ -- infeasible means that the minimum is `⊤`
+    some ⊤
 \end{lstlisting}
-Finally, we define what opposite values are:
+The type \texttt{Option F$\infty$}, which is implemented as
+\texttt{Option (Option (Option F))} after unfolding definitions,
+allows the following values:
+\begin{itemize}
+\item \texttt{none}
+\item \texttt{some $\bot$} implemented as \texttt{some none}
+\item \texttt{some $\top$} implemented as \texttt{some (some none)}
+\item \texttt{some (toE r)} implemented as \texttt{some (some (some r))} for any \texttt{r :~F}
+\end{itemize}
+We assign the following semantics to \texttt{Option F$\infty$} values:
+\begin{itemize}
+\item \texttt{none} $\ \dots$ invalid finite value (infimum is not attained)
+\item \texttt{some $\bot$} $\ \dots$ feasible unbounded
+\item \texttt{some $\top$} $\ \dots$ infeasible
+\item \texttt{some (toE r)} $\ \dots$ the minimum is a finite value $r$
+\end{itemize}
+The definition above first asks if $P$ is feasible; if not, it returns \texttt{some $\top$}
+(i.e., the worst value).
+When $P$ is feasible, it asks whether $P$ is unbounded; if yes, it returns \texttt{some $\bot$}
+(i.e., the best value).
+Otherwise, we are in the middle branch where $P$ is feasible and bounded.
+We ask if there is a finite value $r$ such that $P$ reaches $r$ and, at the same time,
+$P$ is bounded by $r$; is so, \texttt{some (toE r)} is the optimum.
+Note that we use the verbs ``ask'' and ``return'' metaphorically;
+\texttt{ExtendedLP.optimum} is not a computable function; it is just a mathematical
+definition (see the keyword \texttt{noncomputable def} above).
+
+Finally, we define what opposite values of the type \texttt{Option F$\infty$} are
+(note that for any values except \texttt{none} we directly follow the definition
+of negation a.k.a.\ unary minus on the extended linearly ordered fields):
 \begin{lstlisting}
 def OppositesOpt : Option F∞ → Option F∞ → Prop
-| (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
-| _       , _        => False   -- namely `OppositesOpt none none = False`
+| (p : F∞), (q : F∞) => p = -q
+| _       , _        => False
 \end{lstlisting}
+The last line says that \texttt{OppositesOpt none none} is \texttt{False}.
+We later show that \texttt{none} is never the optimum, but we do not know it yet.
 
 
 \section{Formal statements of selected results}
@@ -1058,18 +1090,17 @@ Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
 Let $V$ be a linearly ordered $R$-module.
 Assume (induction hypothesis) that
-for all $R$-linear maps $A_0 : W \r (\fin{m} \r R)$
-and $b_0 : W \r V$, the formula
-``$\forall y_0 : W \st A_0~y_0 \ge 0 \implies b_0~y_0 \ge 0$''
-implies existence of a nonnegative vector family $x_0 : \fin{m} \r V$ such that,
-for all $w_0 : W$, $ \sum_{i : \fin{m}}\; (A_0~w_0)_i \cdot (x_0)_i = b_0~w_0 $.
+for all $R$-linear maps $\bar{A} : W \r (\fin{m} \r R)$
+and $\bar{b} : W \r V$, the formula
+``$\forall \bar{y} : W \st \bar{A}~\bar{y} \ge 0 \implies \bar{b}~\bar{y} \ge 0$''
+implies existence of a nonnegative vector family $\bar{x} : \fin{m} \r V$ such that,
+for all $\bar{w} : W$, $ \sum_{i : \fin{m}}\; (\bar{A}~\bar{w})_i \cdot (\bar{x})_i = \bar{b}~\bar{w} $.
 Let $A$ be an $R$-linear map from $W$ to $(\fin{m\!+\!1} \r R)$.
 Let $b$ be an $R$-linear map from $W$ to~$V$.
 Assume that, for all $y : W$, $\;A~y \ge 0$ implies $b~y \ge 0$.
 We claim there exists a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
-TODO names like $A_0$ do not work well with the ``subscript notation'' on paper.
 
 \medskip \noindent
 Proof idea:
@@ -1080,8 +1111,8 @@ from $W$ to $(\fin{m} \r R)$ that behaves exactly like $A$ where
 it is defined.
 We distinguish two cases. If, for all $y : W$, the inequality
 $A_{<m}~y \ge 0$ implies $b~y \ge 0$, then plug $A_{<m}$
-for $A_0$, obtain $x_0$, and construct a vector family $x$ such that
-$x_m = 0$ and otherwise $x$ copies $x_0$. We easily check that
+for $\bar{A}$, obtain $\bar{x}$, and construct a vector family $x$ such that
+$x_m = 0$ and otherwise $x$ copies $\bar{x}$. We easily check that
 $x$ is nonnegative and that
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $ holds.
 
@@ -1099,13 +1130,13 @@ implies $b~w - b~((A~w)_m \cdot y) \ge 0$
 implies $(b - (z \mapsto (A~z)_m \cdot (b~y)))~w \ge 0$
 \end{itemize}
 We observe that
-$A_0 := A_{<m} - (z \mapsto (A~z)_m \cdot (A_{<m}~y))$
+$\bar{A} := A_{<m} - (z \mapsto (A~z)_m \cdot (A_{<m}~y))$
 and
-$b_0 := b - (z \mapsto (A~z)_m \cdot (b~y))$
+$\bar{b} := b - (z \mapsto (A~z)_m \cdot (b~y))$
 are $R$-linear maps.
-Thanks to the last fact, we can apply induction hypothesis to $A_0$ and $b_0$.
+Thanks to the last fact, we can apply induction hypothesis to $\bar{A}$ and $\bar{b}$.
 We obtain a nonnegative vector family $x'$ such that,
-for all $w_0 : W$, $ \sum_{i : \fin{m}} (A_0\;w_0)_i \cdot x'_i = b_0\;w_0 $.
+for all $\bar{w} : W$, $ \sum_{i : \fin{m}} (\bar{A}\;\bar{w})_i \cdot x'_i = \bar{b}\;\bar{w} $.
 It remains to construct a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
@@ -1297,6 +1328,14 @@ well defined and it is positive.
 Use $x_p + \frac{s-e}{d} \cdot x_0$.
 
 \medskip \noindent
+\textbf{Lemma (dualize\_dualize):}
+Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
+
+\medskip \noindent
+Proof idea:
+$ -(-A^T)^T = A $
+
+\medskip \noindent
 \textbf{Lemma (strongDuality\_aux):}
 Let $P$ be a linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
@@ -1311,7 +1350,7 @@ $$
 \begin{pmatrix}
 	A & 0 \\
 	0 & -A^T \\
-	b & c
+	c & b
 \end{pmatrix}
 \qquad \qquad
 \begin{pmatrix}
@@ -1320,7 +1359,28 @@ $$
 	0
 \end{pmatrix}
 $$
-TODO.
+In the first case, we obtain a nonnegative vectors $x$ and $y$
+such that $A \* x \le b$, $-A^T \* y \le c$, and
+$c \* x + b \* y \le 0$.
+We immediately see that $P$ reaches $c \* x$,
+that the dual of $P$ reaches $b \* y$,
+and that the desired inequality holds.
+
+In the second case, we obtain nonnegative vectors $y$ and $x$ and
+a nonnegative scalar $z$ such that
+$-\!A^T \* y + z \* (-c) \le 0$, $A \* x + z \* (-b) \le 0$,
+and $b \* y + c \* x < 0$.
+If $z > 0$, we finish the proof using $p := z^{-1} \* c \* x$
+and $q := z^{-1} \* b \* y$ (and we do not care that this case
+cannot happen in reality).
+It remain to prove that $z=0$ cannot happen.
+At least one of $b \* y$ or $c \* x$ must be strictly negative.
+If $c \* x < 0$, we apply unbounded\_of\_feasible\_of\_neg to
+$P$, which (using infeasible\_of\_unbounded) contradicts
+that the dual of $P$ is feasible.
+If $b \* y < 0$, we apply unbounded\_of\_feasible\_of\_neg to
+the dual of $P$, which (using infeasible\_of\_unbounded and
+dualize\_dualize) contradicts that $P$ is feasible.
 
 \medskip \noindent
 \textbf{Lemma (strongDuality\_of\_both\_feasible):}
@@ -1344,7 +1404,9 @@ Then $P$ is unbounded.
 
 \medskip \noindent
 Proof idea:
-TODO.
+Apply extendedFarkas to the matrix
+$\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
+and the vector $c$.
 
 \medskip \noindent
 \textbf{Lemma (optimum\_unique):}
@@ -1355,7 +1417,10 @@ Then $r = s$.
 
 \medskip \noindent
 Proof idea:
-TODO.
+We prove $r \le s$ by applying ``$P$ is bounded by $r$'' to
+``$s$ is reached by $P$''.
+We prove $s \le r$ by applying ``$P$ is bounded by~$s$'' to
+``$r$ is reached by $P$''.
 
 \medskip \noindent
 \textbf{Lemma (optimum\_eq\_of\_reaches\_bounded):}
@@ -1374,7 +1439,18 @@ The strong duality holds.
 
 \medskip \noindent
 Proof idea:
-TODO.
+If the dual of $P$ is feasible as well, use strongDuality\_of\_both\_feasible
+to obtain $r$ such that $P$ reaches $-r$ and the dual of $P$ reaches $r$.
+Using optimum\_eq\_of\_reaches\_bounded together with weakDuality,
+conclude that the optimum of $P$ is $-r$.
+Using optimum\_eq\_of\_reaches\_bounded together with weakDuality,
+conclude that the optimum of the dual of $P$ is $r$.
+The strong duality holds.
+
+If the dual of $P$ is infeasible, the optimum of the dual of $P$ is
+$\top$ by definition. Using unbounded\_of\_feasible\_of\_infeasible
+we get that the optimum of $P$ is $\bot$.
+The strong duality holds.
 
 \medskip \noindent
 \textbf{Theorem (optimum\_neq\_none):}
@@ -1385,14 +1461,6 @@ Proof idea:
 If a linear program $P$ is feasible, the existence of optimum
 follows from strongDuality\_of\_prim\_feas.
 Otherwise, the optimum of $P$ is $\top$ by definition.
-
-\medskip \noindent
-\textbf{Lemma (dualize\_dualize):}
-Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
-
-\medskip \noindent
-Proof idea:
-$ -(-A^T)^T = A $
 
 \medskip \noindent
 \textbf{Lemma (strongDuality\_of\_dual\_feas):}
