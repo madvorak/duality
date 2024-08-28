@@ -95,7 +95,7 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 \medskip
 
 \noindent \textbf{Keywords:}\;
-Farkas lemma, linear programming, extended rationals, extended reals
+Farkas lemma, linear programming, extended rationals, extended reals, calculus of inductive constructions
 
 
 \section{Introduction}
@@ -115,7 +115,7 @@ Theorems come with names instead of numbers.
 There are two famous theorems characterizing that a system of linear inequalities
 has a solution if and only if we cannot obtain a contradiction
 by taking a linear combination of the inequalities.
-TODO cite Farkas.
+Farkas \cite{FarkasOrig}.
 
 \medskip \noindent
 \textbf{Theorem (equalityFarkas):}
@@ -128,7 +128,7 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-TODO cite Minkowski?
+TODO whom cite here?
 
 \medskip \noindent
 \textbf{Theorem (inequalityFarkas):}
@@ -199,8 +199,8 @@ In the most general theorem, stated below, we replace certain occurrences of $R$
 a linearly ordered $R$-module $V$ whose order respects order on $R$ (the
 relationship between order on $R$ and order on $V$ will be left implicit
 in all upcoming informal statements; for a formal definition, see the end of
-\sekt{modules}). This result origins from TODO cite Bartl and our proof follows
-TODO cite Bartl.
+\sekt{modules}). This result origins from \cite{Bartl2007} and our proof is based on
+\cite{Bartl2011}.
 
 \medskip \noindent
 \textbf{Theorem (fintypeFarkasBartl):}
@@ -378,7 +378,7 @@ $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
 
 In \sekt{preliminaries}, we explain all underlying definitions and
 comment on the formalization process;
-following the philosophy of (TODO cite How to believe a formal proof)
+following the philosophy of \cite{Believe}
 we review almost all the declarations needed for the reader to believe
 our results, leaving out many declarations that were used in order
 to prove the results.
@@ -572,7 +572,8 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 \end{lstlisting}
 Division ring is a nontrivial ring whose multiplication forms a division monoid, whose nonzero elements have
 multiplicative inverses, whose zero is inverse to itself
-(if you find the equality $0^{-1}\!=\!0$ disturbing, read TODO that explains it), and embeds rational numbers:
+(if you find the equality $0^{-1}\!=\!0$ disturbing, read \cite{DivBy0} that explains it),
+and embeds rational numbers:
 \begin{lstlisting}
 class Nontrivial (α : Type*) : Prop where
   exists_pair_ne : ∃ x y : α, x ≠ y
@@ -948,7 +949,7 @@ def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
 \end{lstlisting}
 The following definition says how linear programs are dualized (the first three parts
 define the dual program's $A, b, c$; the rest generates proofs that our six conditions stay satisfied
-after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aesop} TODO cite):
+after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aesop} \cite{Aesop}):
 \begin{lstlisting}
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
@@ -1558,16 +1559,14 @@ but the optimum of the latter is $\bot$.
 
 \section {Related work}
 
-TODO presents an overcomplicated proof in Isabelle by analyzing
-the Simplex algorithm that already had been formally verified.
-It took them 30 pages to get to the basic Farkas; no generalization
-was provided.
+Isabelle \cite{Farkas-AFP}
+Rocq \cite{Simplex-Coq}
 
 In Lean, it would be possible to prove Farkas for reals using the
 Hahn-Banach separation theorem. However, we do not yet know that
 the set of feasible solutions is closed.
 
-TODO.
+TODO expand or delete.
 
 
 \section {Conclusion}
@@ -1589,6 +1588,11 @@ where Lean 4 is not yet helpful is the search for counterexamples.
 Despite these difficulties, we find Lean 4 to be an extremely
 valuable tool for elegant expressions of mathematical formulas
 and for proving them formally.
+
+
+
+\bibliographystyle{plain}
+\bibliography{duality}
 
 
 %\section{Appendix: algebraic hierarchy up to LinearOrderedField in Mathlib}
