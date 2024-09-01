@@ -16,10 +16,10 @@ structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
   /-- No `⊥` and `⊤` in the same column. -/
   hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
-  /-- No `⊥` in the right-hand-side vector. -/
-  hbi : ¬∃ i : I, b i = ⊥
-  /-- No `⊥` in the objective function coefficients. -/
-  hcj : ¬∃ j : J, c j = ⊥
+  /-- TODO. -/
+  hbi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
+  /-- TODO. -/
+  hcj : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
   /-- No `⊤` in the row where the right-hand-side vector has `⊤`. -/
   hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
   /-- No `⊥` in the column where the objective function has `⊤`. -/
@@ -45,7 +45,7 @@ def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
 
 /-- Linear program `P` is feasible iff `P` reaches a finite value. -/
 def ExtendedLP.IsFeasible (P : ExtendedLP I J F) : Prop :=
-  ∃ p : F, P.Reaches (toE p)
+  ∃ p : F∞, P.Reaches p ∧ p ≠ ⊤
 
 /-- Linear program `P` is bounded by `r` iff every value reached by `P` is
     greater or equal to `r` (i.e., `P` is bounded from below). -/
@@ -61,7 +61,7 @@ def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
     The original objective function becomes the new right-hand-side vector.
     The original right-hand-side vector becomes the new objective function. -/
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
-  ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
+  ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, by aeply P.hcj, by aeply P.hbi, by aeply P.hAc, by aeply P.hAb⟩
 
 open scoped Classical in
 /-- Extended notion of "optimum" of "minimization LP" (the less the better). -/
@@ -140,7 +140,9 @@ theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I
           intro ⟨i, ⟨s, his⟩, ⟨t, hit⟩⟩
           cases i with
           | inl i' => exact P.hAi ⟨i', ⟨s, his⟩, ⟨t, hit⟩⟩
-          | inr => exact P.hcj ⟨s, his⟩
+          | inr =>
+            simp at his hit
+            exact P.hcj ⟨s, by sorry, his⟩
         )
         (by
           intro ⟨j, ⟨s, hjs⟩, ⟨t, hjt⟩⟩
@@ -149,7 +151,10 @@ theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I
             cases t with
             | inl iₜ => exact P.hAj ⟨j, ⟨iₛ, hjs⟩, ⟨iₜ, hjt⟩⟩
             | inr => exact P.hAc ⟨j, ⟨iₛ, hjs⟩, hjt⟩
-          | inr => exact P.hcj ⟨j, hjs⟩
+          | inr =>
+            cases t with
+            | inl iₜ => exact P.hcj ⟨j, ⟨iₜ, hjt⟩, hjs⟩
+            | inr => simp_all
         )
         (by
           intro ⟨i, ⟨j, hij⟩, hi⟩
@@ -161,7 +166,7 @@ theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I
             rw [hi] at contr
             match hby : P.b ᵥ⬝ y with
             | ⊥ =>
-              exact Matrix.no_bot_dotProd_nneg (by simpa using P.hbi) y hby
+              exact Matrix.no_bot_dotProd_nneg (sorry /-by simpa using P.hbi-/) y hby
             | ⊤ =>
               dsimp only [ExtendedLP.dualize] at contr
               rw [hby] at contr
@@ -176,8 +181,11 @@ theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I
         (by
           intro ⟨i, ⟨j, hij⟩, hi⟩
           cases i with
-          | inl i' => exact P.hbi ⟨i', hi⟩
-          | inr => exact P.hcj ⟨j, hij⟩
+          | inl i' => exact P.hbi ⟨i', ⟨j, hij⟩, hi⟩
+          | inr =>
+            simp at hi hij
+            -- ??????????????????????????????????
+            exact P.hcj ⟨j, by sorry, hij⟩
         )
       )
   constructor
@@ -196,8 +204,8 @@ theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I
       · push_neg at contr
         rwa [add_comm]
       rw [Matrix.sumElim_dotProd_sumElim]
-      simp [Matrix.dotProd]
-      rwa [EF.one_smul]
+      simp [Matrix.dotProd, EF.one_smul]
+      exact hlt0
 
 end weak_duality
 
@@ -448,10 +456,14 @@ end misc_EF_properties
 
 section dotProd_EF_properties
 
-lemma Matrix.dotProd_eq_bot {v : J → F∞} {w : J → F≥0} (hvw : v ᵥ⬝ w = ⊥) :
-    ∃ j : J, v j = ⊥ := by
-  by_contra! contr
-  exact Matrix.no_bot_dotProd_nneg contr w hvw
+lemma Matrix.dotProd_eq_bot {v : J → F∞} {w : J → F≥0} :
+    (∃ j : J, v j = ⊥) ↔ v ᵥ⬝ w = ⊥ := by
+  constructor
+  · intro ⟨j, hvj⟩
+    apply Matrix.has_bot_dotProd_nneg hvj
+  · intro hvw
+    by_contra! contr
+    exact Matrix.no_bot_dotProd_nneg contr w hvw
 
 lemma Matrix.zero_dotProd (w : J → F≥0) : (0 : J → F∞) ᵥ⬝ w = 0 := by
   apply Finset.sum_eq_zero
@@ -529,76 +541,103 @@ variable [DecidableEq I] [DecidableEq J]
 
 lemma ExtendedLP.infeasible_of_unbounded {P : ExtendedLP I J F} (hP : P.IsUnbounded) :
     ¬P.dualize.IsFeasible := by
-  intro ⟨q, hq⟩
+  intro ⟨q, hPq, hq⟩
   rw [ExtendedLP.IsUnbounded.iff] at hP
-  obtain ⟨p, hp, hpq⟩ := hP (-q)
-  have wd := P.weakDuality hp hq
-  match p with
-  | ⊥ => simp at wd
-  | ⊤ => simp at hpq
-  | (_ : F) =>
-    rw [←EF.coe_add, ←EF.coe_zero, EF.coe_le_coe_iff] at wd
-    rw [EF.coe_lt_coe_iff] at hpq
-    linarith
+  match q with
+  | ⊥ =>
+    obtain ⟨p, hp, -⟩ := hP 0
+    simpa using P.weakDuality hp hPq
+  | ⊤ =>
+    exact hq rfl
+  | (f : F) =>
+    obtain ⟨p, hp, hpq⟩ := hP (-f)
+    have wd := P.weakDuality hp hPq
+    match p with
+    | ⊥ => simp at wd
+    | ⊤ => simp at hpq
+    | (_ : F) =>
+      rw [←EF.coe_add, ←EF.coe_zero, EF.coe_le_coe_iff] at wd
+      rw [EF.coe_lt_coe_iff] at hpq
+      linarith
+
+lemma ExtendedLP.IsFeasible.no_bot {P : ExtendedLP I J F} (hP : P.IsFeasible) (i : I) : P.b i ≠ ⊥ := by
+  intro contr
+  obtain ⟨-, ⟨x, hx, -⟩, -⟩ := hP
+  specialize hx i
+  rw [contr] at hx
+  unfold Matrix.mulWeig at hx
+  rw [le_bot_iff, ←Matrix.dotProd_eq_bot] at hx
+  exact P.hbi ⟨i, hx, contr⟩
 
 lemma ExtendedLP.unbounded_of_feasible_of_neg {P : ExtendedLP I J F} (hP : P.IsFeasible)
     {x₀ : J → F≥0} (hx₀ : P.c ᵥ⬝ x₀ < 0) (hAx₀ : P.A ₘ* x₀ + (0 : F≥0) • (-P.b) ≤ 0) :
     P.IsUnbounded := by
-  obtain ⟨e, xₚ, hxₚ, he⟩ := hP
+  have nobot := hP.no_bot
+  obtain ⟨e, ⟨xₚ, hxₚ, hce⟩, he⟩ := hP
   apply ExtendedLP.unbounded_of_reaches_le
   intro s
   if hs : e ≤ s then
-    refine ⟨e, ⟨xₚ, hxₚ, he⟩, ?_⟩
+    refine ⟨e, ⟨xₚ, hxₚ, hce⟩, ?_⟩
     simpa using hs
   else
     push_neg at hs
-    match hcx₀ : P.c ᵥ⬝ x₀ with
-    | ⊥ =>
-      exfalso
-      apply P.hcj
-      exact Matrix.dotProd_eq_bot hcx₀
-    | ⊤ =>
-      exfalso
-      rw [hcx₀] at hx₀
-      exact (hx₀.trans_le le_top).false
-    | (d : F) =>
-      rw [hcx₀] at hx₀
-      have coef_pos : 0 < (s - e) / d
-      · apply div_pos_of_neg_of_neg
-        · rwa [sub_neg]
-        · rwa [←EF.coe_neg']
-      let k : F≥0 := ⟨((s - e) / d), coef_pos.le⟩
-      let k_pos : 0 < k := coef_pos
-      refine ⟨s, ⟨xₚ + k • x₀, ?_, ?_⟩, by rfl⟩
-      · intro i
-        match hi : P.b i with
-        | ⊥ =>
-          exfalso
-          exact P.hbi ⟨i, hi⟩
-        | ⊤ =>
-          apply le_top
-        | (bᵢ : F) =>
-          specialize hAx₀ i
-          rw [Pi.add_apply, Pi.smul_apply, Pi.neg_apply, hi] at hAx₀
-          have zeros : (P.A ₘ* x₀) i + (0 : F∞) ≤ 0
-          · convert hAx₀
-            show 0 = 0 • -(toE bᵢ)
-            rw [←EF.coe_neg, EF.zero_smul_coe]
-          rw [add_zero] at zeros
-          rw [Matrix.mulWeig_add, Matrix.mulWeig_smul k_pos, Pi.add_apply]
-          apply add_le_of_le_of_nonpos
-          · convert_to (P.A ₘ* xₚ) i ≤ P.b i
-            · exact hi.symm
-            exact hxₚ i
-          · exact EF.smul_nonpos zeros k
-      · rw [Matrix.dotProd_add, he, Matrix.dotProd_smul k_pos, hcx₀]
-        show toE (e + ((s - e) / d) * d) = toE s
-        rw [EF.coe_eq_coe_iff, div_mul_cancel_of_imp]
-        exact add_sub_cancel e s
-        intro d_eq_0
+    match e with
+    | ⊥ => simp at hs
+    | ⊤ => simp at he
+    | (e : F) =>
+      clear he
+      match hcx₀ : P.c ᵥ⬝ x₀ with
+      | ⊥ =>
+        use ⊥
+        constructor
+        · use xₚ
+          constructor
+          · exact hxₚ
+          · change hcx₀ to P.c ᵥ⬝ x₀ = ⊥
+            rwa [←Matrix.dotProd_eq_bot] at hcx₀ ⊢
+        · apply bot_le
+      | ⊤ =>
         exfalso
-        rw [d_eq_0] at hx₀
-        exact hx₀.false
+        rw [hcx₀] at hx₀
+        exact (hx₀.trans_le le_top).false
+      | (d : F) =>
+        rw [hcx₀] at hx₀
+        have coef_pos : 0 < (s - e) / d
+        · apply div_pos_of_neg_of_neg
+          · rwa [sub_neg, ←EF.coe_lt_coe_iff]
+          · rwa [←EF.coe_neg']
+        let k : F≥0 := ⟨((s - e) / d), coef_pos.le⟩
+        let k_pos : 0 < k := coef_pos
+        refine ⟨s, ⟨xₚ + k • x₀, ?_, ?_⟩, by rfl⟩
+        · intro i
+          match hi : P.b i with
+          | ⊥ =>
+            exfalso
+            exact nobot i hi
+          | ⊤ =>
+            apply le_top
+          | (bᵢ : F) =>
+            specialize hAx₀ i
+            rw [Pi.add_apply, Pi.smul_apply, Pi.neg_apply, hi] at hAx₀
+            have zeros : (P.A ₘ* x₀) i + (0 : F∞) ≤ 0
+            · convert hAx₀
+              show 0 = 0 • -(toE bᵢ)
+              rw [←EF.coe_neg, EF.zero_smul_coe]
+            rw [add_zero] at zeros
+            rw [Matrix.mulWeig_add, Matrix.mulWeig_smul k_pos, Pi.add_apply]
+            apply add_le_of_le_of_nonpos
+            · convert_to (P.A ₘ* xₚ) i ≤ P.b i
+              · exact hi.symm
+              exact hxₚ i
+            · exact EF.smul_nonpos zeros k
+        · rw [Matrix.dotProd_add, hce, Matrix.dotProd_smul k_pos, hcx₀]
+          show toE (e + ((s - e) / d) * d) = toE s
+          rw [EF.coe_eq_coe_iff, div_mul_cancel_of_imp]
+          exact add_sub_cancel e s
+          intro d_eq_0
+          exfalso
+          rw [d_eq_0] at hx₀
+          exact hx₀.false
 
 lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
     (hP : P.IsFeasible) (hQ : P.dualize.IsFeasible) :
@@ -631,8 +670,8 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
                 | inr iₛ => exact P.hAj ⟨j, ⟨iₜ, by simpa using hkt⟩, ⟨iₛ, by simpa using hks⟩⟩
           | inr =>
             cases s with
-            | inl jₛ => exact P.hcj ⟨jₛ, hks⟩
-            | inr iₛ => exact P.hbi ⟨iₛ, hks⟩
+            | inl jₛ => exact hQ.no_bot jₛ hks
+            | inr iₛ => exact hP.no_bot iₛ hks
         )
         (by
           intro ⟨k, ⟨s, hks⟩, ⟨t, hkt⟩⟩
@@ -649,7 +688,7 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
                   | inr jₜ => simp at hkt
                 | inr => exact P.hAc ⟨j, ⟨iₛ, hks⟩, hkt⟩
               | inr jₛ => simp at hks
-            | inr => exact P.hcj ⟨j, hks⟩
+            | inr => exact hQ.no_bot j hks
           | inr i =>
             cases s with
             | inl s' =>
@@ -662,7 +701,7 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
                   | inl iₜ => simp at hkt
                   | inr jₜ => exact P.hAi ⟨i, ⟨jₜ, by simpa using hkt⟩, ⟨jₛ, by simpa using hks⟩⟩
                 | inr => exact P.hAb ⟨i, ⟨jₛ, by simpa using hks⟩, hkt⟩
-            | inr => exact P.hbi ⟨i, hks⟩
+            | inr => exact hP.no_bot i hks
         )
         (by
           intro ⟨k, ⟨t, hkt⟩, hk⟩
@@ -686,12 +725,12 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
             cases k' with
             | inl i =>
               cases s with
-              | inl jₛ => exact P.hbi ⟨i, hk⟩
+              | inl jₛ => exact hP.no_bot i hk
               | inr iₛ => simp at hks
             | inr j =>
               cases s with
               | inl jₛ => simp at hks
-              | inr iₛ => exact P.hcj ⟨j, hk⟩
+              | inr iₛ => exact hQ.no_bot j hk
           | inr => simp at hk
         )
       ) with
@@ -712,14 +751,14 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
     match hcx : P.c ᵥ⬝ x with
     | ⊥ =>
       exfalso
-      apply P.hcj
-      exact Matrix.dotProd_eq_bot hcx
+      obtain ⟨j, hj⟩ := Matrix.dotProd_eq_bot.mpr hcx
+      exact hQ.no_bot j hj
     | ⊤ =>
       exfalso
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
-        apply P.hbi
-        exact Matrix.dotProd_eq_bot hby
+        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        exact hP.no_bot i hi
       | ⊤ =>
         rw [hcx, hby] at hxy
         exact (hxy.trans_lt EF.zero_lt_top).false
@@ -730,8 +769,8 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
         exfalso
-        apply P.hbi
-        exact Matrix.dotProd_eq_bot hby
+        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        exact hP.no_bot i hi
       | ⊤ =>
         exfalso
         rw [hcx, hby] at hxy
@@ -784,14 +823,14 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
     match hcx : P.c ᵥ⬝ x with
     | ⊥ =>
       exfalso
-      apply P.hcj
-      exact Matrix.dotProd_eq_bot hcx
+      obtain ⟨j, hj⟩ := Matrix.dotProd_eq_bot.mpr hcx
+      exact hQ.no_bot j hj
     | ⊤ =>
       exfalso
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
-        apply P.hbi
-        exact Matrix.dotProd_eq_bot hby
+        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        exact hP.no_bot i hi
       | ⊤ =>
         rw [hcx, hby] at hbc
         exact (hbc.trans EF.zero_lt_top).false
@@ -802,8 +841,8 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
         exfalso
-        apply P.hbi
-        exact Matrix.dotProd_eq_bot hby
+        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        exact hP.no_bot i hi
       | ⊤ =>
         exfalso
         rw [hcx, hby] at hbc
@@ -858,11 +897,11 @@ lemma ExtendedLP.unbounded_of_feasible_of_infeasible {P : ExtendedLP I J F}
     exfalso
     obtain ⟨y, hy⟩ := caseI
     match hby : b' ᵥ⬝ y with
-    | ⊥ => exact Matrix.no_bot_dotProd_nneg (fun i hi => P.hbi ⟨i.val, hi⟩) y hby
+    | ⊥ => exact Matrix.no_bot_dotProd_nneg (fun i hi => hP.no_bot i.val hi) y hby
     | ⊤ => exact Matrix.no_top_dotProd_nneg (·.property) y hby
     | (q : F) =>
       apply hQ
-      use q, (fun i : I => if hi : (P.b i ≠ ⊤) then y ⟨i, hi⟩ else 0)
+      refine ⟨toE q, ⟨fun i : I => if hi : (P.b i ≠ ⊤) then y ⟨i, hi⟩ else 0, ?_⟩, EF.coe_neq_top q⟩
       constructor
       · unfold ExtendedLP.dualize ExtendedLP.IsSolution Matrix.mulWeig
         convert hy
@@ -887,7 +926,7 @@ lemma ExtendedLP.unbounded_of_feasible_of_infeasible {P : ExtendedLP I J F}
           intro i _
           apply EF.zero_smul_nonbot
           intro contr
-          exact P.hbi ⟨i.val, contr⟩
+          exact hP.no_bot i.val contr
         · change hby to b' ᵥ⬝ y = toE q
           rw [←Finset.sum_coe_sort_eq_attach, ←hby]
           apply Finset.subtype_univ_sum_eq_subtype_univ_sum
@@ -902,7 +941,7 @@ lemma ExtendedLP.unbounded_of_feasible_of_infeasible {P : ExtendedLP I J F}
     match hbi : P.b i with
     | ⊥ =>
       exfalso
-      exact P.hbi ⟨i, hbi⟩
+      exact hP.no_bot i hbi
     | ⊤ =>
       change hbi to P.b i = ⊤
       rw [Pi.add_apply, Pi.smul_apply, Pi.neg_apply, hbi, EF.neg_top, EF.smul_bot, EF.add_bot]
@@ -934,7 +973,7 @@ lemma ExtendedLP.optimum_eq_of_reaches_bounded {P : ExtendedLP I J F} {r : F}
     P.optimum = some r := by
   have hP : P.IsFeasible
   · obtain ⟨x, hx⟩ := reaches
-    exact ⟨r, x, hx⟩
+    exact ⟨toE r, ⟨x, hx⟩, EF.coe_neq_top r⟩
   have hPP : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r
   · use r
   have hPb : ¬P.IsUnbounded

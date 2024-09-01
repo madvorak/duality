@@ -125,10 +125,12 @@ private lemma StandardLP.toExtendedLP.Reaches_iff (P : StandardLP I J R) (r : R)
 
 private lemma StandardLP.toExtendedLP.IsFeasible_iff (P : StandardLP I J R) :
     P.toExtendedLP.IsFeasible ↔ P.IsFeasible := by
+  -- TODO fix after changing the definition of `Extended LP`
+  sorry/-
   peel with _ x
   apply and_congr
   · apply StandardLP.toExtendedLP.IsSolution_iff
-  · exact P.toE_dotProduct_apply x ▸ EF.coe_eq_coe_iff
+  · exact P.toE_dotProduct_apply x ▸ EF.coe_eq_coe_iff-/
 
 private lemma StandardLP.toExtendedLP.IsBoundedBy_iff (P : StandardLP I J R) (r : R) :
     P.toExtendedLP.IsBoundedBy r ↔ P.IsBoundedBy r := by
@@ -141,7 +143,8 @@ private lemma StandardLP.toExtendedLP.IsBoundedBy_iff (P : StandardLP I J R) (r 
       exfalso
       apply P.toExtendedLP.hcj
       obtain ⟨x, -, hx⟩ := hPp
-      exact Matrix.dotProd_eq_bot hx
+      -- TODO fix after changing the definition of `Extended LP`
+      sorry -- exact Matrix.dotProd_eq_bot hx
     | ⊤ =>
       apply le_top
     | (f : R) =>
