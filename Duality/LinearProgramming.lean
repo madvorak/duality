@@ -16,9 +16,9 @@ structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
   /-- No `⊥` and `⊤` in the same column. -/
   hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
-  /-- TODO. -/
+  /-- No `⊥` in the row where the right-hand-side vector has `⊥`. -/
   hbi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
-  /-- TODO. -/
+  /-- No `⊤` in the column where the objective function has `⊥`. -/
   hcj : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
   /-- No `⊤` in the row where the right-hand-side vector has `⊤`. -/
   hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
@@ -125,6 +125,15 @@ lemma Matrix.fromColumns_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fin
   ext
   simp [Matrix.fromColumns, Matrix.mulWeig, Matrix.dotProd]
 
+lemma Matrix.dotProd_eq_bot {v : J → F∞} {w : J → F≥0} :
+    (∃ j : J, v j = ⊥) ↔ v ᵥ⬝ w = ⊥ := by
+  constructor
+  · intro ⟨j, hvj⟩
+    apply Matrix.has_bot_dotProd_nneg hvj
+  · intro hvw
+    by_contra! contr
+    exact Matrix.no_bot_dotProd_nneg contr w hvw
+
 lemma ExtendedLP.weakDuality_of_no_bot [DecidableEq I] [DecidableEq J] {P : ExtendedLP I J F}
     (hb : ¬∃ i : I, P.b i = ⊥) (hc : ¬∃ j : J, P.c j = ⊥)
     {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
@@ -165,7 +174,9 @@ lemma ExtendedLP.weakDuality_of_no_bot [DecidableEq I] [DecidableEq J] {P : Exte
             rw [hi] at contr
             match hby : P.b ᵥ⬝ y with
             | ⊥ =>
-              exact Matrix.no_bot_dotProd_nneg (by simpa using hb) y hby
+              change hby to P.b ᵥ⬝ y = ⊥
+              rw [←Matrix.dotProd_eq_bot] at hby
+              exact hb hby
             | ⊤ =>
               dsimp only [ExtendedLP.dualize] at contr
               rw [hby] at contr
@@ -203,41 +214,25 @@ lemma ExtendedLP.weakDuality_of_no_bot [DecidableEq I] [DecidableEq J] {P : Exte
       simp [Matrix.dotProd, EF.one_smul]
       exact hlt0
 
-lemma Matrix.dotProd_eq_bot {v : J → F∞} {w : J → F≥0} :
-    (∃ j : J, v j = ⊥) ↔ v ᵥ⬝ w = ⊥ := by
-  constructor
-  · intro ⟨j, hvj⟩
-    apply Matrix.has_bot_dotProd_nneg hvj
-  · intro hvw
-    by_contra! contr
-    exact Matrix.no_bot_dotProd_nneg contr w hvw
-
 lemma ExtendedLP.Reaches.no_bot {P : ExtendedLP I J F} {p : F∞} (hP : P.Reaches p) (i : I) : P.b i ≠ ⊥ := by
   intro contr
   obtain ⟨x, hx, -⟩ := hP
-  specialize hx i
-  rw [contr] at hx
-  unfold Matrix.mulWeig at hx
-  rw [le_bot_iff, ←Matrix.dotProd_eq_bot] at hx
-  exact P.hbi ⟨i, hx, contr⟩
-
-lemma ExtendedLP.IsFeasible.no_bot {P : ExtendedLP I J F} (hP : P.IsFeasible) (i : I) : P.b i ≠ ⊥ := by
-  obtain ⟨_, hP', -⟩ := hP
-  exact hP'.no_bot i
+  have impos : P.A i ᵥ⬝ x ≤ ⊥ := contr ▸ hx i
+  rw [le_bot_iff, ←Matrix.dotProd_eq_bot] at impos
+  exact P.hbi ⟨i, impos, contr⟩
 
 theorem ExtendedLP.weakDuality [DecidableEq I] [DecidableEq J] {P : ExtendedLP I J F}
     {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
     0 ≤ p + q := by
-  if hb : ∃ i : I, P.b i = ⊥ then
-    exfalso
+  by_cases hb : ∃ i : I, P.b i = ⊥
+  · exfalso
     obtain ⟨i, hi⟩ := hb
     exact hP.no_bot i hi
-  else if hc : ∃ j : J, P.c j = ⊥ then
-    exfalso
+  by_cases hc : ∃ j : J, P.c j = ⊥
+  · exfalso
     obtain ⟨j, hj⟩ := hc
     exact hQ.no_bot j hj
-  else
-    exact P.weakDuality_of_no_bot hb hc hP hQ
+  exact P.weakDuality_of_no_bot hb hc hP hQ
 
 end weak_duality
 
@@ -582,6 +577,10 @@ lemma ExtendedLP.infeasible_of_unbounded {P : ExtendedLP I J F} (hP : P.IsUnboun
       rw [←EF.coe_add, ←EF.coe_zero, EF.coe_le_coe_iff] at wd
       rw [EF.coe_lt_coe_iff] at hpq
       linarith
+
+lemma ExtendedLP.IsFeasible.no_bot {P : ExtendedLP I J F} (hP : P.IsFeasible) (i : I) : P.b i ≠ ⊥ := by
+  obtain ⟨_, hP', -⟩ := hP
+  exact hP'.no_bot i
 
 lemma ExtendedLP.unbounded_of_feasible_of_neg {P : ExtendedLP I J F} (hP : P.IsFeasible)
     {x₀ : J → F≥0} (hx₀ : P.c ᵥ⬝ x₀ < 0) (hAx₀ : P.A ₘ* x₀ + (0 : F≥0) • (-P.b) ≤ 0) :

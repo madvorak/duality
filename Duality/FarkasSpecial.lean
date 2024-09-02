@@ -304,7 +304,7 @@ theorem extendedFarkas [DecidableEq I]
         intro x hAxb
         specialize hAxb i
         rw [hi, le_bot_iff] at hAxb
-        refine Matrix.no_bot_dotProd_nneg hi' x hAxb
+        exact Matrix.no_bot_dotProd_nneg hi' x hAxb
       · rw [iff_true]
         use 0
         constructor
