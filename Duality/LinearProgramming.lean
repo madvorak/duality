@@ -601,14 +601,9 @@ lemma ExtendedLP.unbounded_of_feasible_of_neg {P : ExtendedLP I J F} (hP : P.IsF
       clear he
       match hcx₀ : P.c ᵥ⬝ x₀ with
       | ⊥ =>
-        use ⊥
-        constructor
-        · use xₚ
-          constructor
-          · exact hxₚ
-          · change hcx₀ to P.c ᵥ⬝ x₀ = ⊥
-            rwa [←Matrix.dotProd_eq_bot] at hcx₀ ⊢
-        · apply bot_le
+        refine ⟨⊥, ⟨xₚ, hxₚ, ?_⟩, bot_le⟩
+        change hcx₀ to P.c ᵥ⬝ x₀ = ⊥
+        rwa [←Matrix.dotProd_eq_bot] at hcx₀ ⊢
       | ⊤ =>
         exfalso
         rw [hcx₀] at hx₀

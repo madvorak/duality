@@ -112,8 +112,7 @@ private lemma StandardLP.toExtendedLP.IsSolution_iff (P : StandardLP I J R) (x :
     P.toExtendedLP.IsSolution x ↔ P.IsSolution x := by
   show P.A.map toE ₘ* x ≤ toE ∘ P.b ↔ P.A *ᵥ x ≤ P.b
   constructor <;> intro hx i <;> specialize hx i
-  · rw [←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply]
-    exact hx
+  · rwa [←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply]
   · rwa [←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply] at hx
 
 private lemma StandardLP.toExtendedLP.Reaches_iff (P : StandardLP I J R) (r : R) :
@@ -135,9 +134,8 @@ private lemma StandardLP.toExtendedLP.IsFeasible_iff (P : StandardLP I J R) :
     | ⊤ =>
       exfalso
       exact hr rfl
-    | (f : R) =>
-      use f, x
-      constructor
+    | (p : R) =>
+      refine ⟨p, x, ?_, ?_⟩
       · rwa [StandardLP.toExtendedLP.IsSolution_iff] at hx
       · rwa [←EF.coe_eq_coe_iff, P.toE_dotProduct_apply]
   · intro ⟨r, x, hx, hxr⟩
@@ -159,7 +157,7 @@ private lemma StandardLP.toExtendedLP.IsBoundedBy_iff (P : StandardLP I J R) (r 
       simp [StandardLP.toExtendedLP] at impos
     | ⊤ =>
       apply le_top
-    | (f : R) =>
+    | (_ : R) =>
       rw [EF.coe_le_coe_iff]
       apply hP
       simpa [StandardLP.toExtendedLP.Reaches_iff] using hPp
