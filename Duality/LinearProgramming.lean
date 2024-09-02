@@ -862,14 +862,14 @@ lemma ExtendedLP.strongDuality_aux {P : ExtendedLP I J F}
         · rwa [
             ←EF.vec_smul_le_smul_left z_inv_pos, smul_zero,
             EF.smul_add_vec z_inv_pos, ←Matrix.mulWeig_smul z_inv_pos, ←EF.mul_smul_vec,
-            inv_mul_cancel (ne_of_lt z_pos).symm, EF.one_smul_vec, EF.vec_sub_nonpos_iff
+            inv_mul_cancel₀ (ne_of_lt z_pos).symm, EF.one_smul_vec, EF.vec_sub_nonpos_iff
           ] at hx
         · rewrite [Matrix.dotProd_smul z_inv_pos, hcx]
           rfl
         · rwa [
             ←EF.vec_smul_le_smul_left z_inv_pos, smul_zero,
             EF.smul_add_vec z_inv_pos, ←Matrix.mulWeig_smul z_inv_pos, ←EF.mul_smul_vec,
-            inv_mul_cancel (ne_of_lt z_pos).symm, EF.one_smul_vec, EF.vec_sub_nonpos_iff
+            inv_mul_cancel₀ (ne_of_lt z_pos).symm, EF.one_smul_vec, EF.vec_sub_nonpos_iff
           ] at hy
         · dsimp only [ExtendedLP.dualize]
           rewrite [Matrix.dotProd_smul z_inv_pos, hby]

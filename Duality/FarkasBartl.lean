@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Have
 import Duality.Common
@@ -143,7 +143,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
         )).trans_lt hby'
       ).false
     have hAy : A y j = 1
-    · convert inv_mul_cancel hAy'.ne
+    · convert inv_mul_cancel₀ hAy'.ne
       simp [y]
     have hAA : ∀ w : W, A (w - (A w j • y)) j = 0
     · intro w
