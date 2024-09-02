@@ -111,9 +111,7 @@ private lemma StandardLP.toE_mulVec_apply (P : StandardLP I J R) (x : J → R≥
 private lemma StandardLP.toExtendedLP.IsSolution_iff (P : StandardLP I J R) (x : J → R≥0) :
     P.toExtendedLP.IsSolution x ↔ P.IsSolution x := by
   show P.A.map toE ₘ* x ≤ toE ∘ P.b ↔ P.A *ᵥ x ≤ P.b
-  constructor <;> intro hx i <;> specialize hx i
-  · rwa [←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply]
-  · rwa [←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply] at hx
+  simp [Pi.le_def, ←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply]
 
 private lemma StandardLP.toExtendedLP.Reaches_iff (P : StandardLP I J R) (r : R) :
     P.toExtendedLP.Reaches r ↔ P.Reaches r := by
