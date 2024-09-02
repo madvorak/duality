@@ -1,11 +1,15 @@
 \documentclass[]{article}
 \usepackage[portrait, margin=5mm]{geometry}
-\usepackage{amsmath}
+\usepackage{amsmath,amsthm}
 \usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{array}
+
+\usepackage{hyperref}
+\usepackage{xcolor}
+
 \pagenumbering{gobble}
 
 
@@ -31,6 +35,27 @@
 }
 \newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1.5pt\hskip\tabcolsep}}
 \makeatother
+
+
+\makeatletter
+\newcommand{\customlabel}[2]{%
+   \protected@write \@auxout {}{\string \newlabel {#1}{{#2}{\thepage}{#2}{#1}{}} }%
+   \hypertarget{#1}{#2\!\!}
+}
+\makeatother
+
+\makeatletter
+\newcommand{\customlabelrestated}[2]{%
+   \protected@write \@auxout {}{\string \newlabel {#1}{{#2}{\thepage}{#2}{#1}{}} }%
+   \hypertarget{#1}{#2, restated\!\!}
+}
+\makeatother
+
+\newtheorem*{theorem}{Theorem}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{definition}{Definition}
+
+
 
 \begin{document}
 
@@ -77,22 +102,31 @@
 
 
 \title{Duality theory in linear optimization and its extensions\:---\:formally verified}
-\author{Martin Dvorak, Vladimir Kolmogorov}
-\date{2024}
+
+\author{Martin Dvorak \hspace{30pt} Vladimir Kolmogorov \\ \normalsize Institute of Science and Technology Austria \\ {\normalsize\tt $\{$martin.dvorak,vnk$\}$@ista.ac.at}}
+\date{}
+
+%\author{Martin Dvorak, Vladimir Kolmogorov}
+%\date{2024}
 \maketitle
 
 
 \noindent \textbf{Abstract:}\;
+%\begin{abstract}
 Farkas established that a system of linear inequalities has a solution if and only if we cannot obtain
 a contradiction by taking a linear combination of the inequalities.
-We state and formally prove several Farkas-like theorems in Lean 4.
-Furthermore, we consider a linearly ordered field extended with two special elements denoted by $\bot$ and $\top$
-where $\bot$ is below every element and $\top$ is above every element.
-We define $\bot + a = \bot = a + \bot$ for all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
-Instead of multiplication, we define scalar action $c \cdot \bot = \bot$ for every $c \ge 0$ but we define
-$d \cdot \top = \top$ only for $d > 0$ because $0 \cdot \top = 0$.
-We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
+We state and formally prove several Farkas-like theorems over linearly ordered fields in Lean 4.
+Furthermore, we extend duality theory to the case when some coefficients are allowed to take
+``infinite values''.
+%Furthermore, we consider a linearly ordered field extended with two special elements denoted by $\bot$ and $\top$
+%where $\bot$ is below every element and $\top$ is above every element.
+%We define $\bot + a = \bot = a + \bot$ for all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
+%Instead of multiplication, we define scalar action $c \cdot \bot = \bot$ for every $c \ge 0$ but we define
+%$d \cdot \top = \top$ only for $d > 0$ because $0 \cdot \top = 0$.
+%We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
+%\end{abstract}
 \medskip
+
 
 \noindent \textbf{Keywords:}\;
 Farkas lemma, linear programming, extended rationals, extended reals, calculus of inductive constructions
@@ -101,24 +135,19 @@ Farkas lemma, linear programming, extended rationals, extended reals, calculus o
 \section{Introduction}
 \label{introduction}
 
-We do not use set theory.
-We write everything in type theory.
-Juxtaposition never denotes multiplication.
-Juxtaposition is always function application.
-We often talk about linearly ordered fields.
-The two main examples are rationals and reals.
-The paper starts with famous corollaries and
-then proceeds to state more general theorems.
-Proofs are postponed to respective sections.
-Theorems come with names instead of numbers.
+When studying linear programming, we often ask whether a given
+system of linear inequalities has a solution.
+Duality theorems answer these naturally arising questions as follows:
+A system of linear inequalities has a solution if and only if
+we cannot obtain a contradiction by taking a linear combination of
+the inequalities. When we formulate duality theorems as
+``either there exists a solution, or there exists a vector of coefficients
+that tells us how to derive $0 < 0$ from given inequalities'',
+they are usually called {\em theorems of alternatives}.
+Two well-known theorems of alternative are as follows
+(Farkas~\cite{Farkas1894,Farkas1898}; Minkowski~\cite{Minkowski}).
 
-There are two famous theorems characterizing that a system of linear inequalities
-has a solution if and only if we cannot obtain a contradiction
-by taking a linear combination of the inequalities.
-Farkas \cite{FarkasOrig}.
-
-\medskip \noindent
-\textbf{Theorem (equalityFarkas):}
+\begin{theorem}[\customlabel{equalityFarkas}{{\bf equalityFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -128,10 +157,9 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-TODO whom cite here?
+\end{theorem}
 
-\medskip \noindent
-\textbf{Theorem (inequalityFarkas):}
+\begin{theorem}[\customlabel{inequalityFarkas}{{\bf inequalityFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -141,11 +169,15 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
-TODO cite John von Neumann?
-(any maybe Oskar Morgenstern and maybe George Dantzig and maybe Albert W. Tucker?)
+\end{theorem}
 
-\medskip \noindent
-\textbf{Theorem (StandardLP.strongDuality):}
+For optimization problems, duality asserts that primal and dual problems
+have the same optimal values {\color{blue} TODO this sentence needs changes.}
+(von Neumann~\cite{vonNeumann}; Gale, Kuhn, Tucker~\cite{GaleKuhnTucker}).
+For example, for Linear Programs in the standard form, the strong duality theorem,
+the cornerstone of linear programming, can be stated as follows.
+
+\begin{theorem}[\customlabel{StandardLP.strongDuality}{{\bf StandardLP.strongDuality}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -153,37 +185,63 @@ Let $b$ be a vector of type $I \r F$.
 Let $c$ be a vector of type $J \r F$.
 Then
 $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
-=- \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T\! \* y \le c \,\}
+=- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
 $$
-holds if at least one of the systems has a solution
-(very roughly paraphrased).
+holds if at least one of the systems has a solution (very roughly paraphrased).
+\end{theorem}
+For many more Farkas-like theorems (beyond the scope of this paper),
+see for example \cite{Perng2017}.
 
+This paper makes the following contributions.
+\begin{itemize}
+\item We formally prove several existing duality results (including the statements above) in Lean 4.
+In fact, we prove a more general version of \ref{equalityFarkas} due
+to Bartl~\cite{Bartl2007}.
+%This version allows, in particular, allows structures with a non-commutative multiplication, and also allows infinitely many equations.
+\item We establish (and formally prove in Lean 4) a new generalization
+of~\ref{inequalityFarkas} and~\ref{StandardLP.strongDuality}
+to the case when some of the coefficients are allowed to have infinite values. 
+This scenario can be motivated by discrete optimization problems with ``hard'' constraints
+(the ``hard'' constraints declare what has to be be satisfied,
+whereäs ``soft'' constraints declare what should be optimized).
+A common way to concisely write down such problems mathematically is to use
+infinite coefficients in front of the corresponding terms in the objective. 
+Since infinities are not allowed in traditional LPs,
+``soft'' and ``hard'' constraints need to be handled differently 
+when formulating LP relaxations of such problems (see e.g.~\cite{BLP}).
+Our work provides a more direct way to formulate such relaxations.
+\end{itemize}
+Sections~\ref{generalizations} and~\ref{extensions} provide further details
+about these extensions.
 
-\subsection{Generalizations}
-\label{generalizations}
+\subsection{Bartl's generalization}\label{generalizations}
 
-The next theorem generalizes equalityFarkas to structures where
+The next theorem generalizes \ref{equalityFarkas} to structures where
 multiplication does not have to be commutative.
 Furthermore, it supports infinitely many equations.
 
-\medskip \noindent
-\textbf{Theorem (coordinateFarkas):}
+\begin{theorem}[\customlabel{coordinateFarkas}{{\bf coordinateFarkas}}]
 Let $I$ be any type.
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
-Let $A$ be an $R$-linear map from from $(I \r R)$ to $(J \r R)$.
-Let $b$ be an $R$-linear map from from $(I \r R)$ to $R$.
+Let $A$ be an $R$-linear map from $(I \r R)$ to $(J \r R)$.
+Let $b$ be an $R$-linear map from $(I \r R)$ to $R$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector $x : J \r R$ such that, for all $w : I \r R$, we have
 $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : I \r R$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-In the next generalization (similar \cite{Chernikov}), we replace
-the partially ordered module $I \r R$ by a general $R$-module $W$.
+\end{theorem}
+{\color{blue} TODO: describe how it implies \ref{equalityFarkas}?
 
-\medskip \noindent
-\textbf{Theorem (scalarFarkas):}
+This is so trivial that I don't know how to answer your question in a style
+that is consistent with how the Introduction is written.}
+
+In the next generalization (similar to \cite{Chernikov}), 
+the partially ordered module $I \r R$ is replaced by a general $R$-module $W$.
+
+\begin{theorem}[\customlabel{scalarFarkas}{{\bf scalarFarkas}}]
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -195,15 +253,15 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
-In the most general theorem, stated below, we replace certain occurrences of $R$ by
+\end{theorem}
+In the most general theorem, stated below, certain occurrences of $R$ are replaced by
 a linearly ordered $R$-module $V$ whose order respects order on $R$ (the
 relationship between order on $R$ and order on $V$ will be left implicit
 in all upcoming informal statements; for a formal definition, see the end of
-\sekt{modules}). This result origins from \cite{Bartl2007} and our proof is based on
+\sekt{modules}). This result is due to \cite{Bartl2007} and our proof is based on
 \cite{Bartl2011}.
 
-\medskip \noindent
-\textbf{Theorem (fintypeFarkasBartl):}
+\begin{theorem}[\customlabel{fintypeFarkasBartl}{{\bf fintypeFarkasBartl}}]
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -216,21 +274,20 @@ Exactly one of the following exists:
 $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
+\end{theorem}
 In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
 $b~y < 0$ uses the linear order on $V$.
-Note that fintypeFarkasBartl subsumes scalarFarkas (as well as the other versions based on equality),
+Note that \ref{fintypeFarkasBartl} subsumes \ref{scalarFarkas} (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
-We prove fintypeFarkasBartl in \sekt{bartl}, which is where the heavy lifting comes.
+We prove \ref{fintypeFarkasBartl} in \sekt{bartl}, which is where the heavy lifting comes.
 
 
-\subsection{Extensions}
-\label{extensions}
+\subsection{Extension to infinite coefficients}\label{extensions}
 
 Until now, we have talked about known results.
 What follows is a new extension of the theory.
 
-\medskip \noindent
-\textbf{Definition:}
+\begin{definition}
 Let $F$ be a linearly ordered field.
 We define an \textbf{extended} linearly ordered field $F_\infty$ as
 $F \cup \{ \bot, \top \}$ with the following properties.
@@ -240,7 +297,7 @@ We define addition, negation, and scalar action on $F_\infty$ as follows:
 \begin{center}
 	\begin{tabular}{ | c " c | c | c | }
 		\hline
-		+ & $\bot$ & $q$ & $\top$  \\
+		$+$ & $\bot$ & $q$ & $\top$  \\
 		\thickhline
 		$\bot$ & $\bot$ & $\bot$ & $\bot$  \\ 
 		\hline
@@ -270,6 +327,7 @@ We define addition, negation, and scalar action on $F_\infty$ as follows:
 \end{center}
 When we talk about elements of $F_\infty$,
 we say that values from $F$ are \textbf{finite}.
+\end{definition}
 
 Informally speaking, $\top$ represents the positive infinity,
 $\bot$ represents the negative infinity, and we say that
@@ -280,8 +338,35 @@ In fact, $F_\infty$ is not even a group.
 However, $F_\infty$ is still a densely linearly ordered abelian monoid
 with characteristic zero.
 
-\medskip \noindent
-\textbf{Theorem (extendedFarkas):}
+%{\color{blue}
+%Alternative presentation:
+%
+%\begin{definition}
+%Let $I$ and $J$ be finite types, and $F$ be a linearly ordered field.
+%Consider matrix $U:(I \times J) \r F_\infty$ and vector $u:I \r F_\infty$.
+%The pair $(U,u)$ is called {\em nonconflicting} if (i) matrix $(U; u)$ does not have $\bot$ and $\top$
+%in the same row, and (ii) matrix $U$ does not have $\bot$ and $\top$ in the same column.
+%\end{definition}
+%
+%Condition for \ref{extendedFarkas}: Assume that pair $(A, -b)$ is nonconflicting.
+%
+%Condition for extended LP: Assume that pairs $(A, b)$ and $(A^T, c)$ are nonconflicting.
+%
+%Yet another presentation:
+%\begin{definition}
+%Consider matrix $A:(I \times J) \r F_\infty$ where $I,J$ are some types.
+%A row (resp. colum) of $A$ is called {\em conflicting} if it contains both $\bot$ and $\top$.
+%Otherwise it is {\em nonconflicting}.
+%\end{definition}
+%
+%Condition for \ref{extendedFarkas}: Assume that pair all rows $(A\; -\!b)$ are nonconflicting
+%and all columns of $A$ are nonconflicting.
+%
+%Condition for extended LP: Assume that all rows of $(A\; -\!b)$ 
+%are nonconflicting and all columns of and $\begin{pmatrix}A \\ c\end{pmatrix}$ are nonconflicting.
+%}
+
+\begin{theorem}[\customlabel{extendedFarkas}{{\bf extendedFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
@@ -295,12 +380,12 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
+\end{theorem}
 Next we define an extended notion of linear program, i.e.,
 linear programming over extended linearly ordered fields.
 The implicit intention is that the linear program is to be minimized.
 
-\medskip \noindent
-\textbf{Definition:}
+\begin{definition}
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$,
@@ -310,8 +395,8 @@ such that the following six conditions hold:
 \begin{itemize}
 \item $A$ does not have $\bot$ and $\top$ in the same row
 \item $A$ does not have $\bot$ and $\top$ in the same column
-\item $b$ does not contain $\bot$
-\item $c$ does not contain $\bot$
+\item $A$ does not have $\bot$ in any row where $b$ has $\bot$
+\item $A$ does not have $\top$ in any column where $c$ has $\bot$
 \item $A$ does not have $\top$ in any row where $b$ has $\top$
 \item $A$ does not have $\bot$ in any column where $c$ has $\top$
 \end{itemize}
@@ -332,16 +417,16 @@ for every value $p$ reached by $P$, we have $r \le p$.
 We say that $P$ is \textbf{unbounded} if and only if there is no finite value $r$
 such that $P$ is bounded by $r$.
 We say that the linear program $(-A^T, c, b)$ is the \textbf{dual} of $P$.
+\end{definition}
 
-\medskip \noindent
-\textbf{Theorem (ExtendedLP.weakDuality):}
+\begin{theorem}[\customlabel{ExtendedLP.weakDuality}{{\bf ExtendedLP.weakDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
 then $p + q \ge 0$.
+\end{theorem}
 
-\medskip \noindent
-\textbf{Definition:}
+\begin{definition}
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 We define the \textbf{optimum} of $P$ as follows.
@@ -354,24 +439,26 @@ have proved that optimum always exists, i.e., it cannot happen that the set of
 objective values reached by $P$ has a finite infimum that is not attained.
 However, because we do not have the theorem now, the optimum is defined as a partial function
 from linear programs to $F_\infty$.}
+\end{definition}
 
 %The existence of optimum (minimum) for every linear program is stated as follows:
 %\begin{lstlisting}
 %theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none
 %\end{lstlisting}
 
-\medskip \noindent
-\textbf{Theorem (ExtendedLP.strongDuality):}\footnote{For simplicity,
-we rephrased the theorem without mentioning partial functions.
-Also note that it would be incorrect to say the following:
-$P$ has optimum~$p$, the dual of $P$ has optimum $q$, and $p + q = 0$.
-It would fail for unbounded linear programs because the arithmetics
-of $F_\infty$ defines $\top + \bot = \bot$.}
+\begin{theorem}[\customlabel{ExtendedLP.strongDuality}{{\bf ExtendedLP.strongDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
 then there exists $p$ in $F_\infty$ such that
 $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
+~\footnote{For simplicity,
+we rephrased the theorem without mentioning partial functions.
+Also note that it would be incorrect to say the following:
+$P$ has optimum~$p$, the dual of $P$ has optimum $q$, and $p + q = 0$.
+It would fail for unbounded linear programs because the arithmetics
+of $F_\infty$ defines $\top + \bot = \bot$.}
+\end{theorem}
 
 
 \subsection{Structure of this paper}
@@ -384,12 +471,12 @@ our results, leaving out many declarations that were used in order
 to prove the results.
 In \sekt{statements}, we formally state theorems from \sekt{introduction}
 using definitions from \sekt{preliminaries}.
-In \sekt{bartl}, we prove fintypeFarkasBartl (stated in \sekt{generalizations}),
-from which be obtain equalityFarkas as a corollary.
-In \sekt{extended}, we prove extendedFarkas (stated in \sekt{extensions}).
-In \sekt{duality}, we prove ExtendedLP.strongDuality
+In \sekt{bartl}, we prove \ref{fintypeFarkasBartl} (stated in \sekt{generalizations}),
+from which be obtain \ref{equalityFarkas} as a corollary.
+In \sekt{extended}, we prove \ref{extendedFarkas} (stated in \sekt{extensions}).
+In \sekt{duality}, we prove \ref{ExtendedLP.strongDuality}
 (stated in \sekt{extensions}), from which we obtain
-StandardLP.strongDuality as a corollary.
+\ref{StandardLP.strongDuality} as a corollary.
 
 Repository \texttt{https://github.com/madvorak/duality}
 contains full version of all definitions, statements,
@@ -908,7 +995,7 @@ underline by red.
 
 \subsection{Linear programming}
 
-Extended linear programs are defined as follows:
+Extended linear programs are defined as follows: {\color{blue} TODO this changed.}
 \begin{lstlisting}
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   A : Matrix I J F∞
@@ -932,7 +1019,7 @@ Reaching a value $r$ is defined as follows:
 def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 \end{lstlisting}
-Feasibility is defined as follows:
+Feasibility is defined as follows: {\color{blue} TODO this changed.}
 \begin{lstlisting}
 def ExtendedLP.IsFeasible (P : ExtendedLP I J F) : Prop :=
   ∃ p : F, P.Reaches (toE p)
@@ -950,6 +1037,7 @@ def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
 The following definition says how linear programs are dualized (the first three parts
 define the dual program's $A, b, c$; the rest generates proofs that our six conditions stay satisfied
 after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aesop} \cite{Aesop}):
+{\color{blue} TODO this changed.}
 \begin{lstlisting}
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
@@ -1050,10 +1138,9 @@ theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P
 \section {Proving the Farkas-Bartl theorem}
 \label{bartl}
 
-We prove finFarkasBartl and, in the end, we obtain fintypeFarkasBartl as corollary.
+We prove \ref{finFarkasBartl} and, in the end, we obtain \ref{fintypeFarkasBartl} as corollary.
 
-\medskip \noindent
-\textbf{Theorem (finFarkasBartl):}
+\begin{theorem}[\customlabel{finFarkasBartl}{{\bf finFarkasBartl}}]
 Let $n$ be a natural number.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -1066,6 +1153,7 @@ Exactly one of the following exists:
 $ \sum_{j : \fin{n}}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
+\end{theorem}
 The only difference is that finFarkasBartl uses $\fin{n} = \{ 0, \dots, n\!-\!1 \}$
 instead of an arbitrary (unordered) finite type $J$.
 
@@ -1088,8 +1176,7 @@ we choose $y$ to be either $w$ or $(-w)$.
 Since $V$ is linearly ordered, one of them satisfies $b~y<0$.
 Now we precisely state how the induction step will be.
 
-\medskip \noindent
-\textbf{Lemma (industepFarkasBartl):}
+\begin{lemma}[\customlabel{industepFarkasBartl}{{\bf industepFarkasBartl}}]
 Let $m$ be a natural number.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -1106,6 +1193,7 @@ Assume that, for all $y : W$, $\;A~y \ge 0$ implies $b~y \ge 0$.
 We claim there exists a nonnegative vector family $x : \fin{m\!+\!1} \r V$
 such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
@@ -1150,21 +1238,20 @@ and otherwise $x$ copies $x'$. We check that our $x$ has the required
 properties. Qed.
 
 \medskip
-We complete the proof of finFarkasBartl by applying industepFarkasBartl
-to $A_{\le n}$ and $b$. Finally, we obtain fintypeFarkasBartl from
-finFarkasBartl using some boring mechanisms regarding equivalence between
+We complete the proof of \ref{finFarkasBartl} by applying \ref{industepFarkasBartl}
+to $A_{\le n}$ and $b$. Finally, we obtain \ref{fintypeFarkasBartl} from
+\ref{finFarkasBartl} using some boring mechanisms regarding equivalence between
 finite types.
 
 
 \section {Extended Farkas theorem}
 \label{extended}
 
-We prove inequalityFarkas by applying equalityFarkas 
+We prove \ref{inequalityFarkas} by applying \ref{equalityFarkas}
 to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
 $(I \times I) \r F$.
 
-\medskip \noindent
-\textbf{Theorem (inequalityFarkas\_neg):}
+\begin{theorem}[\customlabel{inequalityFarkas-neg}{{\bf inequalityFarkas\_neg}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -1174,10 +1261,10 @@ Exactly one of the following exists:
 	\item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 	\item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
-Obviously, inequalityFarkas\_neg is an immediate corollary of inequalityFarkas.
+\end{theorem}
+Obviously, \ref{inequalityFarkas-neg} is an immediate corollary of \ref{inequalityFarkas}.
 
-\medskip \noindent
-\textbf{Theorem (extendedFarkas):}
+\begin{theorem}[\customlabelrestated{extendedFarkas:restated}{{\bf extendedFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
@@ -1191,7 +1278,7 @@ Exactly one of the following exists:
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
-(restated)
+\end{theorem}
 
 \subsection{Proof idea}
 We need to do the following steps in given order:
@@ -1258,20 +1345,19 @@ $$
 \label{duality}
 
 We start with the weak duality and then move to the strong duality.
-We will use extendedFarkas in several places.
+We will use \ref{extendedFarkas} in several places.
 
-\medskip \noindent
-\textbf{Theorem (weakDuality):}
+\begin{theorem}[\customlabelrestated{weakDuality:restated}{{\bf weakDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
 then $p + q \ge 0$.
-(restated)
+\end{theorem}
 
 \medskip \noindent
 Proof idea:
 There is a vector $x$ such that $A \* x \le b$ and $c \* x = p$.
-Apply extendedFarkas to the following matrix and vector:
+Apply \ref{extendedFarkas} to the following matrix and vector:
 $$
 \begin{pmatrix}
 A \\
@@ -1283,26 +1369,26 @@ b \\
 c \* x
 \end{pmatrix}
 $$
+{\color{blue} TODO this changed.}
 
-
-\medskip \noindent
-\textbf{Lemma (infeasible\_of\_unbounded):}
+\begin{lemma}[\customlabel{infeasible-of-unbounded}{{\bf infeasible\_of\_unbounded}}]
 If a linear program $P$ is unbounded,
 the dual of $P$ cannot be feasible.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
 Assume that $P$ is unbounded, but the dual of $P$ is feasible.
-Obtain contradiction using weakDuality.
+Obtain contradiction using \ref{weakDuality:restated}.
 
-\medskip \noindent
-\textbf{Lemma (unbounded\_of\_reaches\_le):}
+\begin{lemma}[\customlabel{unbounded-of-reaches-le}{{\bf unbounded\_of\_reaches\_le}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 Assume that for each $s$ in $F$ there exists
 $p$ in $F_\infty$ such that $P$ reaches $p$
 and $p \le s$.
 Then $P$ is unbounded.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
@@ -1310,13 +1396,13 @@ It suffices to prove that for each $r$ in $F$ there exists
 $p'$ in $F_\infty$ such that $P$ reaches $p'$ and $p' < r$.
 Apply the assumption to $r\!-\!1$.
 
-\medskip \noindent
-\textbf{Lemma (unbounded\_of\_feasible\_of\_neg):}
+\begin{lemma}[\customlabel{unbounded-of-feasible-of-neg}{{\bf unbounded\_of\_feasible\_of\_neg}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$ that is feasible.
 Let $x_0$ be a nonnegative vector such that $c \cdot x_0 < 0$
 and $A \cdot x_0 + 0 \cdot (-b) \le 0$.
 Then $P$ is unbounded.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
@@ -1332,25 +1418,25 @@ Observe that the fraction $\frac{s-e}{d}$ is
 well defined and it is positive.
 Use $x_p + \frac{s-e}{d} \cdot x_0$.
 
-\medskip \noindent
-\textbf{Lemma (dualize\_dualize):}
+\begin{lemma}[\customlabel{dualize-dualize}{{\bf dualize\_dualize}}]
 Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
 $ -(-A^T)^T = A $
 
-\medskip \noindent
-\textbf{Lemma (strongDuality\_aux):}
+\begin{lemma}[\customlabel{strongDuality-aux}{{\bf strongDuality\_aux}}]
 Let $P$ be a linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
 There is a value $p$ reached by $P$ and
 a value $q$ reached by the dual of $P$ such
 that $p + q \le 0$.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
-Apply extendedFarkas to the following matrix and vector:
+Apply \ref{extendedFarkas} to the following matrix and vector:
 $$
 \begin{pmatrix}
 	A & 0 \\
@@ -1387,38 +1473,38 @@ If $b \* y < 0$, we apply unbounded\_of\_feasible\_of\_neg to
 the dual of $P$, which (using infeasible\_of\_unbounded and
 dualize\_dualize) contradicts that $P$ is feasible.
 
-\medskip \noindent
-\textbf{Lemma (strongDuality\_of\_both\_feasible):}
+\begin{lemma}[\customlabel{strongDuality-of-both-feasible}{{\bf strongDuality\_of\_both\_feasible}}]
 Let $P$ be a linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
 There is a finite value $r$ such that
 $P$ reaches $-r$ and the dual of $P$ reaches $r$.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
-From strongDuality\_aux we have a value $p$ reached by $P$ and
+From \ref{strongDuality-aux} we have a value $p$ reached by $P$ and
 a value $q$ reached by the dual of $P$ such that $p + q \le 0$.
 We apply weakDuality to $p$ and $q$ to obtain $p + q \ge 0$.
 We set $r := q$.
 
-\medskip \noindent
-\textbf{Lemma (unbounded\_of\_feasible\_of\_infeasible):}
+\begin{lemma}[\customlabel{unbounded-of-feasible-of-infeasible}{{\bf unbounded\_of\_feasible\_of\_infeasible}}]
 Let $P$ be a linear program such that
 $P$ is feasible but the dual of $P$ is not feasible.
 Then $P$ is unbounded.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
-Apply extendedFarkas to the matrix
+Apply \ref{extendedFarkas} to the matrix
 $\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
 and the vector $c$.
 
-\medskip \noindent
-\textbf{Lemma (optimum\_unique):}
+\begin{lemma}[\customlabel{optimum-unique}{{\bf optimum\_unique}}]
 Let $P$ be a linear program.
 Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
 Let $s$ be a valued reached by $P$ such that $P$ is bounded by $s$.
 Then $r = s$.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
@@ -1427,68 +1513,67 @@ We prove $r \le s$ by applying ``$P$ is bounded by $r$'' to
 We prove $s \le r$ by applying ``$P$ is bounded by~$s$'' to
 ``$r$ is reached by $P$''.
 
-\medskip \noindent
-\textbf{Lemma (optimum\_eq\_of\_reaches\_bounded):}
+\begin{lemma}[\customlabel{optimum-eq-of-reaches-bounded}{{\bf optimum\_eq\_of\_reaches\_bounded}}]
 Let $P$ be a linear program.
 Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
 Then the optimum of $P$ is $r$.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
-Apply the axiom of choice to the definition of optimum and use optimum\_unique.
+Apply the axiom of choice to the definition of optimum and use \ref{optimum-unique}.
 
-\medskip \noindent
-\textbf{Lemma (strongDuality\_of\_prim\_feas):}
+\begin{lemma}[\customlabel{strongDuality-of-prim-feas}{{\bf strongDuality\_of\_prim\_feas}}]
 Let $P$ be a linear program that is feasible.
 The strong duality holds.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
-If the dual of $P$ is feasible as well, use strongDuality\_of\_both\_feasible
+If the dual of $P$ is feasible as well, use \ref{strongDuality-of-both-feasible}
 to obtain $r$ such that $P$ reaches $-r$ and the dual of $P$ reaches $r$.
-Using optimum\_eq\_of\_reaches\_bounded together with weakDuality,
+Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality:restated},
 conclude that the optimum of $P$ is $-r$.
-Using optimum\_eq\_of\_reaches\_bounded together with weakDuality,
+Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality:restated},
 conclude that the optimum of the dual of $P$ is $r$.
 The strong duality holds.
 
 If the dual of $P$ is infeasible, the optimum of the dual of $P$ is
-$\top$ by definition. Using unbounded\_of\_feasible\_of\_infeasible
+$\top$ by definition. Using \ref{unbounded-of-feasible-of-infeasible}
 we get that the optimum of $P$ is $\bot$.
 The strong duality holds.
 
-\medskip \noindent
-\textbf{Theorem (optimum\_neq\_none):}
+\begin{theorem}[\customlabel{optimum-neq-none}{{\bf optimum\_neq\_none}}]
 Every linear program has optimum.
+\end{theorem}
 
 \medskip \noindent
 Proof idea:
 If a linear program $P$ is feasible, the existence of optimum
-follows from strongDuality\_of\_prim\_feas.
+follows from \ref{strongDuality-of-prim-feas}.
 Otherwise, the optimum of $P$ is $\top$ by definition.
 
-\medskip \noindent
-\textbf{Lemma (strongDuality\_of\_dual\_feas):}
+\begin{lemma}[\customlabel{strongDuality-of-dual-feas}{{\bf strongDuality\_of\_dual\_feas}}]
 Let $P$ be a linear program whose dual is feasible.
 The strong duality holds.
+\end{lemma}
 
 \medskip \noindent
 Proof idea:
-Apply strongDuality\_of\_prim\_feas to the dual of $P$ and
-use dualize\_dualize.
+Apply \ref{strongDuality-of-prim-feas} to the dual of $P$ and
+use \ref{dualize-dualize}.
 
-\medskip \noindent
-\textbf{Theorem (strongDuality):}
+\begin{theorem}[\customlabelrestated{strongDuality:restated}{{\bf strongDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
 then there exists $p$ in $F_\infty$ such that
 $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
-(restated)
+\end{theorem}
 
 \medskip \noindent
 Proof idea:
-Use strongDuality\_of\_prim\_feas or strongDuality\_of\_dual\_feas.
+Use \ref{strongDuality-of-prim-feas} or \ref{strongDuality-of-dual-feas}.
 
 \subsection{Counterexample (first two conditions)}
 
@@ -1514,7 +1599,7 @@ but the optimum of the latter is $\bot$.
 
 \subsection{Counterexample (middle two conditions)}
 
-If $b$ contains $\bot$, the following may happen:
+If $A$ has $\bot$ in a row where $b$ has $\bot$, the following may happen:
 $$
 A = \begin{pmatrix} \bot \end{pmatrix}
 \qquad \qquad
@@ -1522,7 +1607,7 @@ b = \begin{pmatrix} \bot \end{pmatrix}
 \qquad \qquad
 c = \begin{pmatrix} 0 \end{pmatrix}
 $$
-If $c$ contains $\bot$, the following may happen:
+If $A$ has $\top$ in a column where $c$ has $\bot$, the following may happen:
 $$
 A = \begin{pmatrix} \top \end{pmatrix}
 \qquad \qquad
@@ -1566,7 +1651,7 @@ In Lean, it would be possible to prove Farkas for reals using the
 Hahn-Banach separation theorem. However, we do not yet know that
 the set of feasible solutions is closed.
 
-TODO expand or delete.
+TODO more about existing formalizations of Farkas-like theorems.
 
 
 \section {Conclusion}
@@ -1585,9 +1670,9 @@ over subtypes and summation of conditional expression made
 us developed a lot of ad-hoc machinery which we would have
 preferred to be handled by existing tactics. Another area
 where Lean 4 is not yet helpful is the search for counterexamples.
-Despite these difficulties, we find Lean 4 to be an extremely
-valuable tool for elegant expressions of mathematical formulas
-and for proving them formally.
+Despite these difficulties, we find Lean 4 to be an excellent
+tool for elegant expressions of mathematical theorems and
+for proving them formally.
 
 
 
@@ -1608,6 +1693,7 @@ What we consider to be the main theorems are
 denoted by yellow background.
 
 TODO yellow extendedFarkas.
+{\color{blue} TODO this changed.}
 
 
 \end{document}
