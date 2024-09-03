@@ -58,9 +58,6 @@ def ExtendedLP.IsBoundedBy (P : ExtendedLP I J F) (r : F) : Prop :=
 def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
   ¬∃ r : F, P.IsBoundedBy r
 
---def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
---  ⟨-P.Aᵀ, P.c, P.b⟩
-
 open scoped Classical in
 /-- Extended notion of "optimum" of "minimization LP" (the less the better). -/
 noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
@@ -80,14 +77,15 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
 | _       , _        => False   -- namely `OppositesOpt none none` is `False`
 
+
+abbrev ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
+  ⟨-P.Aᵀ, P.c, P.b⟩
 /-- Dualize a linear program in the standard form.
     The matrix gets transposed and its values flip signs.
     The original objective function becomes the new right-hand-side vector.
     The original right-hand-side vector becomes the new objective function. -/
 def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
-  A := -P.Aᵀ
-  b := P.c
-  c := P.b
+  toExtendedLP := P.toExtendedLP.dualize
   hAi := by aeply P.hAj
   hAj := by aeply P.hAi
   hbi := by aeply P.hcj
