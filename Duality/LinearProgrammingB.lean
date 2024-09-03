@@ -96,7 +96,7 @@ noncomputable def StandardLP.optimum (P : StandardLP I J R) : Option R∞ :=
 
 
 private def StandardLP.toExtendedLP (P : StandardLP I J R) : ExtendedLP I J R :=
-  ⟨P.A.map toE, toE ∘ P.b, toE ∘ P.c, by aesop, by aesop, by aesop, by aesop, by aesop, by aesop⟩
+  ⟨P.A.map toE, toE ∘ P.b, toE ∘ P.c⟩
 
 private lemma StandardLP.toE_dotProduct_apply (P : StandardLP I J R) (x : J → R≥0) :
     toE (P.c ⬝ᵥ ↑x) = (toE ∘ P.c ᵥ⬝ x) := by
@@ -191,16 +191,21 @@ private lemma StandardLP.toExtendedLP.dualize_eq (P : StandardLP I J R) :
     P.toExtendedLP.dualize = P.dualize.toExtendedLP :=
   rfl
 
+private lemma StandardLP.toExtendedLP_isValid (P : StandardLP I J R) : P.toExtendedLP.IsValid := by
+  unfold StandardLP.toExtendedLP
+  constructor
+  repeat { aesop }
+
 
 variable [DecidableEq I] [DecidableEq J]
 
 theorem StandardLP.optimum_neq_none (P : StandardLP I J R) :
     P.optimum ≠ none :=
-  StandardLP.toExtendedLP.optimum_eq P ▸ P.toExtendedLP.optimum_neq_none
+  StandardLP.toExtendedLP.optimum_eq P ▸ P.toExtendedLP.optimum_neq_none P.toExtendedLP_isValid
 
 theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
   simpa [StandardLP.toExtendedLP.optimum_eq, StandardLP.toExtendedLP.dualize_eq] using
-    P.toExtendedLP.strongDuality (by
+    P.toExtendedLP.strongDuality P.toExtendedLP_isValid (by
       simpa [StandardLP.toExtendedLP.IsFeasible_iff, StandardLP.toExtendedLP.dualize_eq] using
         hP)
