@@ -77,13 +77,13 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
 | _       , _        => False   -- namely `OppositesOpt none none` is `False`
 
-
-abbrev ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
-  ⟨-P.Aᵀ, P.c, P.b⟩
 /-- Dualize a linear program in the standard form.
     The matrix gets transposed and its values flip signs.
     The original objective function becomes the new right-hand-side vector.
     The original right-hand-side vector becomes the new objective function. -/
+abbrev ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
+  ⟨-P.Aᵀ, P.c, P.b⟩
+
 def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
   toExtendedLP := P.toExtendedLP.dualize
   hAi := by aeply P.hAj
@@ -1026,7 +1026,7 @@ lemma oppositesOpt_comm (p q : Option F∞) : OppositesOpt p q ↔ OppositesOpt 
 
 variable [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J]
 
-lemma ValidELP.strongDuality_of_prim_feasible(P : ValidELP I J F) (hP : P.IsFeasible) :
+lemma ValidELP.strongDuality_of_prim_feasible (P : ValidELP I J F) (hP : P.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
   if hQ : P.dualize.IsFeasible then
     obtain ⟨r, hPr, hQr⟩ := P.strongDuality_of_both_feasible hP hQ
@@ -1086,5 +1086,6 @@ theorem ValidELP.strongDuality (P : ValidELP I J F) (hP : P.IsFeasible ∨ P.dua
 end extended_LP_optima
 
 end strong_duality
+
 
 #print axioms ValidELP.strongDuality
