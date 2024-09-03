@@ -268,6 +268,7 @@ lemma Matrix.dotProd_zero_le_zero (v : I → F∞) :
     · apply bot_le
     · exact hv.choose_spec
 
+omit [Fintype I] in
 lemma Matrix.mulWeig_zero_le_zero (M : Matrix I J F∞) :
     M ₘ* (0 : J → F≥0) ≤ (0 : I → F∞) := by
   intro i

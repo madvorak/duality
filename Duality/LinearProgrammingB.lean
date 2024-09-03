@@ -58,13 +58,11 @@ def StandardLP.dualize [Ring R] (P : StandardLP I J R) : StandardLP J I R :=
   ⟨-P.Aᵀ, P.c, P.b⟩
 
 
-variable [Fintype I]
-
-lemma Matrix.transpose_mulVec_dotProduct [CommSemiring R] (M : Matrix I J R) (v : I → R) (w : J → R) :
+lemma Matrix.transpose_mulVec_dotProduct [Fintype I] [CommSemiring R] (M : Matrix I J R) (v : I → R) (w : J → R) :
     Mᵀ *ᵥ v ⬝ᵥ w = M *ᵥ w ⬝ᵥ v := by
   rw [Matrix.dotProduct_comm, Matrix.dotProduct_mulVec, Matrix.vecMul_transpose]
 
-theorem StandardLP.weakDuality [OrderedCommRing R] {P : StandardLP I J R}
+theorem StandardLP.weakDuality [Fintype I] [OrderedCommRing R] {P : StandardLP I J R}
     {p : R} (hP : P.Reaches p) {q : R} (hQ : P.dualize.Reaches q) :
     0 ≤ p + q := by
   obtain ⟨x, hxb, rfl⟩ := hP
@@ -187,12 +185,13 @@ private theorem StandardLP.toValidELP.optimum_eq (P : StandardLP I J R) :
     · simp [ExtendedLP.optimum, feas, StandardLP.toValidELP.IsFeasible_iff]
     · simp [StandardLP.optimum, feas]
 
+omit [Fintype J] in
 private lemma StandardLP.toValidELP.dualize_eq (P : StandardLP I J R) :
     P.toValidELP.dualize = P.dualize.toValidELP :=
   rfl
 
 
-variable [DecidableEq I] [DecidableEq J]
+variable [Fintype I] [DecidableEq I] [DecidableEq J]
 
 theorem StandardLP.optimum_neq_none (P : StandardLP I J R) :
     P.optimum ≠ none :=
