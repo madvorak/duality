@@ -144,10 +144,10 @@ the inequalities. When we formulate duality theorems as
 ``either there exists a solution, or there exists a vector of coefficients
 that tells us how to derive $0 < 0$ from given inequalities'',
 they are usually called {\em theorems of alternatives}.
-Two well-known theorems of alternative are as follows
+Two well-known theorems of alternatives are as follows
 (Farkas~\cite{Farkas1894,Farkas1898}; Minkowski~\cite{Minkowski}).
 
-\begin{theorem}[\customlabel{equalityFarkas}{{\bf equalityFarkas}}]
+\begin{theorem}[\customlabel{equalityFarkas}{\texttt{equalityFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -159,7 +159,7 @@ Exactly one of the following exists:
 \end{itemize}
 \end{theorem}
 
-\begin{theorem}[\customlabel{inequalityFarkas}{{\bf inequalityFarkas}}]
+\begin{theorem}[\customlabel{inequalityFarkas}{\texttt{inequalityFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -177,7 +177,7 @@ have the same optimal values {\color{blue} TODO this sentence needs changes.}
 For example, for Linear Programs in the standard form, the strong duality theorem,
 the cornerstone of linear programming, can be stated as follows.
 
-\begin{theorem}[\customlabel{StandardLP.strongDuality}{{\bf StandardLP.strongDuality}}]
+\begin{theorem}[\customlabel{StandardLP.strongDuality}{\texttt{StandardLP.strongDuality}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -220,7 +220,7 @@ The next theorem generalizes \ref{equalityFarkas} to structures where
 multiplication does not have to be commutative.
 Furthermore, it supports infinitely many equations.
 
-\begin{theorem}[\customlabel{coordinateFarkas}{{\bf coordinateFarkas}}]
+\begin{theorem}[\customlabel{coordinateFarkas}{\texttt{coordinateFarkas}}]
 Let $I$ be any type.
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
@@ -241,7 +241,7 @@ that is consistent with how the Introduction is written.}
 In the next generalization (similar to \cite{Chernikov}), 
 the partially ordered module $I \r R$ is replaced by a general $R$-module $W$.
 
-\begin{theorem}[\customlabel{scalarFarkas}{{\bf scalarFarkas}}]
+\begin{theorem}[\customlabel{scalarFarkas}{\texttt{scalarFarkas}}]
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -261,7 +261,7 @@ in all upcoming informal statements; for a formal definition, see the end of
 \sekt{modules}). This result is due to \cite{Bartl2007} and our proof is based on
 \cite{Bartl2011}.
 
-\begin{theorem}[\customlabel{fintypeFarkasBartl}{{\bf fintypeFarkasBartl}}]
+\begin{theorem}[\customlabel{fintypeFarkasBartl}{\texttt{fintypeFarkasBartl}}]
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -289,7 +289,7 @@ What follows is a new extension of the theory.
 
 \begin{definition}
 Let $F$ be a linearly ordered field.
-We define an \textbf{extended} linearly ordered field $F_\infty$ as
+We define an \emph{extended} linearly ordered field $F_\infty$ as
 $F \cup \{ \bot, \top \}$ with the following properties.
 Let $p$ and $q$ be numbers from $F$.
 We have $\bot < p < \top$.
@@ -326,7 +326,7 @@ We define addition, negation, and scalar action on $F_\infty$ as follows:
 	\end{tabular}
 \end{center}
 When we talk about elements of $F_\infty$,
-we say that values from $F$ are \textbf{finite}.
+we say that values from $F$ are \emph{finite}.
 \end{definition}
 
 Informally speaking, $\top$ represents the positive infinity,
@@ -338,35 +338,7 @@ In fact, $F_\infty$ is not even a group.
 However, $F_\infty$ is still a densely linearly ordered abelian monoid
 with characteristic zero.
 
-%{\color{blue}
-%Alternative presentation:
-%
-%\begin{definition}
-%Let $I$ and $J$ be finite types, and $F$ be a linearly ordered field.
-%Consider matrix $U:(I \times J) \r F_\infty$ and vector $u:I \r F_\infty$.
-%The pair $(U,u)$ is called {\em nonconflicting} if (i) matrix $(U; u)$ does not have $\bot$ and $\top$
-%in the same row, and (ii) matrix $U$ does not have $\bot$ and $\top$ in the same column.
-%\end{definition}
-%
-%Condition for \ref{extendedFarkas}: Assume that pair $(A, -b)$ is nonconflicting.
-%
-%Condition for extended LP: Assume that pairs $(A, b)$ and $(A^T, c)$ are nonconflicting.
-%
-%Yet another presentation:
-%\begin{definition}
-%Consider matrix $A:(I \times J) \r F_\infty$ where $I,J$ are some types.
-%A row (resp. colum) of $A$ is called {\em conflicting} if it contains both $\bot$ and $\top$.
-%Otherwise it is {\em nonconflicting}.
-%\end{definition}
-%
-%Condition for \ref{extendedFarkas}: Assume that pair all rows $(A\; -\!b)$ are nonconflicting
-%and all columns of $A$ are nonconflicting.
-%
-%Condition for extended LP: Assume that all rows of $(A\; -\!b)$ 
-%are nonconflicting and all columns of and $\begin{pmatrix}A \\ c\end{pmatrix}$ are nonconflicting.
-%}
-
-\begin{theorem}[\customlabel{extendedFarkas}{{\bf extendedFarkas}}]
+\begin{theorem}[\customlabel{extendedFarkas}{\texttt{extendedFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
@@ -400,26 +372,26 @@ such that the following six conditions hold:
 \item $A$ does not have $\top$ in any row where $b$ has $\top$
 \item $A$ does not have $\bot$ in any column where $c$ has $\top$
 \end{itemize}
-We say that $P = (A, b, c)$ is a \textbf{linear program} over $F_\infty$
+We say that $P = (A, b, c)$ is a \emph{linear program} over $F_\infty$
 whose constraints are indexed by $I$ and variables are indexed by $J$.
 We say that a nonnegative vector $x : J \r R$ is
-a \textbf{solution} to $P$ if and only if $A \* x \le b$.
-We say that $P$ \textbf{reaches} an objective value $r$
+a \emph{solution} to $P$ if and only if $A \* x \le b$.
+We say that $P$ \emph{reaches} an objective value $r$
 if and only if there exists $x$ such that $x$ is a solution to $P$
 and $c \* x = r$.
-We say that $P$ is \textbf{feasible} if and only if $P$ reaches a finite\footnote{
+We say that $P$ is \emph{feasible} if and only if $P$ reaches a finite\footnote{
 It would be perhaps more natural to say that $P$ reaches a value different
 from $\top$. However, since $\bot$ cannot be reached because of the way
 linear programming is defined, it is equivalent to our definition by
-reaching a finite value.} value.
-We say that $P$ is \textbf{bounded by} a finite value $r$ if and only if,
+reaching a finite value. {\color{blue} TODO this changed.}} value.
+We say that $P$ is \emph{bounded by} a finite value $r$ if and only if,
 for every value $p$ reached by $P$, we have $r \le p$.
-We say that $P$ is \textbf{unbounded} if and only if there is no finite value $r$
+We say that $P$ is \emph{unbounded} if and only if there is no finite value $r$
 such that $P$ is bounded by $r$.
-We say that the linear program $(-A^T, c, b)$ is the \textbf{dual} of $P$.
+We say that the linear program $(-A^T, c, b)$ is the \emph{dual} of $P$.
 \end{definition}
 
-\begin{theorem}[\customlabel{ExtendedLP.weakDuality}{{\bf ExtendedLP.weakDuality}}]
+\begin{theorem}[\customlabel{ExtendedLP.weakDuality}{\texttt{ExtendedLP.weakDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
@@ -429,16 +401,16 @@ then $p + q \ge 0$.
 \begin{definition}
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
-We define the \textbf{optimum} of $P$ as follows.
+We define the \emph{optimum} of $P$ as follows.
 If $P$ is feasible and unbounded, its optimum is $\bot$.
 If $P$ is not feasible, its optimum is $\top$.
 In all other cases, we ask whether $P$ reaches a finite value $r$ such that
 $P$ is bounded by $r$. If so, its optimum is $r$.
-Otherwise, $P$ does not have optimum.\footnote{By the end of the paper, we will
+Otherwise, $P$ does not have optimum. \footnote{By the end of the paper, we will
 have proved that optimum always exists, i.e., it cannot happen that the set of
 objective values reached by $P$ has a finite infimum that is not attained.
-However, because we do not have the theorem now, the optimum is defined as a partial function
-from linear programs to $F_\infty$.}
+However, because we do not have the theorem now, the optimum is defined as
+a partial function from linear programs to $F_\infty$.}
 \end{definition}
 
 %The existence of optimum (minimum) for every linear program is stated as follows:
@@ -446,7 +418,7 @@ from linear programs to $F_\infty$.}
 %theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none
 %\end{lstlisting}
 
-\begin{theorem}[\customlabel{ExtendedLP.strongDuality}{{\bf ExtendedLP.strongDuality}}]
+\begin{theorem}[\customlabel{ExtendedLP.strongDuality}{\texttt{ExtendedLP.strongDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
@@ -1140,7 +1112,7 @@ theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P
 
 We prove \ref{finFarkasBartl} and, in the end, we obtain \ref{fintypeFarkasBartl} as corollary.
 
-\begin{theorem}[\customlabel{finFarkasBartl}{{\bf finFarkasBartl}}]
+\begin{theorem}[\customlabel{finFarkasBartl}{\texttt{finFarkasBartl}}]
 Let $n$ be a natural number.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -1176,7 +1148,7 @@ we choose $y$ to be either $w$ or $(-w)$.
 Since $V$ is linearly ordered, one of them satisfies $b~y<0$.
 Now we precisely state how the induction step will be.
 
-\begin{lemma}[\customlabel{industepFarkasBartl}{{\bf industepFarkasBartl}}]
+\begin{lemma}[\customlabel{industepFarkasBartl}{\texttt{industepFarkasBartl}}]
 Let $m$ be a natural number.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
@@ -1251,7 +1223,7 @@ We prove \ref{inequalityFarkas} by applying \ref{equalityFarkas}
 to the matrix $(1~|~A)$ where $1$ is the identity matrix of type
 $(I \times I) \r F$.
 
-\begin{theorem}[\customlabel{inequalityFarkas-neg}{{\bf inequalityFarkas\_neg}}]
+\begin{theorem}[\customlabel{inequalityFarkas-neg}{\texttt{inequalityFarkas\_neg}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F$.
@@ -1264,7 +1236,7 @@ Exactly one of the following exists:
 \end{theorem}
 Obviously, \ref{inequalityFarkas-neg} is an immediate corollary of \ref{inequalityFarkas}.
 
-\begin{theorem}[\customlabelrestated{extendedFarkas:restated}{{\bf extendedFarkas}}]
+\begin{theorem}[\customlabelrestated{extendedFarkas:restated}{\texttt{extendedFarkas}}]
 Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$.
@@ -1347,7 +1319,7 @@ $$
 We start with the weak duality and then move to the strong duality.
 We will use \ref{extendedFarkas} in several places.
 
-\begin{theorem}[\customlabelrestated{weakDuality:restated}{{\bf weakDuality}}]
+\begin{theorem}[\customlabelrestated{weakDuality:restated}{\texttt{weakDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
@@ -1371,7 +1343,7 @@ c \* x
 $$
 {\color{blue} TODO this changed.}
 
-\begin{lemma}[\customlabel{infeasible-of-unbounded}{{\bf infeasible\_of\_unbounded}}]
+\begin{lemma}[\customlabel{infeasible-of-unbounded}{\texttt{infeasible\_of\_unbounded}}]
 If a linear program $P$ is unbounded,
 the dual of $P$ cannot be feasible.
 \end{lemma}
@@ -1381,7 +1353,7 @@ Proof idea:
 Assume that $P$ is unbounded, but the dual of $P$ is feasible.
 Obtain contradiction using \ref{weakDuality:restated}.
 
-\begin{lemma}[\customlabel{unbounded-of-reaches-le}{{\bf unbounded\_of\_reaches\_le}}]
+\begin{lemma}[\customlabel{unbounded-of-reaches-le}{\texttt{unbounded\_of\_reaches\_le}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 Assume that for each $s$ in $F$ there exists
@@ -1396,7 +1368,7 @@ It suffices to prove that for each $r$ in $F$ there exists
 $p'$ in $F_\infty$ such that $P$ reaches $p'$ and $p' < r$.
 Apply the assumption to $r\!-\!1$.
 
-\begin{lemma}[\customlabel{unbounded-of-feasible-of-neg}{{\bf unbounded\_of\_feasible\_of\_neg}}]
+\begin{lemma}[\customlabel{unbounded-of-feasible-of-neg}{\texttt{unbounded\_of\_feasible\_of\_neg}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$ that is feasible.
 Let $x_0$ be a nonnegative vector such that $c \cdot x_0 < 0$
@@ -1418,7 +1390,7 @@ Observe that the fraction $\frac{s-e}{d}$ is
 well defined and it is positive.
 Use $x_p + \frac{s-e}{d} \cdot x_0$.
 
-\begin{lemma}[\customlabel{dualize-dualize}{{\bf dualize\_dualize}}]
+\begin{lemma}[\customlabel{dualize-dualize}{\texttt{dualize\_dualize}}]
 Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
 \end{lemma}
 
@@ -1426,7 +1398,7 @@ Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
 Proof idea:
 $ -(-A^T)^T = A $
 
-\begin{lemma}[\customlabel{strongDuality-aux}{{\bf strongDuality\_aux}}]
+\begin{lemma}[\customlabel{strongDuality-aux}{\texttt{strongDuality\_aux}}]
 Let $P$ be a linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
 There is a value $p$ reached by $P$ and
@@ -1473,7 +1445,7 @@ If $b \* y < 0$, we apply unbounded\_of\_feasible\_of\_neg to
 the dual of $P$, which (using infeasible\_of\_unbounded and
 dualize\_dualize) contradicts that $P$ is feasible.
 
-\begin{lemma}[\customlabel{strongDuality-of-both-feasible}{{\bf strongDuality\_of\_both\_feasible}}]
+\begin{lemma}[\customlabel{strongDuality-of-both-feasible}{\texttt{strongDuality\_of\_both\_feasible}}]
 Let $P$ be a linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
 There is a finite value $r$ such that
@@ -1487,7 +1459,7 @@ a value $q$ reached by the dual of $P$ such that $p + q \le 0$.
 We apply weakDuality to $p$ and $q$ to obtain $p + q \ge 0$.
 We set $r := q$.
 
-\begin{lemma}[\customlabel{unbounded-of-feasible-of-infeasible}{{\bf unbounded\_of\_feasible\_of\_infeasible}}]
+\begin{lemma}[\customlabel{unbounded-of-feasible-of-infeasible}{\texttt{unbounded\_of\_feasible\_of\_infeasible}}]
 Let $P$ be a linear program such that
 $P$ is feasible but the dual of $P$ is not feasible.
 Then $P$ is unbounded.
@@ -1499,10 +1471,10 @@ Apply \ref{extendedFarkas} to the matrix
 $\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
 and the vector $c$.
 
-\begin{lemma}[\customlabel{optimum-unique}{{\bf optimum\_unique}}]
+\begin{lemma}[\customlabel{optimum-unique}{\texttt{optimum\_unique}}]
 Let $P$ be a linear program.
-Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
-Let $s$ be a valued reached by $P$ such that $P$ is bounded by $s$.
+Let $r$ be a value reached by $P$ such that $P$ is bounded by $r$.
+Let $s$ be a value reached by $P$ such that $P$ is bounded by $s$.
 Then $r = s$.
 \end{lemma}
 
@@ -1513,9 +1485,9 @@ We prove $r \le s$ by applying ``$P$ is bounded by $r$'' to
 We prove $s \le r$ by applying ``$P$ is bounded by~$s$'' to
 ``$r$ is reached by $P$''.
 
-\begin{lemma}[\customlabel{optimum-eq-of-reaches-bounded}{{\bf optimum\_eq\_of\_reaches\_bounded}}]
+\begin{lemma}[\customlabel{optimum-eq-of-reaches-bounded}{\texttt{optimum\_eq\_of\_reaches\_bounded}}]
 Let $P$ be a linear program.
-Let $r$ be a valued reached by $P$ such that $P$ is bounded by $r$.
+Let $r$ be a value reached by $P$ such that $P$ is bounded by $r$.
 Then the optimum of $P$ is $r$.
 \end{lemma}
 
@@ -1523,7 +1495,7 @@ Then the optimum of $P$ is $r$.
 Proof idea:
 Apply the axiom of choice to the definition of optimum and use \ref{optimum-unique}.
 
-\begin{lemma}[\customlabel{strongDuality-of-prim-feas}{{\bf strongDuality\_of\_prim\_feas}}]
+\begin{lemma}[\customlabel{strongDuality-of-prim-feas}{\texttt{strongDuality\_of\_prim\_feas}}]
 Let $P$ be a linear program that is feasible.
 The strong duality holds.
 \end{lemma}
@@ -1543,7 +1515,7 @@ $\top$ by definition. Using \ref{unbounded-of-feasible-of-infeasible}
 we get that the optimum of $P$ is $\bot$.
 The strong duality holds.
 
-\begin{theorem}[\customlabel{optimum-neq-none}{{\bf optimum\_neq\_none}}]
+\begin{theorem}[\customlabel{optimum-neq-none}{\texttt{optimum\_neq\_none}}]
 Every linear program has optimum.
 \end{theorem}
 
@@ -1553,7 +1525,7 @@ If a linear program $P$ is feasible, the existence of optimum
 follows from \ref{strongDuality-of-prim-feas}.
 Otherwise, the optimum of $P$ is $\top$ by definition.
 
-\begin{lemma}[\customlabel{strongDuality-of-dual-feas}{{\bf strongDuality\_of\_dual\_feas}}]
+\begin{lemma}[\customlabel{strongDuality-of-dual-feas}{\texttt{strongDuality\_of\_dual\_feas}}]
 Let $P$ be a linear program whose dual is feasible.
 The strong duality holds.
 \end{lemma}
@@ -1563,7 +1535,7 @@ Proof idea:
 Apply \ref{strongDuality-of-prim-feas} to the dual of $P$ and
 use \ref{dualize-dualize}.
 
-\begin{theorem}[\customlabelrestated{strongDuality:restated}{{\bf strongDuality}}]
+\begin{theorem}[\customlabelrestated{strongDuality:restated}{\texttt{strongDuality}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
