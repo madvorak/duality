@@ -172,7 +172,7 @@ Exactly one of the following exists:
 \end{theorem}
 
 For optimization problems, duality asserts that primal and dual problems
-have the same optimal values {\color{blue} TODO this sentence needs changes.}
+have the same optimal values {\color{blue} TODO reformulate this sentence.}
 (von Neumann~\cite{vonNeumann}; Gale, Kuhn, Tucker~\cite{GaleKuhnTucker}).
 For example, for Linear Programs in the standard form, the strong duality theorem,
 the cornerstone of linear programming, can be stated as follows.
@@ -188,6 +188,7 @@ $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 =- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
 $$
 holds if at least one of the systems has a solution (very roughly paraphrased).
+{\color{blue} TODO change in the code, then change here.}
 \end{theorem}
 For many more Farkas-like theorems (beyond the scope of this paper),
 see for example \cite{Perng2017}.
@@ -195,8 +196,7 @@ see for example \cite{Perng2017}.
 This paper makes the following contributions.
 \begin{itemize}
 \item We formally prove several existing duality results (including the statements above) in Lean 4.
-In fact, we prove a more general version of \ref{equalityFarkas} due
-to Bartl~\cite{Bartl2007}.
+In fact, we prove a more general version of \ref{equalityFarkas} due to Bartl~\cite{Bartl2007}.
 %This version allows, in particular, allows structures with a non-commutative multiplication, and also allows infinitely many equations.
 \item We establish (and formally prove in Lean 4) a new generalization
 of~\ref{inequalityFarkas} and~\ref{StandardLP.strongDuality}
@@ -233,10 +233,13 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : I \r R$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 \end{theorem}
-{\color{blue} TODO: describe how it implies \ref{equalityFarkas}?
+{\color{blue}
 
-This is so trivial that I don't know how to answer your question in a style
-that is consistent with how the Introduction is written.}
+Note that \ref{equalityFarkas} for matrix $A: I \times J \r F$ and vector $b : I \r F$
+can be obtained by applying \ref{coordinateFarkas} to the $F$-linear maps
+$(A^T \* \phantom{v})$ and $(b \* \phantom{v})$ utilizing the fact that
+two linear maps are equal if and only if they map the basis vectors equally.
+}
 
 In the next generalization (similar to \cite{Chernikov}), 
 the partially ordered module $I \r R$ is replaced by a general $R$-module $W$.
@@ -258,7 +261,8 @@ In the most general theorem, stated below, certain occurrences of $R$ are replac
 a linearly ordered $R$-module $V$ whose order respects order on $R$ (the
 relationship between order on $R$ and order on $V$ will be left implicit
 in all upcoming informal statements; for a formal definition, see the end of
-\sekt{modules}). This result is due to \cite{Bartl2007} and our proof is based on
+\sekt{modules}). {\color{blue} TODO inline the (...) into theorem statement somehow.}
+This result is due to \cite{Bartl2007} and our proof is based on
 \cite{Bartl2011}.
 
 \begin{theorem}[\customlabel{fintypeFarkasBartl}{\texttt{fintypeFarkasBartl}}]
@@ -353,7 +357,25 @@ Exactly one of the following exists:
 \item nonnegative vector $y : I \r F$ such that $(-A^T) \* y \le 0$ and $b \* y < 0$
 \end{itemize}
 \end{theorem}
-Next we define an extended notion of linear program, i.e.,
+Note \ref{extendedFarkas} has four preconditions on matrix $A$ and vector $b$. 
+In \sekt{sec:extendedFarkas:counterexamples}
+we show that omitting any of them makes the theorem false.
+Observe that \ref{inequalityFarkas} has condition $A^T \* y \ge 0$
+in the second branch, while in \ref{extendedFarkas}
+we changed it to  $(-A^T) \* y \le 0$.
+The two conditions are equivalent
+for finite-valued matrices $A$,
+but not necessarily for matrices $A$ with infinities
+(e.g.\ condition
+$(-\top) \* 0 \ge 0$ is false but 
+$\top \* 0 \le 0$ is true).
+One must be careful when formulating this condition;
+for example, using the condition from \ref{inequalityFarkas}
+would make the theorem false even if $A$ has a single $\bot$ entry
+(see \sekt{sec:extendedFarkas:counterexamples}).
+
+
+Next, we define an extended notion of linear program, i.e.,
 linear programming over extended linearly ordered fields.
 The implicit intention is that the linear program is to be minimized.
 
@@ -362,8 +384,32 @@ Let $I$ and $J$ be finite types.
 Let $F$ be a linearly ordered field.
 Let $A$ be a matrix of type $(I \times J) \r F_\infty$,
 let $b$ be a vector of type $I \r F_\infty$,
-and $c$ be a vector of type $J \r F_\infty$
-such that the following six conditions hold:
+and $c$ be a vector of type $J \r F_\infty$.
+We say that $P = (A, b, c)$ is a \emph{linear program} over $F_\infty$
+whose constraints are indexed by $I$ and variables are indexed by $J$.
+
+{\color{blue} 
+
+A nonnegative vector $x : J \r R$ is a \emph{solution} to $P$ if  $A \* x \le b$.
+We say that $P$ is \emph{feasible} if there exists \emph{solution} $x$ with $c \* x \ne \top$.
+We say that $P$ is \emph{unbounded} if, for any $r\in F$, there exists solution $x$
+with $c \* x \le r$.
+
+The \emph{optimum} of $P$, denoted as $P^\star$,
+is defined as follows. If $P$ is not feasible then $P^\star=\top$.
+If $P$ is unbounded then $P^\star=\bot$.
+If there exists finite $r\in F$ such that $c \* x \ge r$ for all solutions $x$
+and $c \* x^\star = r$ for some solution $x^\star$ then $P^\star=r$.
+%(Clearly, these three cases are mutually exclusive, and such $r$, if exists, is unique).
+If none of the cases holds then $P^\star$ is undefined.
+}
+\end{definition}
+
+In order to state our duality results, we need a few more definitions.
+
+\begin{definition}
+Linear Program $P = (A, b, c)$ over $F_\infty$ is said to be
+{\em valid} if it satisfies the following six conditions:
 \begin{itemize}
 \item $A$ does not have $\bot$ and $\top$ in the same row
 \item $A$ does not have $\bot$ and $\top$ in the same column
@@ -372,66 +418,34 @@ such that the following six conditions hold:
 \item $A$ does not have $\top$ in any row where $b$ has $\top$
 \item $A$ does not have $\bot$ in any column where $c$ has $\top$
 \end{itemize}
-We say that $P = (A, b, c)$ is a \emph{linear program} over $F_\infty$
-whose constraints are indexed by $I$ and variables are indexed by $J$.
-We say that a nonnegative vector $x : J \r R$ is
-a \emph{solution} to $P$ if and only if $A \* x \le b$.
-We say that $P$ \emph{reaches} an objective value $r$
-if and only if there exists $x$ such that $x$ is a solution to $P$
-and $c \* x = r$.
-We say that $P$ is \emph{feasible} if and only if $P$ reaches a finite\footnote{
-It would be perhaps more natural to say that $P$ reaches a value different
-from $\top$. However, since $\bot$ cannot be reached because of the way
-linear programming is defined, it is equivalent to our definition by
-reaching a finite value. {\color{blue} TODO this changed.}} value.
-We say that $P$ is \emph{bounded by} a finite value $r$ if and only if,
-for every value $p$ reached by $P$, we have $r \le p$.
-We say that $P$ is \emph{unbounded} if and only if there is no finite value $r$
-such that $P$ is bounded by $r$.
 We say that the linear program $(-A^T, c, b)$ is the \emph{dual} of $P$.
 \end{definition}
-
-\begin{theorem}[\customlabel{ExtendedLP.weakDuality}{\texttt{ExtendedLP.weakDuality}}]
-Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$.
-If $P$ reaches $p$ and the dual of $P$ reaches $q$,
-then $p + q \ge 0$.
-\end{theorem}
-
-\begin{definition}
-Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$.
-We define the \emph{optimum} of $P$ as follows.
-If $P$ is feasible and unbounded, its optimum is $\bot$.
-If $P$ is not feasible, its optimum is $\top$.
-In all other cases, we ask whether $P$ reaches a finite value $r$ such that
-$P$ is bounded by $r$. If so, its optimum is $r$.
-Otherwise, $P$ does not have optimum. \footnote{By the end of the paper, we will
-have proved that optimum always exists, i.e., it cannot happen that the set of
-objective values reached by $P$ has a finite infimum that is not attained.
-However, because we do not have the theorem now, the optimum is defined as
-a partial function from linear programs to $F_\infty$.}
-\end{definition}
-
-%The existence of optimum (minimum) for every linear program is stated as follows:
-%\begin{lstlisting}
-%theorem ExtendedLP.optimum_neq_none (P : ExtendedLP I J F) : P.optimum ≠ none
-%\end{lstlisting}
+It is straightforward to check that the dual of a valid LP is valid.
 
 \begin{theorem}[\customlabel{ExtendedLP.strongDuality}{\texttt{ExtendedLP.strongDuality}}]
-Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$.
-If $P$ or its dual is feasible (at least one of them),
-then there exists $p$ in $F_\infty$ such that
-$P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
-~\footnote{For simplicity,
-we rephrased the theorem without mentioning partial functions.
-Also note that it would be incorrect to say the following:
-$P$ has optimum~$p$, the dual of $P$ has optimum $q$, and $p + q = 0$.
-It would fail for unbounded linear programs because the arithmetics
-of $F_\infty$ defines $\top + \bot = \bot$.}
+{\color{blue} 
+Let $F$ be a linearly ordered field,
+$P$ be a valid linear program over $F_\infty$ and $D$ be its dual.
+Then $P^\star$ and $D^\star$ are defined.
+If at least one of them is feasible, i.e., $(P^\star, D^\star) \ne (\top, \top)$,
+then $P^\star = -D^\star$.
+}
 \end{theorem}
 
+The conclusion of the theorem ($P^\star = -D^\star$) can be reformulated,
+when we use highly informal notation, as
+$$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+=- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
+$$
+
+\begin{sloppypar}
+Similar to~\ref{extendedFarkas}, all six conditions in the definition of a valid LP are necessary:
+omitting any one of them makes~\ref{ExtendedLP.strongDuality} false (see counterexamples in \sekt{sec:ExtendedLP.strongDuality:counterexamples}).
+Again, one must again be careful when formulating the theorem.
+We chose a formulation in which both primal and dual are minimization problems
+(``$\min$ / $\min$''). We tried several ``$\min$ / $\max$'' and ``$\max$ / $\max$''
+formulations (TODO)
+\end{sloppypar}
 
 \subsection{Structure of this paper}
 
@@ -465,10 +479,11 @@ However, in case of any discrepancy, the code shall prevail.
 \section{Preliminaries}
 \label{preliminaries}
 
-There are many layers of definitions that are built before say what
-a linearly ordered field is, what a linearly ordered division ring is,
-and what linearly ordered abelian group is.
-We need these three algebraic structures for stating our main results.
+There are many layers of definitions that are built before say
+what a linearly ordered field $F$ is (used e.g.~in \ref{equalityFarkas}),
+what a linearly ordered division ring $R$ is (used e.g.~in \ref{scalarFarkas}), and
+what linearly ordered abelian group $V$ is (used in \ref{fintypeFarkasBartl}).
+%We need these three algebraic structures for stating our main results.
 This section mainly documents existing Mathlib definitions.
 We also highlight custom definitions added to our project only.
 
@@ -1065,6 +1080,7 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 \end{lstlisting}
 The last line says that \texttt{OppositesOpt none none} is \texttt{False}.
 We later show that \texttt{none} is never the optimum, but we do not know it yet.
+{\color{blue} TODO this changed.}
 
 
 \section{Formal statements of selected results}
@@ -1167,13 +1183,14 @@ such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Let $A_{<m}$ roughly mean $A \restriction \fin{m}$.
 To be more precise, $A_{<m}$ is a function that maps $(w : W)$ to
 $(A~w) \restriction \fin{m}$, i.e., $A_{<m}$ is an $R$-linear map
 from $W$ to $(\fin{m} \r R)$ that behaves exactly like $A$ where
 it is defined.
+{\color{blue} TODO reconsider: Is $\restriction$ idiomatic?}
 We distinguish two cases. If, for all $y : W$, the inequality
 $A_{<m}~y \ge 0$ implies $b~y \ge 0$, then plug $A_{<m}$
 for $\bar{A}$, obtain $\bar{x}$, and construct a vector family $x$ such that
@@ -1265,53 +1282,6 @@ but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
 In either case, extend $x$ or $y$ with zeros on all deleted positions.
 \end{enumerate}
 
-\subsection{Counterexamples}
-
-If $A$ has $\bot$ and $\top$ in the same row, it may happen that both $x$ and $y$ exist:
-$$
-A =
-\begin{pmatrix}
-	\bot & \top \\
-	0 & -1
-\end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} 0 \\ -1 \end{pmatrix}
-\qquad \qquad
-x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
-\qquad \qquad
-y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
-$$
-If $A$ has $\bot$ and $\top$ in the same column, it may happen that both $x$ and $y$ exist:
-$$
-A = \begin{pmatrix} \bot \\ \top \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} -1 \\ 0 \end{pmatrix}
-\qquad \qquad
-x = \begin{pmatrix} 0 \end{pmatrix}
-\qquad \qquad
-y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
-$$
-If $A$ has $\top$ in a row where $b$ has $\top$, it may happen that both $x$ and $y$ exist:
-$$
-A = \begin{pmatrix} \top \\ -1 \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} \top \\ -1 \end{pmatrix}
-\qquad \qquad
-x = \begin{pmatrix} 1 \end{pmatrix}
-\qquad \qquad
-y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
-$$
-If $A$ has $\bot$ in a row where $b$ has $\bot$, it may happen that both $x$ and $y$ exist:
-$$
-A = \begin{pmatrix} \bot \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} \bot \end{pmatrix}
-\qquad \qquad
-x = \begin{pmatrix} 1 \end{pmatrix}
-\qquad \qquad
-y = \begin{pmatrix} 0 \end{pmatrix}
-$$
-
 
 \section {Extended strong LP duality}
 \label{duality}
@@ -1326,7 +1296,7 @@ If $P$ reaches $p$ and the dual of $P$ reaches $q$,
 then $p + q \ge 0$.
 \end{theorem}
 
-\medskip \noindent
+\noindent
 Proof idea:
 There is a vector $x$ such that $A \* x \le b$ and $c \* x = p$.
 Apply \ref{extendedFarkas} to the following matrix and vector:
@@ -1348,7 +1318,7 @@ If a linear program $P$ is unbounded,
 the dual of $P$ cannot be feasible.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Assume that $P$ is unbounded, but the dual of $P$ is feasible.
 Obtain contradiction using \ref{weakDuality:restated}.
@@ -1362,7 +1332,7 @@ and $p \le s$.
 Then $P$ is unbounded.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 It suffices to prove that for each $r$ in $F$ there exists
 $p'$ in $F_\infty$ such that $P$ reaches $p'$ and $p' < r$.
@@ -1376,7 +1346,7 @@ and $A \cdot x_0 + 0 \cdot (-b) \le 0$.
 Then $P$ is unbounded.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 There is a nonnegative vector $x_p$ such that $A \* x_p \le b$ and
 $c \* x_p = e$ for some $e$ in $F$.
@@ -1394,7 +1364,7 @@ Use $x_p + \frac{s-e}{d} \cdot x_0$.
 Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 $ -(-A^T)^T = A $
 
@@ -1406,7 +1376,7 @@ a value $q$ reached by the dual of $P$ such
 that $p + q \le 0$.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Apply \ref{extendedFarkas} to the following matrix and vector:
 $$
@@ -1452,7 +1422,7 @@ There is a finite value $r$ such that
 $P$ reaches $-r$ and the dual of $P$ reaches $r$.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 From \ref{strongDuality-aux} we have a value $p$ reached by $P$ and
 a value $q$ reached by the dual of $P$ such that $p + q \le 0$.
@@ -1465,7 +1435,7 @@ $P$ is feasible but the dual of $P$ is not feasible.
 Then $P$ is unbounded.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Apply \ref{extendedFarkas} to the matrix
 $\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
@@ -1478,7 +1448,7 @@ Let $s$ be a value reached by $P$ such that $P$ is bounded by $s$.
 Then $r = s$.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 We prove $r \le s$ by applying ``$P$ is bounded by $r$'' to
 ``$s$ is reached by $P$''.
@@ -1491,16 +1461,16 @@ Let $r$ be a value reached by $P$ such that $P$ is bounded by $r$.
 Then the optimum of $P$ is $r$.
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Apply the axiom of choice to the definition of optimum and use \ref{optimum-unique}.
 
 \begin{lemma}[\customlabel{strongDuality-of-prim-feas}{\texttt{strongDuality\_of\_prim\_feas}}]
 Let $P$ be a linear program that is feasible.
-The strong duality holds.
+The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 If the dual of $P$ is feasible as well, use \ref{strongDuality-of-both-feasible}
 to obtain $r$ such that $P$ reaches $-r$ and the dual of $P$ reaches $r$.
@@ -1508,18 +1478,18 @@ Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality:restate
 conclude that the optimum of $P$ is $-r$.
 Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality:restated},
 conclude that the optimum of the dual of $P$ is $r$.
-The strong duality holds.
+The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
 
 If the dual of $P$ is infeasible, the optimum of the dual of $P$ is
 $\top$ by definition. Using \ref{unbounded-of-feasible-of-infeasible}
 we get that the optimum of $P$ is $\bot$.
-The strong duality holds.
+The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
 
 \begin{theorem}[\customlabel{optimum-neq-none}{\texttt{optimum\_neq\_none}}]
 Every linear program has optimum.
 \end{theorem}
 
-\medskip \noindent
+\noindent
 Proof idea:
 If a linear program $P$ is feasible, the existence of optimum
 follows from \ref{strongDuality-of-prim-feas}.
@@ -1527,10 +1497,10 @@ Otherwise, the optimum of $P$ is $\top$ by definition.
 
 \begin{lemma}[\customlabel{strongDuality-of-dual-feas}{\texttt{strongDuality\_of\_dual\_feas}}]
 Let $P$ be a linear program whose dual is feasible.
-The strong duality holds.
+The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
 \end{lemma}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Apply \ref{strongDuality-of-prim-feas} to the dual of $P$ and
 use \ref{dualize-dualize}.
@@ -1541,77 +1511,164 @@ Let $P$ be a linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
 then there exists $p$ in $F_\infty$ such that
 $P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
+{\color{blue} TODO rephrase in terms of OppositesOpt.}
 \end{theorem}
 
-\medskip \noindent
+\noindent
 Proof idea:
 Use \ref{strongDuality-of-prim-feas} or \ref{strongDuality-of-dual-feas}.
 
-\subsection{Counterexample (first two conditions)}
 
-If $A$ has $\bot$ and $\top$ in the same column, the following may happen:
+
+
+
+
+
+
+
+
+
+\section{Counterexamples}
+\subsection{Counterexamples for~\ref{extendedFarkas}}\label{sec:extendedFarkas:counterexamples}
+Recall that~\ref{extendedFarkas} has four preconditions on matrix $A$ and vector $b$.
+The following examples show that omitting any of these preconditions makes the theorem false: there may exist nonnegative vectors $x,y$ such that 
+$A \* x \le b$, $(-A^T) \* y \le 0$ and $b \* y < 0$.
+ 
 $$
+\begin{array}{cc@{\hspace{30pt}}ccc@{\hspace{60pt}}l}
+A =
+\begin{pmatrix}
+	\bot & \top \\
+	0 & -1
+\end{pmatrix}
+&
+b = \begin{pmatrix} 0 \\ -1 \end{pmatrix}
+&
+x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
+&
+y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
+&
+&\mbox{ \em $A$ has $\bot$ and $\top$ in the same row}
+%
+\vspace{5pt} \\
+%
 A = \begin{pmatrix} \bot \\ \top \end{pmatrix}
-\qquad \qquad
+&
 b = \begin{pmatrix} -1 \\ 0 \end{pmatrix}
-\qquad \qquad
-c = \begin{pmatrix} 0 \end{pmatrix}
-$$
-If $A$ has $\bot$ and $\top$ in the same row, the following may happen:
-$$
-A = \begin{pmatrix} \top & \bot \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} 0 \end{pmatrix}
-\qquad \qquad
-c = \begin{pmatrix} -1 \\ 0 \end{pmatrix}
-$$
-The two linear programs above are duals of each other.
-Yet the optimum of the former is $0$
-but the optimum of the latter is $\bot$.
-
-\subsection{Counterexample (middle two conditions)}
-
-If $A$ has $\bot$ in a row where $b$ has $\bot$, the following may happen:
-$$
-A = \begin{pmatrix} \bot \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} \bot \end{pmatrix}
-\qquad \qquad
-c = \begin{pmatrix} 0 \end{pmatrix}
-$$
-If $A$ has $\top$ in a column where $c$ has $\bot$, the following may happen:
-$$
-A = \begin{pmatrix} \top \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} 0 \end{pmatrix}
-\qquad \qquad
-c = \begin{pmatrix} \bot \end{pmatrix}
-$$
-The two linear programs above are duals of each other.
-Yet the optimum of the former is $0$
-but the optimum of the latter is $\bot$.
-
-\subsection{Counterexample (last two conditions)}
-
-If $A$ has $\top$ in a row where $b$ has $\top$, the following may happen:
-$$
+&
+x = \begin{pmatrix} 0 \end{pmatrix}
+&
+y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
+&
+&\mbox{ \em $A$ has $\bot$ and $\top$ in the same column}
+%
+\vspace{5pt} \\
+%
 A = \begin{pmatrix} \top \\ -1 \end{pmatrix}
-\qquad \qquad
+&
 b = \begin{pmatrix} \top \\ -1 \end{pmatrix}
-\qquad \qquad
-c = \begin{pmatrix} 0 \end{pmatrix}
+&
+x = \begin{pmatrix} 1 \end{pmatrix}
+&
+y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
+&
+&\mbox{ \em $A$ has $\top$ in a row where $b$ has $\top$}
+%
+\vspace{5pt} \\
+%
+A = \begin{pmatrix} \bot \end{pmatrix}
+&
+b = \begin{pmatrix} \bot \end{pmatrix}
+&
+x = \begin{pmatrix} 1 \end{pmatrix}
+&
+y = \begin{pmatrix} 0 \end{pmatrix}
+&
+&\mbox{ \em $A$ has $\bot$ in a row where $b$ has $\bot$}
+\end{array}
 $$
-If $A$ has $\bot$ in a column where $c$ has $\top$, the following may happen:
+
+We also claimed in \sekt{extensions} that changing condition $(-A^T) \* y \le 0$
+to  $A^T \* y \ge 0$ in  \ref{extendedFarkas} would cause the theorem
+to fail even when $A$ has a single $\bot$ entry. The counterexample is as follows:
 $$
-A = \begin{pmatrix} \bot & 1 \end{pmatrix}
-\qquad \qquad
-b = \begin{pmatrix} 0 \end{pmatrix}
-\qquad \qquad
-c = \begin{pmatrix} \top \\ -1 \end{pmatrix}
+\begin{array}{cc}
+A =
+\begin{pmatrix}
+	\bot  \\
+	0 
+\end{pmatrix}
+&
+b = \begin{pmatrix} 0 \\ -1 \end{pmatrix}
+\end{array}
 $$
-The two linear programs above are duals of each other.
-Yet the optimum of the former is $0$
-but the optimum of the latter is $\bot$.
+System $A \* x\le b$ does not have a solution, and neither does system $A^T \* y \ge 0$, $b \* y < 0$
+(over nonnegative vectors $x,y$).
+
+\subsection{Counterexamples for~\ref{ExtendedLP.strongDuality}}\label{sec:ExtendedLP.strongDuality:counterexamples}
+Recall that \ref{ExtendedLP.strongDuality} is formulated for {\em valid} LPs,
+and the definition of a valid LP has six conditions.
+In this section we show that omitting any of these six conditions
+makes the theorem false.
+
+Let us consider the following six LPs over $F_\infty$;
+all of them are written in the format $P=(A,b,c)$.
+$$
+\begin{array}{c@{\hspace{100pt}}c}
+P_1 = \left(
+	\begin{pmatrix} \bot \\ \top \end{pmatrix},
+	\begin{pmatrix} -1 \\ 0 \end{pmatrix},
+	\begin{pmatrix} 0 \end{pmatrix}
+\right)
+&
+D_1 = \left(
+	\begin{pmatrix} \top & \bot \end{pmatrix},
+	\begin{pmatrix} 0 \end{pmatrix},
+	\begin{pmatrix} -1 \\ 0 \end{pmatrix}
+\right)
+\vspace{5pt} \\
+P_2=\left(
+	\begin{pmatrix} \bot \end{pmatrix}, 
+	\begin{pmatrix} \bot \end{pmatrix}, 
+	\begin{pmatrix} 0 \end{pmatrix}
+\right)
+&
+D_2=\left(
+	\begin{pmatrix} \top \end{pmatrix},
+	\begin{pmatrix} 0 \end{pmatrix},
+	\begin{pmatrix} \bot \end{pmatrix}
+\right)
+\vspace{5pt} \\
+P_3=\left(
+	\begin{pmatrix} \top \\ -1 \end{pmatrix},
+	\begin{pmatrix} \top \\ -1 \end{pmatrix},
+	\begin{pmatrix} 0 \end{pmatrix}
+\right)
+&
+D_3=\left(
+	\begin{pmatrix} \bot & 1 \end{pmatrix},
+	\begin{pmatrix} 0 \end{pmatrix},
+	\begin{pmatrix} \top \\ -1 \end{pmatrix}
+\right)
+\end{array}
+$$
+It can be checked that $D_i$ is the dual of $P_i$ for $i=1,2,3$.
+Furthermore, strong duality fails in all cases, since
+the optimum of $P_i$ is $0$ and the optimum of $D_i$ is $\bot$ for $i=1,2,3$.
+Each of $P_1,D_1,P_2,D_2,P_3,D_3$ violates exactly one of the conditions
+in the definition of a valid LP.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \section {Related work}
