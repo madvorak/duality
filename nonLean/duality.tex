@@ -1381,17 +1381,17 @@ Proof idea: Directly from \ref{no-bot-of-reaches}.
 \begin{lemma}[\customlabel{unbounded-of-reaches-le}{\texttt{unbounded\_of\_reaches\_le}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a valid linear program over $F_\infty$.
-Assume that for each $s$ in $F$ there exists
+Assume that for each $r$ in $F$ there exists
 $p$ in $F_\infty$ such that $P$ reaches $p$
-and $p \le s$.
+and $p \le r$.
 Then $P$ is unbounded.
 \end{lemma}
 
 \noindent
 Proof idea:
-It suffices to prove that for each $r$ in $F$ there exists
-$p'$ in $F_\infty$ such that $P$ reaches $p'$ and $p' < r$.
-Apply the assumption to $r\!-\!1$.
+It suffices to prove that for each $r'$ in $F$ there exists
+$p'$ in $F_\infty$ such that $P$ reaches $p'$ and $p' < r'$.
+Apply the assumption to $r'\!-\!1$.
 
 \begin{lemma}[\customlabel{unbounded-of-feasible-of-neg}{\texttt{unbounded\_of\_feasible\_of\_neg}}]
 Let $F$ be a linearly ordered field.
@@ -1406,14 +1406,14 @@ Proof idea:
 There is a nonnegative vector $x_p$ such that $A \* x_p \le b$ and
 $c \* x_p = e$ for some $e \neq \top$.
 We apply \ref{unbounded-of-reaches-le}.
-In case $e \le s$, we use $x_p$ and we are done.
+In case $e \le r$, we use $x_p$ and we are done.
 Otherwise, consider what $c \cdot x_0$ equals to.
 If $c \cdot x_0 = \bot$ then we are done.
 We cannot have $c \cdot x_0 = \top$ because $c \cdot x_0 < 0$.
 Hence $c \cdot x_0 = d$ for some $d$ in $F$.
-Observe that the fraction $\frac{s-e}{d}$ is
+Observe that the fraction $\frac{r-e}{d}$ is
 well defined and it is positive.
-Use $x_p + \frac{s-e}{d} \cdot x_0$.
+Use $x_p + \frac{r-e}{d} \cdot x_0$.
 
 \begin{lemma}[\customlabel{unbounded-of-feasible-of-infeasible}{\texttt{unbounded\_of\_feasible\_of\_infeasible}}]
 Let $P$ be a valid linear program such that
