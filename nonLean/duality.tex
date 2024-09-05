@@ -1175,7 +1175,8 @@ $ \sum_{j : \fin{n}}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 \end{theorem}
-The only difference is that finFarkasBartl uses $\fin{n} = \{ 0, \dots, n\!-\!1 \}$
+The only difference from \ref{fintypeFarkasBartl} is that
+\ref{finFarkasBartl} uses $\fin{n} = \{ 0, \dots, n\!-\!1 \}$
 instead of an arbitrary (unordered) finite type $J$.
 
 \medskip \noindent
@@ -1587,15 +1588,6 @@ Proof idea:
 Use \ref{strongDuality-of-prim-feas} or \ref{strongDuality-of-dual-feas}.
 
 
-
-
-
-
-
-
-
-
-
 \section{Counterexamples}
 \label{counterexamples}
 
@@ -1603,8 +1595,9 @@ Use \ref{strongDuality-of-prim-feas} or \ref{strongDuality-of-dual-feas}.
 \label{sec:extendedFarkas:counterexamples}
 
 Recall that~\ref{extendedFarkas} has four preconditions on matrix $A$ and vector $b$.
-The following examples show that omitting any of these preconditions makes the theorem false: there may exist nonnegative vectors $x,y$ such that 
-$A \* x \le b$, $(-A^T) \* y \le 0$ and $b \* y < 0$.
+The following examples show that omitting any of these preconditions makes the theorem
+false\:---\:there may exist nonnegative vectors $x,y$ such that 
+$A \* x \le b$, $(-A^T) \* y \le 0$, and $b \* y < 0$.
  
 $$
 \begin{array}{cc@{\hspace{30pt}}ccc@{\hspace{60pt}}l}
@@ -1620,7 +1613,7 @@ x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 &
 y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 &
-&\mbox{ \em $A$ has $\bot$ and $\top$ in the same row}
+&\mbox{ $A$ has $\bot$ and $\top$ in the same row}
 %
 \vspace{5pt} \\
 %
@@ -1632,7 +1625,7 @@ x = \begin{pmatrix} 0 \end{pmatrix}
 &
 y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 &
-&\mbox{ \em $A$ has $\bot$ and $\top$ in the same column}
+&\mbox{ $A$ has $\bot$ and $\top$ in the same column}
 %
 \vspace{5pt} \\
 %
@@ -1644,7 +1637,7 @@ x = \begin{pmatrix} 1 \end{pmatrix}
 &
 y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 &
-&\mbox{ \em $A$ has $\top$ in a row where $b$ has $\top$}
+&\mbox{ $A$ has $\top$ in a row where $b$ has $\top$}
 %
 \vspace{5pt} \\
 %
@@ -1656,7 +1649,7 @@ x = \begin{pmatrix} 1 \end{pmatrix}
 &
 y = \begin{pmatrix} 0 \end{pmatrix}
 &
-&\mbox{ \em $A$ has $\bot$ in a row where $b$ has $\bot$}
+&\mbox{ $A$ has $\bot$ in a row where $b$ has $\bot$}
 \end{array}
 $$
 
@@ -1674,8 +1667,8 @@ A =
 b = \begin{pmatrix} 0 \\ -1 \end{pmatrix}
 \end{array}
 $$
-System $A \* x\le b$ does not have a solution, and neither does system $A^T \* y \ge 0$, $b \* y < 0$
-(over nonnegative vectors $x,y$).
+System $A \* x\le b$ does not have a solution, and neither does system
+$A^T \* y \ge 0$, $b \* y < 0$ (over nonnegative vectors $x,y$).
 
 \subsection{Counterexamples for~\ref{ExtendedLP.strongDuality}}\label{sec:ExtendedLP.strongDuality:counterexamples}
 Recall that \ref{ExtendedLP.strongDuality} is formulated for {\em valid} LPs,
@@ -1729,18 +1722,6 @@ Furthermore, strong duality fails in all cases, since
 the optimum of $P_i$ is $0$ and the optimum of $D_i$ is $\bot$ for $i=1,2,3$.
 Each of $P_1,D_1,P_2,D_2,P_3,D_3$ violates exactly one of the conditions
 in the definition of a valid LP.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \section {Related work}
