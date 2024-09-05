@@ -1219,12 +1219,11 @@ $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
 
 \noindent
 Proof idea:
-Let $A_{<m}$ roughly mean $A \restriction \fin{m}$.
+Let $A_{<m}$ roughly mean $A \big|_{\fin{m}}$.
 To be more precise, $A_{<m}$ is a function that maps $(w : W)$ to
-$(A~w) \restriction \fin{m}$, i.e., $A_{<m}$ is an $R$-linear map
+$(A~w) \big|_{\fin{m}}$, i.e., $A_{<m}$ is an $R$-linear map
 from $W$ to $(\fin{m} \r R)$ that behaves exactly like $A$ where
 it is defined.
-{\color{blue} TODO do not use $\restriction$ it is not idiomatic.}
 We distinguish two cases. If, for all $y : W$, the inequality
 $A_{<m}~y \ge 0$ implies $b~y \ge 0$, then plug $A_{<m}$
 for $\bar{A}$, obtain $\bar{x}$, and construct a vector family $x$ such that
@@ -1424,7 +1423,7 @@ Then $P$ is unbounded.
 \noindent
 Proof idea:
 Apply \ref{extendedFarkas} to the matrix
-$\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
+$( A \big|_{\{ i : I \,|\, b_i \neq \top \}} )^T$
 and the vector $c$.
 Utilize \ref{no-bot-of-feasible} in all places where $\neq \bot$ is needed.
 
