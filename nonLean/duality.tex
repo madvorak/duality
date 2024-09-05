@@ -243,13 +243,11 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : I \r R$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 \end{theorem}
-{\color{blue}
 
 Note that \ref{equalityFarkas} for matrix $A: I \times J \r F$ and vector $b : I \r F$
 can be obtained by applying \ref{coordinateFarkas} to the $F$-linear maps
 $(A^T \* \phantom{v})$ and $(b \* \phantom{v})$ utilizing the fact that
-two linear maps are equal if and only if they map the basis vectors equally.
-}
+two linear maps are equal if and only if they map the basis vectors equally.,
 
 In the next generalization (similar to \cite{Chernikov}), 
 the partially ordered module $I \r R$ is replaced by a general $R$-module $W$.
@@ -462,7 +460,7 @@ using definitions from \sekt{preliminaries}.
 In \sekt{bartl}, we prove \ref{fintypeFarkasBartl} (stated in \sekt{generalizations}),
 from which be obtain \ref{equalityFarkas} as a corollary.
 In \sekt{extended}, we prove \ref{extendedFarkas} (stated in \sekt{extensions}).
-In \sekt{duality}, we prove \ref{ExtendedLP.strongDuality}
+In \sekt{dualityELP}, we prove \ref{ExtendedLP.strongDuality}
 (stated in \sekt{extensions}), from which we obtain
 \ref{StandardLP.strongDuality} as a corollary.
 In \sekt{counterexamples}, we show what happens when various preconditions
@@ -724,7 +722,7 @@ instance that converts LinearOrderedField to LinearOrderedDivisionRing:
 instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : LinearOrderedField F] :
   LinearOrderedDivisionRing F := { instF with }
 \end{lstlisting}
-This instance is needed for the step from coordinateFarkas to equalityFarkas.
+This instance is needed for the step from \ref{coordinateFarkas} to \ref{equalityFarkas}.
 All the classes in this section come from Mathlib; we import them without any modification.
 The only class that we defined on our own is LinearOrderedDivisionRing.
 
@@ -954,7 +952,7 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends Di
   add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
   zero_smul : ∀ x : M, (0 : R) • x = 0
 \end{lstlisting}
-Note the the class Module does not extend the class Semiring; it requires Semiring as an argument.
+Note the class Module does not extend the class Semiring; it requires Semiring as an argument.
 The abelian monoid is also required separately in the definition. We call such a class ``mixin''.
 Thanks to this design, we do not need to define superclasses of Module in order to require
 ``more than a module''. Instead, we use superclasses in the respective arguments, i.e.,
@@ -984,7 +982,7 @@ class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] : Pro
   elim {a : α} (ha : 0 ≤ a) {b₁ b₂ : β} (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
 \end{lstlisting}
 We encourage the reader to try and delete various assumptions and see which parts of the proofs
-underline by red.
+get underlined in red.
 
 {\color{blue}
 TODO explain ordering (specifically, nonnegativity) on explicit vectors.
@@ -997,18 +995,12 @@ The code, however, does distinguish between them.
 
 \subsection{Linear programming}
 
-Extended linear programs are defined as follows: {\color{blue} TODO this changed.}
+Extended linear programs are defined as follows:
 \begin{lstlisting}
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   A : Matrix I J F∞
   b : I → F∞
   c : J → F∞
-  hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
-  hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
-  hbi : ¬∃ i : I, b i = ⊥
-  hcj : ¬∃ j : J, c j = ⊥
-  hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
-  hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
 \end{lstlisting}
 Vector $x$ made of finite nonnegative values is a solution if and only if $A \* x \le b$
 holds:
@@ -1021,10 +1013,10 @@ Reaching a value $r$ is defined as follows:
 def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 \end{lstlisting}
-Feasibility is defined as follows: {\color{blue} TODO this changed.}
+Feasibility is defined as follows:
 \begin{lstlisting}
-def ExtendedLP.IsFeasible (P : ExtendedLP I J F) : Prop :=
-  ∃ p : F, P.Reaches (toE p)
+def ExtendedLP.IsFeasible [Fintype J] (P : ExtendedLP I J F) : Prop :=
+  ∃ p : F∞, P.Reaches p ∧ p ≠ ⊤
 \end{lstlisting}
 Being bounded by a value $r$ (from below -- we always minimize) is defined as follows:
 \begin{lstlisting}
@@ -1036,27 +1028,49 @@ Being unbounded is defined as follows:
 def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
   ¬∃ r : F, P.IsBoundedBy r
 \end{lstlisting}
-The following definition says how linear programs are dualized (the first three parts
-define the dual program's $A, b, c$; the rest generates proofs that our six conditions stay satisfied
-after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aesop} \cite{Aesop}):
-{\color{blue} TODO this changed.}
+Valid extended linear programs are defined as follows:
 \begin{lstlisting}
-def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
-  ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
+structure ValidELP (I J F : Type*) [LinearOrderedField F] extends ExtendedLP I J F where
+  hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
+  hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
+  hbi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
+  hcj : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
+  hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
+  hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
 \end{lstlisting}
-The definition of optimum is, sadly, very complicated: {\color{blue} TODO this changed.}
+The following definition says how linear programs are dualized (first, the abbreviation
+\texttt{ExtendedLP.dualize} defines the dual program's $A, b, c$; then the definition
+\texttt{ValidELP.dualize} says that the dualization of \texttt{ValidELP}
+is inherited from the dualization of \texttt{ExtendedLP}; the remaining six lines generate
+proofs that our six conditions stay satisfied after dualization,
+where \texttt{aeply} is a custom tactic based on \texttt{aesop} \cite{Aesop}
+and \texttt{apply}):
 \begin{lstlisting}
-noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
-  if P.IsFeasible then
+abbrev ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
+  ⟨-P.Aᵀ, P.c, P.b⟩
+
+def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
+  toExtendedLP := P.toExtendedLP.dualize
+  hAi := by aeply P.hAj
+  hAj := by aeply P.hAi
+  hbi := by aeply P.hcj
+  hcj := by aeply P.hbi
+  hAb := by aeply P.hAc
+  hAc := by aeply P.hAb
+\end{lstlisting}
+The definition of optimum is, sadly, very complicated (more explained below):
+\begin{lstlisting}
+noncomputable def ExtendedLP.optimum [Fintype J] (P : ExtendedLP I J F) : Option F∞ :=
+  if ¬P.IsFeasible then
+    some ⊤
+  else
     if P.IsUnbounded then
-      some ⊥ 
+      some ⊥
     else
       if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
         some (toE hf.choose)
       else
         none
-  else
-    some ⊤
 \end{lstlisting}
 The type \texttt{Option F$\infty$}, which is implemented as
 \texttt{Option (Option (Option F))} after unfolding definitions,
@@ -1094,8 +1108,10 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | _       , _        => False
 \end{lstlisting}
 The last line says that \texttt{OppositesOpt none none} is \texttt{False}.
-We later show that \texttt{none} is never the optimum, but we do not know it yet.
-{\color{blue} TODO this changed.}
+We later show that \texttt{none} is never the optimum of a valid\footnote{
+In principle, we could say that \texttt{none} is never the optimum of any
+linear program, i.e., $P^\ast$ is defined for every (extended) linear program $P$,
+but we did not bother proving it.} linear program, but we do not know it yet.
 
 
 \section{Formal statements of selected results}
@@ -1217,7 +1233,7 @@ $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $ holds.
 
 In the second case, we have $y'$ such that $A_{<m}~y' \ge 0$
 holds but $b~y' < 0$ also holds. We realize that $(A~y')_m < 0$.
-We now declare $y := (A~y')_m \cdot y'$ and observe
+We now declare $y := ((A~y')_m)^{-1} \cdot y'$ and observe
 $(A~y)_m = 1$. We establish the following facts (proofs are omitted):
 \begin{itemize}
 \item for all $w : W$, we have $A~(w - ((A~w)_m \cdot y)) = 0$
@@ -1301,17 +1317,18 @@ In either case, extend $x$ or $y$ with zeros on all deleted positions.
 
 
 \section {Extended strong LP duality}
-\label{duality}
+\label{dualityELP}
 
 We start with the weak duality and then move to the strong duality.
 We will use \ref{extendedFarkas} in several places.
 
-\begin{theorem}[\customlabelrestated{weakDuality:restated}{\texttt{weakDuality}}]
+\begin{lemma}[\customlabel{weakDuality-of-no-bot}{\texttt{weakDuality\_of\_no\_bot}}]
 Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$.
+Let $P = (A,b,c)$ be a valid linear program over $F_\infty$ such that
+neither $b$ nor $c$ contains $\bot$.
 If $P$ reaches $p$ and the dual of $P$ reaches $q$,
 then $p + q \ge 0$.
-\end{theorem}
+\end{lemma}
 
 \noindent
 Proof idea:
@@ -1328,21 +1345,41 @@ b \\
 c \* x
 \end{pmatrix}
 $$
-{\color{blue} TODO this changed.}
 
-\begin{lemma}[\customlabel{infeasible-of-unbounded}{\texttt{infeasible\_of\_unbounded}}]
-If a linear program $P$ is unbounded,
-the dual of $P$ cannot be feasible.
+\begin{lemma}[\customlabel{no-bot-of-reaches}{\texttt{no\_bot\_of\_reaches}}]
+Let $F$ be a linearly ordered field.
+Let $P = (A,b,c)$ be a valid linear program over $F_\infty$.
+If $P$ reaches any value $p$, then $b$ does not contain $\bot$.
 \end{lemma}
 
 \noindent
-Proof idea:
-Assume that $P$ is unbounded, but the dual of $P$ is feasible.
-Obtain contradiction using \ref{weakDuality:restated}.
+Proof idea: It would contradict the assumption that
+$A$ does not have $\bot$ in any row where $b$ has $\bot$.
+
+\begin{theorem}[\customlabel{weakDuality}{\texttt{weakDuality}}]
+Let $F$ be a linearly ordered field.
+Let $P = (A,b,c)$ be a valid linear program over $F_\infty$.
+If $P$ reaches $p$ and the dual of $P$ reaches $q$,
+then $p + q \ge 0$.
+\end{theorem}
+
+\noindent
+Proof idea: Apply \ref{no-bot-of-reaches} to P.
+Apply \ref{no-bot-of-reaches} to the dual of P.
+Finish the proof using \ref{weakDuality-of-no-bot}.
+
+\begin{lemma}[\customlabel{no-bot-of-feasible}{\texttt{no\_bot\_of\_feasible}}]
+Let $F$ be a linearly ordered field.
+Let $P$ be a valid linear program over $F_\infty$.
+If $P$ is feasible, then $b$ does not contain $\bot$.
+\end{lemma}
+
+\noindent
+Proof idea: Directly from \ref{no-bot-of-reaches}.
 
 \begin{lemma}[\customlabel{unbounded-of-reaches-le}{\texttt{unbounded\_of\_reaches\_le}}]
 Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$.
+Let $P$ be a valid linear program over $F_\infty$.
 Assume that for each $s$ in $F$ there exists
 $p$ in $F_\infty$ such that $P$ reaches $p$
 and $p \le s$.
@@ -1357,7 +1394,7 @@ Apply the assumption to $r\!-\!1$.
 
 \begin{lemma}[\customlabel{unbounded-of-feasible-of-neg}{\texttt{unbounded\_of\_feasible\_of\_neg}}]
 Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$ that is feasible.
+Let $P$ be a valid linear program over $F_\infty$ that is feasible.
 Let $x_0$ be a nonnegative vector such that $c \cdot x_0 < 0$
 and $A \cdot x_0 + 0 \cdot (-b) \le 0$.
 Then $P$ is unbounded.
@@ -1366,19 +1403,42 @@ Then $P$ is unbounded.
 \noindent
 Proof idea:
 There is a nonnegative vector $x_p$ such that $A \* x_p \le b$ and
-$c \* x_p = e$ for some $e$ in $F$.
-We apply unbounded\_of\_reaches\_le.
+$c \* x_p = e$ for some $e \neq \top$.
+We apply \ref{unbounded-of-reaches-le}.
 In case $e \le s$, we use $x_p$ and we are done.
 Otherwise, consider what $c \cdot x_0$ equals to.
-We cannot have $c \cdot x_0 = \bot$ because $c$ does not contain $\bot$.
+If $c \cdot x_0 = \bot$ then we are done.
 We cannot have $c \cdot x_0 = \top$ because $c \cdot x_0 < 0$.
 Hence $c \cdot x_0 = d$ for some $d$ in $F$.
 Observe that the fraction $\frac{s-e}{d}$ is
 well defined and it is positive.
 Use $x_p + \frac{s-e}{d} \cdot x_0$.
 
+\begin{lemma}[\customlabel{unbounded-of-feasible-of-infeasible}{\texttt{unbounded\_of\_feasible\_of\_infeasible}}]
+Let $P$ be a valid linear program such that
+$P$ is feasible but the dual of $P$ is not feasible.
+Then $P$ is unbounded.
+\end{lemma}
+
+\noindent
+Proof idea:
+Apply \ref{extendedFarkas} to the matrix
+$\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
+and the vector $c$.
+Utilize \ref{no-bot-of-feasible} in all places where $\neq \bot$ is needed.
+
+\begin{lemma}[\customlabel{infeasible-of-unbounded}{\texttt{infeasible\_of\_unbounded}}]
+If a valid linear program $P$ is unbounded,
+the dual of $P$ cannot be feasible.
+\end{lemma}
+
+\noindent
+Proof idea:
+Assume that $P$ is unbounded, but the dual of $P$ is feasible.
+Obtain contradiction using \ref{weakDuality}.
+
 \begin{lemma}[\customlabel{dualize-dualize}{\texttt{dualize\_dualize}}]
-Let $P$ be a linear program. The dual of the dual of $P$ is exactly $P$.
+Let $P$ be a valid linear program. The dual of the dual of $P$ is exactly $P$.
 \end{lemma}
 
 \noindent
@@ -1386,7 +1446,7 @@ Proof idea:
 $ -(-A^T)^T = A $
 
 \begin{lemma}[\customlabel{strongDuality-aux}{\texttt{strongDuality\_aux}}]
-Let $P$ be a linear program such that
+Let $P$ be a valid linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
 There is a value $p$ reached by $P$ and
 a value $q$ reached by the dual of $P$ such
@@ -1425,15 +1485,17 @@ and $q := z^{-1} \* b \* y$ (and we do not care that this case
 cannot happen in reality).
 It remains to prove that $z=0$ cannot happen.
 At least one of $b \* y$ or $c \* x$ must be strictly negative.
-If $c \* x < 0$, we apply unbounded\_of\_feasible\_of\_neg to
-$P$, which (using infeasible\_of\_unbounded) contradicts
+If $c \* x < 0$, we apply \ref{unbounded-of-feasible-of-neg} to
+$P$, which (using \ref{infeasible-of-unbounded}) contradicts
 that the dual of $P$ is feasible.
-If $b \* y < 0$, we apply unbounded\_of\_feasible\_of\_neg to
-the dual of $P$, which (using infeasible\_of\_unbounded and
-dualize\_dualize) contradicts that $P$ is feasible.
+If $b \* y < 0$, we apply \ref{unbounded-of-feasible-of-neg} to
+the dual of $P$, which (using \ref{infeasible-of-unbounded} and
+\ref{dualize-dualize}) contradicts that $P$ is feasible.
+
+Lemma \ref{no-bot-of-feasible} is used 12 times throughout this proof.
 
 \begin{lemma}[\customlabel{strongDuality-of-both-feasible}{\texttt{strongDuality\_of\_both\_feasible}}]
-Let $P$ be a linear program such that
+Let $P$ be a valid linear program such that
 $P$ is feasible and the dual of $P$ is also feasible.
 There is a finite value $r$ such that
 $P$ reaches $-r$ and the dual of $P$ reaches $r$.
@@ -1443,23 +1505,11 @@ $P$ reaches $-r$ and the dual of $P$ reaches $r$.
 Proof idea:
 From \ref{strongDuality-aux} we have a value $p$ reached by $P$ and
 a value $q$ reached by the dual of $P$ such that $p + q \le 0$.
-We apply weakDuality to $p$ and $q$ to obtain $p + q \ge 0$.
+We apply \ref{weakDuality} to $p$ and $q$ to obtain $p + q \ge 0$.
 We set $r := q$.
 
-\begin{lemma}[\customlabel{unbounded-of-feasible-of-infeasible}{\texttt{unbounded\_of\_feasible\_of\_infeasible}}]
-Let $P$ be a linear program such that
-$P$ is feasible but the dual of $P$ is not feasible.
-Then $P$ is unbounded.
-\end{lemma}
-
-\noindent
-Proof idea:
-Apply \ref{extendedFarkas} to the matrix
-$\left( A \restriction \{ i : I ~|~ b_i \neq \top \} \right)^T$
-and the vector $c$.
-
 \begin{lemma}[\customlabel{optimum-unique}{\texttt{optimum\_unique}}]
-Let $P$ be a linear program.
+Let $P$ be a valid linear program.
 Let $r$ be a value reached by $P$ such that $P$ is bounded by $r$.
 Let $s$ be a value reached by $P$ such that $P$ is bounded by $s$.
 Then $r = s$.
@@ -1473,7 +1523,7 @@ We prove $s \le r$ by applying ``$P$ is bounded by~$s$'' to
 ``$r$ is reached by $P$''.
 
 \begin{lemma}[\customlabel{optimum-eq-of-reaches-bounded}{\texttt{optimum\_eq\_of\_reaches\_bounded}}]
-Let $P$ be a linear program.
+Let $P$ be a valid linear program.
 Let $r$ be a value reached by $P$ such that $P$ is bounded by $r$.
 Then the optimum of $P$ is $r$.
 \end{lemma}
@@ -1483,38 +1533,40 @@ Proof idea:
 Apply the axiom of choice to the definition of optimum and use \ref{optimum-unique}.
 
 \begin{lemma}[\customlabel{strongDuality-of-prim-feas}{\texttt{strongDuality\_of\_prim\_feas}}]
-Let $P$ be a linear program that is feasible.
-The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
+Let $P$ be a valid linear program that is feasible.
+Then the optiomum of $P$ and the optimum of dual of $P$
+are opposites.
 \end{lemma}
 
 \noindent
 Proof idea:
 If the dual of $P$ is feasible as well, use \ref{strongDuality-of-both-feasible}
 to obtain $r$ such that $P$ reaches $-r$ and the dual of $P$ reaches $r$.
-Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality:restated},
+Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality},
 conclude that the optimum of $P$ is $-r$.
-Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality:restated},
+Using \ref{optimum-eq-of-reaches-bounded} together with \ref{weakDuality},
 conclude that the optimum of the dual of $P$ is $r$.
-The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
+Observe that $-r$ and $r$ are opposites.
 
 If the dual of $P$ is infeasible, the optimum of the dual of $P$ is
 $\top$ by definition. Using \ref{unbounded-of-feasible-of-infeasible}
 we get that the optimum of $P$ is $\bot$.
-The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
+Observe that $\top$ and $\bot$ are opposites.
 
 \begin{theorem}[\customlabel{optimum-neq-none}{\texttt{optimum\_neq\_none}}]
-Every linear program has optimum.
+Every valid linear program has optimum.
 \end{theorem}
 
 \noindent
 Proof idea:
-If a linear program $P$ is feasible, the existence of optimum
+If a valid linear program $P$ is feasible, the existence of optimum
 follows from \ref{strongDuality-of-prim-feas}.
 Otherwise, the optimum of $P$ is $\top$ by definition.
 
 \begin{lemma}[\customlabel{strongDuality-of-dual-feas}{\texttt{strongDuality\_of\_dual\_feas}}]
-Let $P$ be a linear program whose dual is feasible.
-The strong duality holds. {\color{blue} TODO rephrase in terms of OppositesOpt.}
+Let $P$ be a valid linear program whose dual is feasible.
+Then the optiomum of $P$ and the optimum of dual of $P$
+are opposites.
 \end{lemma}
 
 \noindent
@@ -1524,11 +1576,10 @@ use \ref{dualize-dualize}.
 
 \begin{theorem}[\customlabelrestated{strongDuality:restated}{\texttt{strongDuality}}]
 Let $F$ be a linearly ordered field.
-Let $P$ be a linear program over $F_\infty$.
+Let $P$ be a valid linear program over $F_\infty$.
 If $P$ or its dual is feasible (at least one of them),
-then there exists $p$ in $F_\infty$ such that
-$P$ has optimum $p$ and the dual of $P$ has optimum $-p$.
-{\color{blue} TODO rephrase in terms of OppositesOpt.}
+then the optiomum of $P$ and the optimum of dual of $P$
+are opposites.
 \end{theorem}
 
 \noindent
