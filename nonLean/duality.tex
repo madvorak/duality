@@ -1089,16 +1089,16 @@ We assign the following semantics to \texttt{Option F$\infty$} values:
 \item \texttt{some $\top$} $\ \dots$ infeasible
 \item \texttt{some (toE r)} $\ \dots$ the minimum is a finite value $r$
 \end{itemize}
-The definition above first asks if $P$ is feasible; if not, it returns \texttt{some $\top$}
-(i.e., the worst value).
+The definition \texttt{ExtendedLP.optimum} first asks if $P$ is feasible;
+if not, it returns \texttt{some $\top$} (i.e., the worst value).
 When $P$ is feasible, it asks whether $P$ is unbounded; if yes, it returns \texttt{some $\bot$}
 (i.e., the best value).
-Otherwise, we are in the middle branch where $P$ is feasible and bounded.
+Otherwise, we are in the branch where $P$ is feasible and bounded.
 We ask if there is a finite value $r$ such that $P$ reaches $r$ and, at the same time,
-$P$ is bounded by $r$; is so, \texttt{some (toE r)} is the optimum.
+$P$ is bounded by $r$; is so, $r$ is the optimum.
 Note that we use the verbs ``ask'' and ``return'' metaphorically;
 \texttt{ExtendedLP.optimum} is not a computable function; it is just a mathematical
-definition (see the keyword \texttt{noncomputable def} above).
+definition (see the keyword \texttt{noncomputable def} above) you can prove things about.
 
 Finally, we define what opposite values of the type \texttt{Option F$\infty$} are
 (note that for any values except \texttt{none} we directly follow the definition
@@ -1535,8 +1535,7 @@ Apply the axiom of choice to the definition of optimum and use \ref{optimum-uniq
 
 \begin{lemma}[\customlabel{strongDuality-of-prim-feas}{\texttt{strongDuality\_of\_prim\_feas}}]
 Let $P$ be a valid linear program that is feasible.
-Then the optiomum of $P$ and the optimum of dual of $P$
-are opposites.
+Then the optimum of $P$ and the optimum of dual of $P$ are opposites.
 \end{lemma}
 
 \noindent
