@@ -81,16 +81,16 @@ variable [LinearOrderedField R]
 open scoped Classical in
 /-- The "optimum" of "minimization LP" (the less the better). -/
 noncomputable def StandardLP.optimum (P : StandardLP I J R) : Option R∞ :=
-  if P.IsFeasible then
+  if ¬P.IsFeasible then
+    some ⊤ -- infeasible means that the minimum is `⊤`
+  else
     if P.IsUnbounded then
       some ⊥ -- unbounded means that the minimum is `⊥`
     else
-      if hf : ∃ r : R, P.Reaches r ∧ P.IsBoundedBy r then
-        some (toE hf.choose) -- the minimum exists
+      if hr : ∃ r : R, P.Reaches r ∧ P.IsBoundedBy r then
+        some (toE hr.choose) -- the minimum exists
       else
-        none -- invalid finite value (infimum is not attained; later, we prove it cannot happen)
-  else
-    some ⊤ -- infeasible means that the minimum is `⊤`
+        none -- invalid finite value (infimum is not attained)
 
 
 private def StandardLP.toValidELP (P : StandardLP I J R) : ValidELP I J R :=
@@ -173,7 +173,7 @@ private theorem StandardLP.toValidELP.optimum_eq (P : StandardLP I J R) :
       simp only [StandardLP.optimum, ExtendedLP.optimum, feas, unbo,
         StandardLP.toValidELP.IsFeasible_iff, StandardLP.toValidELP.IsUnbounded_iff]
       if hr : ∃ r, P.Reaches r ∧ P.IsBoundedBy r then
-        convert @rfl _ (some (toE (hr.choose)))
+        convert @rfl _ (some (toE hr.choose))
         · simp [hr, StandardLP.toValidELP.Reaches_iff, StandardLP.toValidELP.IsBoundedBy_iff]
         · simp [hr]
       else

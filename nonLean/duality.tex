@@ -171,11 +171,11 @@ Exactly one of the following exists:
 \end{itemize}
 \end{theorem}
 
-For optimization problems, duality asserts that primal and dual problems
-have the same optimal values {\color{blue} TODO reformulate this sentence.}
-(von Neumann~\cite{vonNeumann}; Gale, Kuhn, Tucker~\cite{GaleKuhnTucker}).
-For example, for Linear Programs in the standard form, the strong duality theorem,
-the cornerstone of linear programming, can be stated as follows.
+For optimization problems, duality asserts a correspondence between
+the optimal value of a linear program and the optimal value of its dual
+(Dantzig, von Neumann~\cite{Discussion}; Gale, Kuhn, Tucker~\cite{GaleKuhnTucker}).
+The strong duality theorem, the cornerstone of linear programming, can be stated as follows.
+% maybe "which is a cornerstone of linear programming"
 
 \begin{theorem}[\customlabel{StandardLP.strongDuality}{\texttt{StandardLP.strongDuality}}]
 Let $I$ and $J$ be finite types.
@@ -188,16 +188,27 @@ $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 =- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
 $$
 holds if at least one of the systems has a solution (very roughly paraphrased).
-{\color{blue} TODO change in the code, then change here.}
 \end{theorem}
+Typically, the strong duality is stated as follows:
+$$ \max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+ = \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T \!\* y \ge c \,\}
+$$
+Later it will be clear why we chose min/min formulation rather than
+the idiomatic max/min formulation. Also, we do not investigate
+``asymmetric versions'' such as:
+$$ \max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x = b \,\}
+ = \min \,\{\, b \* y ~|~ A^T \!\* y \ge c \,\}
+$$
+
 For many more Farkas-like theorems (beyond the scope of this paper),
 see for example \cite{Perng2017}.
 
 This paper makes the following contributions.
 \begin{itemize}
-\item We formally prove several existing duality results (including the statements above) in Lean 4.
+\item We formally prove several existing duality results (including the theorems above) in Lean 4.
 In fact, we prove a more general version of \ref{equalityFarkas} due to Bartl~\cite{Bartl2007}.
 %This version allows, in particular, allows structures with a non-commutative multiplication, and also allows infinitely many equations.
+\sekt{generalizations} says more about it.
 \item We establish (and formally prove in Lean 4) a new generalization
 of~\ref{inequalityFarkas} and~\ref{StandardLP.strongDuality}
 to the case when some of the coefficients are allowed to have infinite values. 
@@ -210,9 +221,8 @@ Since infinities are not allowed in traditional LPs,
 ``soft'' and ``hard'' constraints need to be handled differently 
 when formulating LP relaxations of such problems (see e.g.~\cite{BLP}).
 Our work provides a more direct way to formulate such relaxations.
+\sekt{extensions} says more about the extensions.
 \end{itemize}
-Sections~\ref{generalizations} and~\ref{extensions} provide further details
-about these extensions.
 
 \subsection{Bartl's generalization}\label{generalizations}
 
@@ -258,18 +268,15 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \end{itemize}
 \end{theorem}
 In the most general theorem, stated below, certain occurrences of $R$ are replaced by
-a linearly ordered $R$-module $V$ whose order respects order on $R$ (the
-relationship between order on $R$ and order on $V$ will be left implicit
-in all upcoming informal statements; for a formal definition, see the end of
-\sekt{modules}). {\color{blue} TODO inline the (...) into theorem statement somehow.}
-This result is due to \cite{Bartl2007} and our proof is based on
-\cite{Bartl2011}.
+a linearly ordered $R$-module $V$ whose order respects the order on $R$
+(for a formal definition, see the end of \sekt{modules}).
 
 \begin{theorem}[\customlabel{fintypeFarkasBartl}{\texttt{fintypeFarkasBartl}}]
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $V$ be a linearly ordered $R$-module.
+Let $V$ be a linearly ordered $R$-module whose ordering satisfies
+monotonicity of scalar multiplication by nonnegative elements on the left.
 Let $A$ be an $R$-linear map from $W$ to $(J \r R)$.
 Let $b$ be an $R$-linear map from $W$ to $V$.
 Exactly one of the following exists:
@@ -284,6 +291,7 @@ $b~y < 0$ uses the linear order on $V$.
 Note that \ref{fintypeFarkasBartl} subsumes \ref{scalarFarkas} (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
 We prove \ref{fintypeFarkasBartl} in \sekt{bartl}, which is where the heavy lifting comes.
+Our proof is based on \cite{Bartl2011}.
 
 
 \subsection{Extension to infinite coefficients}\label{extensions}
@@ -388,8 +396,6 @@ and $c$ be a vector of type $J \r F_\infty$.
 We say that $P = (A, b, c)$ is a \emph{linear program} over $F_\infty$
 whose constraints are indexed by $I$ and variables are indexed by $J$.
 
-{\color{blue} 
-
 A nonnegative vector $x : J \r R$ is a \emph{solution} to $P$ if  $A \* x \le b$.
 We say that $P$ is \emph{feasible} if there exists \emph{solution} $x$ with $c \* x \ne \top$.
 We say that $P$ is \emph{unbounded} if, for any $r\in F$, there exists solution $x$
@@ -397,12 +403,10 @@ with $c \* x \le r$.
 
 The \emph{optimum} of $P$, denoted as $P^\star$,
 is defined as follows. If $P$ is not feasible then $P^\star=\top$.
-If $P$ is unbounded then $P^\star=\bot$.
-If there exists finite $r\in F$ such that $c \* x \ge r$ for all solutions $x$
-and $c \* x^\star = r$ for some solution $x^\star$ then $P^\star=r$.
-%(Clearly, these three cases are mutually exclusive, and such $r$, if exists, is unique).
-If none of the cases holds then $P^\star$ is undefined.
-}
+Else, if $P$ is unbounded, then $P^\star=\bot$.
+Else, if there exists finite $r\in F$ such that $c \* x \ge r$ for all solutions $x$
+and $c \* x^\star = r$ for some solution $x^\star$, then $P^\star=r$.
+Otherwise, $P^\star$ is undefined.
 \end{definition}
 
 In order to state our duality results, we need a few more definitions.
@@ -423,13 +427,11 @@ We say that the linear program $(-A^T, c, b)$ is the \emph{dual} of $P$.
 It is straightforward to check that the dual of a valid LP is valid.
 
 \begin{theorem}[\customlabel{ExtendedLP.strongDuality}{\texttt{ExtendedLP.strongDuality}}]
-{\color{blue} 
 Let $F$ be a linearly ordered field,
 $P$ be a valid linear program over $F_\infty$ and $D$ be its dual.
 Then $P^\star$ and $D^\star$ are defined.
 If at least one of them is feasible, i.e., $(P^\star, D^\star) \ne (\top, \top)$,
 then $P^\star = -D^\star$.
-}
 \end{theorem}
 
 The conclusion of the theorem ($P^\star = -D^\star$) can be reformulated,
@@ -438,7 +440,7 @@ $$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 =- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
 $$
 
-\begin{sloppypar}
+\begin{sloppypar} % ``unrecognized environment''
 Similar to~\ref{extendedFarkas}, all six conditions in the definition of a valid LP are necessary:
 omitting any one of them makes~\ref{ExtendedLP.strongDuality} false (see counterexamples in \sekt{sec:ExtendedLP.strongDuality:counterexamples}).
 Again, one must again be careful when formulating the theorem.
@@ -463,6 +465,8 @@ In \sekt{extended}, we prove \ref{extendedFarkas} (stated in \sekt{extensions}).
 In \sekt{duality}, we prove \ref{ExtendedLP.strongDuality}
 (stated in \sekt{extensions}), from which we obtain
 \ref{StandardLP.strongDuality} as a corollary.
+In \sekt{counterexamples}, we show what happens when various preconditions
+are not satisfied.
 
 Repository \texttt{https://github.com/madvorak/duality}
 contains full version of all definitions, statements,
@@ -487,7 +491,7 @@ what linearly ordered abelian group $V$ is (used in \ref{fintypeFarkasBartl}).
 This section mainly documents existing Mathlib definitions.
 We also highlight custom definitions added to our project only.
 
-\subsection{We start with a review of algebraic typeclasses that our project depends on}
+\subsection{Review of algebraic typeclasses that our project depends on}
 
 Additive semigroup is a structure on any type with addition where the addition is associative:
 \begin{lstlisting}
@@ -605,7 +609,7 @@ semiring requirement makes it associative):
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 \end{lstlisting}
-Additive monoid with one and abelian monoid with one are defined defined from additive monoid
+Additive monoid with one and abelian monoid with one are defined from additive monoid
 and abelian monoid, equipped with the symbol ``one'' and embedding of natural numbers
 (please ignore the difference between \texttt{Type u} and \texttt{Type*} as it is the same thing
 for all our purposes):
@@ -721,6 +725,8 @@ instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : Lin
   LinearOrderedDivisionRing F := { instF with }
 \end{lstlisting}
 This instance is needed for the step from coordinateFarkas to equalityFarkas.
+All the classes in this section come from Mathlib; we import them without any modification.
+The only class that we defined on our own is LinearOrderedDivisionRing.
 
 \subsection{Extended linearly ordered fields}
 
@@ -757,7 +763,7 @@ Line-by-line, we see that:
 \begin{itemize}
 \item negating $\bot$ gives $\top$
 \item negating $\top$ gives $\bot$
-\item negating any finite value $x$ by gives $-x$ converted to the type $F_\infty$
+\item negating any finite value $x$ gives $-x$ converted to the type $F_\infty$
 \end{itemize}
 In the file \texttt{FarkasSpecial.lean} and everything downstream,
 we have the notation
@@ -798,7 +804,7 @@ it can refer to members of any module).
 Explicit vectors are functions from coordinates to values (again, we use the word
 ``explicit vector`` (or just ``vector'' when it is clear from context that our vector
 is a map) not only when they form a vector space).
-The type of coordinates need not be ordered.
+The type of coordinates does not have to be ordered.
 Matrices live next to explicit vectors. They are also functions; they take a row index
 and a column index and they output a value at the given spot.
 Neither the row indices nor the column vertices are required to form an ordered type.
@@ -980,6 +986,15 @@ class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] : Pro
 We encourage the reader to try and delete various assumptions and see which parts of the proofs
 underline by red.
 
+{\color{blue}
+TODO explain ordering (specifically, nonnegativity) on explicit vectors.
+}
+
+Throughout the paper, we do not distinguish between
+nonnegative explicit vectors and explicit vectors of nonnegative elements.
+The code, however, does distinguish between them.
+
+
 \subsection{Linear programming}
 
 Extended linear programs are defined as follows: {\color{blue} TODO this changed.}
@@ -1029,7 +1044,7 @@ after dualization, where \texttt{aeply} is a custom tactic based on \texttt{aeso
 def ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b, by aeply P.hAj, by aeply P.hAi, P.hcj, P.hbi, by aeply P.hAc, by aeply P.hAb⟩
 \end{lstlisting}
-The definition of optimum is, sadly, very complicated:
+The definition of optimum is, sadly, very complicated: {\color{blue} TODO this changed.}
 \begin{lstlisting}
 noncomputable def ExtendedLP.optimum (P : ExtendedLP I J F) : Option F∞ :=
   if P.IsFeasible then
@@ -1132,7 +1147,8 @@ We prove \ref{finFarkasBartl} and, in the end, we obtain \ref{fintypeFarkasBartl
 Let $n$ be a natural number.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $V$ be a linearly ordered $R$-module.
+Let $V$ be a linearly ordered $R$-module whose ordering satisfies
+monotonicity of scalar multiplication by nonnegative elements on the left.
 Let $A$ be an $R$-linear map from $W$ to $(\fin{n} \r R)$.
 Let $b$ be an $R$-linear map from $W$ to $V$.
 Exactly one of the following exists:
@@ -1168,7 +1184,8 @@ Now we precisely state how the induction step will be.
 Let $m$ be a natural number.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $V$ be a linearly ordered $R$-module.
+Let $V$ be a linearly ordered $R$-module whose ordering satisfies
+monotonicity of scalar multiplication by nonnegative elements on the left.
 Assume (induction hypothesis) that
 for all $R$-linear maps $\bar{A} : W \r (\fin{m} \r R)$
 and $\bar{b} : W \r V$, the formula
@@ -1190,7 +1207,7 @@ To be more precise, $A_{<m}$ is a function that maps $(w : W)$ to
 $(A~w) \restriction \fin{m}$, i.e., $A_{<m}$ is an $R$-linear map
 from $W$ to $(\fin{m} \r R)$ that behaves exactly like $A$ where
 it is defined.
-{\color{blue} TODO reconsider: Is $\restriction$ idiomatic?}
+{\color{blue} TODO do not use $\restriction$ it is not idiomatic.}
 We distinguish two cases. If, for all $y : W$, the inequality
 $A_{<m}~y \ge 0$ implies $b~y \ge 0$, then plug $A_{<m}$
 for $\bar{A}$, obtain $\bar{x}$, and construct a vector family $x$ such that
@@ -1529,7 +1546,11 @@ Use \ref{strongDuality-of-prim-feas} or \ref{strongDuality-of-dual-feas}.
 
 
 \section{Counterexamples}
-\subsection{Counterexamples for~\ref{extendedFarkas}}\label{sec:extendedFarkas:counterexamples}
+\label{counterexamples}
+
+\subsection{Counterexamples for~\ref{extendedFarkas}}
+\label{sec:extendedFarkas:counterexamples}
+
 Recall that~\ref{extendedFarkas} has four preconditions on matrix $A$ and vector $b$.
 The following examples show that omitting any of these preconditions makes the theorem false: there may exist nonnegative vectors $x,y$ such that 
 $A \* x \le b$, $(-A^T) \* y \le 0$ and $b \* y < 0$.

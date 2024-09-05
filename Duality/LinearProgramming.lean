@@ -61,16 +61,16 @@ def ExtendedLP.IsUnbounded [Fintype J] (P : ExtendedLP I J F) : Prop :=
 open scoped Classical in
 /-- Extended notion of "optimum" of "minimization LP" (the less the better). -/
 noncomputable def ExtendedLP.optimum [Fintype J] (P : ExtendedLP I J F) : Option F∞ :=
-  if P.IsFeasible then
+  if ¬P.IsFeasible then
+    some ⊤ -- infeasible means that the minimum is `⊤`
+  else
     if P.IsUnbounded then
       some ⊥ -- unbounded means that the minimum is `⊥`
     else
       if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
         some (toE hf.choose) -- the minimum is finite
       else
-        none -- invalid finite value (infimum is not attained; later, we prove it cannot happen)
-  else
-    some ⊤ -- infeasible means that the minimum is `⊤`
+        none -- invalid finite value (infimum is not attained)
 
 /-- `OppositesOpt p q` essentially says `none ≠ p = -q`. -/
 def OppositesOpt : Option F∞ → Option F∞ → Prop
