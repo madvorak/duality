@@ -1220,8 +1220,7 @@ $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
 
 \noindent
 Proof idea:
-Let $A_{<m}$ roughly mean $A \big|_{\fin{m}}$.
-To be more precise, $A_{<m}$ is a function that maps $(w : W)$ to
+Let $A_{<m}$ denote a function that maps $(w : W)$ to
 $(A~w) \big|_{\fin{m}}$, i.e., $A_{<m}$ is an $R$-linear map
 from $W$ to $(\fin{m} \r R)$ that behaves exactly like $A$ where
 it is defined.
@@ -1240,8 +1239,6 @@ $(A~y)_m = 1$. We establish the following facts (proofs are omitted):
 \item for all $w : W$, we have $A~(w - ((A~w)_m \cdot y)) = 0$
 \item for all $w : W$, the inequality $A_{<m}~(w - ((A~w)_m \cdot y)) \ge 0$
 implies $b~(w - ((A~w)_m \cdot y)) \ge 0$
-\item for all $w : W$, the inequality $A_{<m}~w - A_{<m}~((A~w)_m \cdot y) \ge 0$
-implies $b~w - b~((A~w)_m \cdot y) \ge 0$
 \item for all $w : W$, the inequality $(A_{<m} - (z \mapsto (A~z)_m \cdot (A_{<m}~y)))~w \ge 0$
 implies $(b - (z \mapsto (A~z)_m \cdot (b~y)))~w \ge 0$
 \end{itemize}
@@ -1376,7 +1373,7 @@ If $P$ is feasible, then $b$ does not contain $\bot$.
 \end{lemma}
 
 \noindent
-Proof idea: Directly from \ref{no-bot-of-reaches}.
+Proof idea: This is just a weaker version of \ref{no-bot-of-reaches}.
 
 \begin{lemma}[\customlabel{unbounded-of-reaches-le}{\texttt{unbounded\_of\_reaches\_le}}]
 Let $F$ be a linearly ordered field.
@@ -1426,7 +1423,6 @@ Proof idea:
 Apply \ref{extendedFarkas} to the matrix
 $( A \big|_{\{ i : I \,|\, b_i \neq \top \}} )^T$
 and the vector $c$.
-Utilize \ref{no-bot-of-feasible} in all places where $\neq \bot$ is needed.
 
 \begin{lemma}[\customlabel{infeasible-of-unbounded}{\texttt{infeasible\_of\_unbounded}}]
 If a valid linear program $P$ is unbounded,
