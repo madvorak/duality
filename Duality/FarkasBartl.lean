@@ -29,11 +29,13 @@ private def chop {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W] [Module 
     simp
   ⟩
 
+prefix:max "▀" => chop
+
 private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Module R W]
     (A : W →ₗ[R] Fin m.succ → R) (y : W) :
     W →ₗ[R] Fin m → R :=
   ⟨⟨
-    chop A - (A · ⟨m, lt_add_one m⟩ • chop A y),
+    ▀A - (A · ⟨m, lt_add_one m⟩ • ▀A y),
   by
     intros
     ext
@@ -87,7 +89,7 @@ variable {R V W : Type*}
 private lemma finishing_piece {m : ℕ} [Semiring R]
     [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
     {A : W →ₗ[R] Fin m.succ → R} {w : W} {x : Fin m → V} :
-    ∑ i : Fin m, chop A w i • x i =
+    ∑ i : Fin m, ▀A w i • x i =
     ∑ i : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) }, A w i.val • x ⟨i.val.val, by aesop⟩ := by
   apply
     Finset.sum_bij'
@@ -108,9 +110,9 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     {A : W →ₗ[R] Fin m.succ → R} {b : W →ₗ[R] V} (hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y) :
     ∃ x : Fin m.succ → V, 0 ≤ x ∧ ∀ w : W, ∑ i : Fin m.succ, A w i • x i = b w := by
   if
-    is_easy : ∀ y : W, 0 ≤ chop A y → 0 ≤ b y
+    is_easy : ∀ y : W, 0 ≤ ▀A y → 0 ≤ b y
   then
-    obtain ⟨x, hx, hxb⟩ := ih (chop A) b is_easy
+    obtain ⟨x, hx, hxb⟩ := ih ▀A b is_easy
     use (fun i : Fin m.succ => if hi : i.val < m then x ⟨i.val, hi⟩ else 0)
     constructor
     · intro i
@@ -128,60 +130,58 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
   else
     push_neg at is_easy
     obtain ⟨y', hay', hby'⟩ := is_easy
-    let j : Fin m.succ := ⟨m, lt_add_one m⟩ -- the last (new) index
-    let y := (A y' j)⁻¹ • y' -- rescaled `y'`
-    have hAy' : A y' j < 0
+    let M : Fin m.succ := ⟨m, lt_add_one m⟩ -- the last (new) index
+    let y := (A y' M)⁻¹ • y' -- rescaled `y'`
+    have hAy' : A y' M < 0
     · by_contra! contr
       exact (
         (hAb y' (fun i : Fin m.succ =>
           if hi : i.val < m then
             hay' ⟨i, hi⟩
-          else if hij : i = j then
-            hij ▸ contr
+          else if hiM : i = M then
+            hiM ▸ contr
           else
-            (impossible_index hi hij).elim
+            (impossible_index hi hiM).elim
         )).trans_lt hby'
       ).false
-    have hAy : A y j = 1
+    have hAy : A y M = 1
     · convert inv_mul_cancel₀ hAy'.ne
       simp [y]
-    have hAA : ∀ w : W, A (w - (A w j • y)) j = 0
+    have hAA : ∀ w : W, A (w - (A w M • y)) M = 0
     · intro w
       simp [hAy]
-    have hbA : ∀ w : W, 0 ≤ chop A (w - (A w j • y)) → 0 ≤ b (w - (A w j • y))
+    have hbA : ∀ w : W, 0 ≤ ▀A (w - (A w M • y)) → 0 ≤ b (w - (A w M • y))
     · intro w hw
       apply hAb
       intro i
       if hi : i.val < m then
         exact hw ⟨i, hi⟩
-      else if hij : i = j then
-        rw [hij, hAA, Pi.zero_apply]
+      else if hiM : i = M then
+        rw [hiM, hAA, Pi.zero_apply]
       else
         exfalso
-        exact impossible_index hi hij
-    have hbbA : ∀ w : W, 0 ≤ chop A w - chop A (A w j • y) → 0 ≤ b w - b (A w j • y)
+        exact impossible_index hi hiM
+    have hbAb : ∀ w : W, 0 ≤ (▀A - (A · M • ▀A y)) w → 0 ≤ (b - (A · M • b y)) w
     · simpa using hbA
-    have hbAb : ∀ w : W, 0 ≤ (chop A - (A · j • chop A y)) w → 0 ≤ (b - (A · j • b y)) w
-    · simpa using hbbA
     obtain ⟨x', hx', hxb'⟩ := ih (auxLinMaps A y) (auxLinMap A b y) hbAb
-    use (fun i : Fin m.succ => if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, chop A y i • x' i)
+    use (fun i : Fin m.succ => if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, ▀A y i • x' i)
     constructor
     · intro i
       if hi : i.val < m then
         clear * - hi hx'
         aesop
       else
-        have hAy'' : (A y' j)⁻¹ ≤ 0
+        have hAy'' : (A y' M)⁻¹ ≤ 0
         · exact (inv_neg_of_neg hAy').le
-        have hay : chop A y ≤ 0
+        have hay : ▀A y ≤ 0
         · simpa [y] using smul_nonpos_of_nonpos_of_nonneg hAy'' hay'
         have hby : 0 ≤ b y
         · simpa [y] using smul_nonneg_of_nonpos_of_nonpos hAy'' hby'.le
         simpa [hi] using (Finset.sum_nonpos (fun i _ => smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i))).trans hby
     · intro w
-      have key : ∑ i : Fin m, (chop A w i - A w j * chop A y i) • x' i = b w - A w j • b y
+      have haAa : ∑ i : Fin m, (▀A w i - A w M * ▀A y i) • x' i = b w - A w M • b y
       · simpa using hxb' w
-      rw [←add_eq_of_eq_sub key]
+      rw [←add_eq_of_eq_sub haAa]
       simp_rw [smul_dite]
       rw [Finset.sum_dite, filter_yielding_singleton_attach_sum]
       simp_rw [sub_smul]
@@ -243,12 +243,12 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     · simpa using hAy ((Fintype.equivFin J).invFun j)
     · simpa using hAy ((Fintype.equivFin J).toFun j)
 
-theorem scalarFarkas {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
+theorem almostFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
     (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
     (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) :=
   fintypeFarkasBartl A b
 
-theorem coordinateFarkas {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+theorem coordinateFarkasBartl {I J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
     (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0) :=
-  scalarFarkas A b
+  almostFarkasBartl A b
