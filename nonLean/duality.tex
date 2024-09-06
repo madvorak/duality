@@ -473,8 +473,9 @@ and proofs. They are written in a formal language called
 Lean 4, which provides a guarantee that every step of
 every proof follows from valid logical axioms.\footnote{
 The only axioms used in our proofs are
-propext, Classical.choice, and Quot.sound, which you can
-check by the \texttt{\#print axioms} command.}
+\texttt{propext}, \texttt{Classical.choice}, and
+\texttt{Quot.sound}, which you can check by the
+\texttt{\#print axioms} command.}
 This paper attempts to be an accurate description of
 the \texttt{duality} project.
 However, in case of any discrepancy, the code shall prevail.
@@ -968,20 +969,23 @@ in a theorem statement by
 we require \texttt{M} to be a vector space over \texttt{R}. We do not need to extend
 Module in order to define what a vector space is.
 
-In our case, to state the theorem fintypeFarkasBartl,
-we need $R$ to be a linearly ordered division ring,
-we need $W$ to be an $R$-module, and
-we need $V$ to be a linearly ordered $R$-module.
+In our case, to state the theorem \ref{fintypeFarkasBartl},
+we need \texttt{R} to be a linearly ordered division ring,
+we need \texttt{W} to be an \texttt{R}-module, and
+we need \texttt{V} to be a linearly ordered \texttt{R}-module.
 The following list of requirements is almost correct:
 \begin{lstlisting}
 [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W] [LinearOrderedAddCommGroup V] [Module R V]
 \end{lstlisting}
-The only missing assumption is the relationship between how $R$ is ordered and how $V$ is ordered.
+The only missing assumption is the relationship between
+how \texttt{R} is ordered and how \texttt{V} is ordered.
 For that, we use another mixin, defined in Mathlib as follows:
 \begin{lstlisting}
 class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] : Prop where
   elim {a : α} (ha : 0 ≤ a) {b₁ b₂ : β} (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
 \end{lstlisting}
+Adding \texttt{[PosSMulMono R V]} to the list of requirements solves the issue.
+
 We encourage the reader to try and delete various assumptions and see which parts of the proofs
 get underlined in red.
 
@@ -996,7 +1000,7 @@ The code, however, does distinguish between them.
 
 \subsection{Linear programming}
 
-Extended linear programs are defined as follows:
+Extended linear programs are defined as follows: {\color{blue} TODO Matrix was not defined!}
 \begin{lstlisting}
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   A : Matrix I J F∞
@@ -1009,12 +1013,12 @@ holds:
 def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
   P.A ₘ* x ≤ P.b
 \end{lstlisting}
-$P$ reaches a value $r$ if and only if $P$ has solution $x$ with $c \* x = r$:
+$P$ reaches a value $r$ if and only if $P$ has solution $x$ such that $c \* x = r$ holds:
 \begin{lstlisting}
 def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 \end{lstlisting}
-$P$ is feasible if and only if it reaches a value different from $\top$:
+$P$ is feasible if and only if $P$ reaches a value different from $\top$:
 \begin{lstlisting}
 def ExtendedLP.IsFeasible [Fintype J] (P : ExtendedLP I J F) : Prop :=
   ∃ p : F∞, P.Reaches p ∧ p ≠ ⊤
@@ -1305,7 +1309,7 @@ Exactly one of the following exists:
 \end{theorem}
 
 \subsection{Proof idea}
-We need to do the following steps in given order:
+We need to do the following steps in the given order:
 \begin{enumerate}
 \item Delete all rows of both $A$ and $b$ where $A$ has $\bot$ or $b$ has $\top$
 (they are tautologies).
