@@ -185,20 +185,26 @@ Let $A$ be a matrix of type $(I \times J) \r F$.
 Let $b$ be a vector of type $I \r F$.
 Let $c$ be a vector of type $J \r F$.
 Then
-$$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+\begin{equation}
+\min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
 =- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
-$$
+\label{eq:StandardLP.strongDuality:minmin}
+\end{equation}
 holds if at least one of the systems has a solution (very roughly paraphrased).
 \end{theorem}
-Typically, the strong duality is stated as follows:
-$$ \max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
- = \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T \!\* y \ge c \,\}
-$$
-Later it will be clear why we chose min/min formulation rather than
-the idiomatic max/min formulation. Also, we do not investigate
+Using identity  $\min\{c\*x~|~\ldots\}=-\max\{-c\*x~|~\ldots\}$ and replacing $c$ with $-c$,
+eq.~\eqref{eq:StandardLP.strongDuality:minmin} can be equivalently transformed to
+\begin{equation}
+\max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+= \min \,\{\, b \* y ~|~ y \ge 0 \aand A^T \!\* y \ge c \,\}
+\label{eq:StandardLP.strongDuality:maxmin}
+\end{equation}
+which is probably a more familiar formulation of strong LP duality.
+Later it will be clear why we chose the ``$\min\,$/$\,\min$''
+rather than the more idiomatic ``$\max\,$/$\,\min$'' formulation. Also, we do not investigate
 ``asymmetric versions'' such as:
 $$ \max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x = b \,\}
- = \min \,\{\, b \* y ~|~ A^T \!\* y \ge c \,\}
+= \min \,\{\, b \* y ~|~ A^T \!\* y \ge c \,\}
 $$
 
 For many more Farkas-like theorems (beyond the scope of this paper),
@@ -206,7 +212,7 @@ see for example \cite{Perng2017}.
 
 This paper makes the following contributions.
 \begin{itemize}
-\item We formally prove several existing duality results (including the theorems above) in Lean 4.
+\item We formally prove several existing duality results (including the three theorems above) in Lean 4.
 In fact, we prove a more general version of \ref{equalityFarkas} due to Bartl~\cite{Bartl2007}.
 %This version allows, in particular, allows structures with a non-commutative multiplication, and also allows infinitely many equations.
 \sekt{generalizations} says more about it.
@@ -381,7 +387,6 @@ for example, using the condition from \ref{inequalityFarkas}
 would make the theorem false even if $A$ has a single $\bot$ entry
 (see \sekt{sec:extendedFarkas:counterexamples}).
 
-
 Next, we define an extended notion of linear program, i.e.,
 linear programming over extended linearly ordered fields.
 The implicit intention is that the linear program is to be minimized.
@@ -432,21 +437,26 @@ Then $P^\star$ and $D^\star$ are defined.
 If at least one of them is feasible, i.e., $(P^\star, D^\star) \ne (\top, \top)$,
 then $P^\star = -D^\star$.
 \end{theorem}
-
-The conclusion of the theorem ($P^\star = -D^\star$) can be reformulated,
-when we use highly informal notation, as
-$$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
-=- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
-$$
-
 \begin{sloppypar} % ``unrecognized environment''
 Similar to~\ref{extendedFarkas}, all six conditions in the definition of a valid LP are necessary:
 omitting any one of them makes~\ref{ExtendedLP.strongDuality} false (see counterexamples in \sekt{sec:ExtendedLP.strongDuality:counterexamples}).
-Again, one must again be careful when formulating the theorem.
-We chose a formulation in which both primal and dual are minimization problems
-(``$\min$ / $\min$''). We tried several ``$\min$ / $\max$'' and ``$\max$ / $\max$''
-formulations (TODO)
 \end{sloppypar}
+
+Note that the conclusion of the theorem ($P^\star = -D^\star$) can be reformulated,
+when we use highly informal notation, as in eq.~\eqref{eq:StandardLP.strongDuality:minmin}:
+$$ \min \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
+=- \min \,\{\, b \* y ~|~ y \ge 0 \aand (-A^T) \* y \le c \,\}
+$$
+If all entries of $(A,b,c)$ are finite then this equation can be stated in
+many equivalent ways, e.g.\ as in~\eqref{eq:StandardLP.strongDuality:maxmin}.
+This reformulation uses the facts
+that $ (-c) \* x = - (c \* x) $,
+and that $(-A^T) \* y \le c$ is equivalent to $A^T \* y \ge -c$.
+These facts are no longer true if infinities are allowed,
+so one must  be careful when formulating the duality theorem for $F_\infty$.
+We considered several ``$\max\,$/$\,\min$'' and ``$\max\,$/$\,\max$'' versions,
+but they all required stronger preconditions compared to the ``$\min\,$/$\,\min$'' version
+given in~\ref{ExtendedLP.strongDuality}.
 
 \subsection{Structure of this paper}
 
@@ -617,10 +627,10 @@ for all our purposes):
 class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast := Nat.unaryCast
   natCast_zero : natCast 0 = 0
-  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 
+  natCast_succ : ∀ n : ℕ, natCast (n + 1) = (natCast n) + 1 
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 \end{lstlisting}
-Additive group with one is an additive monoid with one and additive group at the same time:
+Additive group with one is an additive monoid with one and additive group, and embeds all integers:
 \begin{lstlisting}
 class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
   intCast := Int.castDef
@@ -709,7 +719,7 @@ Linearly ordered commutative ring is a linearly ordered ring and commutative mon
 \begin{lstlisting}
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 \end{lstlisting}
-We define a linearly ordered division ring as a division ring that is a linearly ordered ring at the same time:
+In our project, we define a linearly ordered division ring as a division ring that is a linearly ordered ring at the same time:
 \begin{lstlisting}
 class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, DivisionRing R
 \end{lstlisting}
@@ -717,16 +727,15 @@ Linearly ordered field is defined in Mathlib as a linearly ordered commutative r
 \begin{lstlisting}
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 \end{lstlisting}
-Note that LinearOrderedDivisionRing is not a part of the algebraic hierarchy provided by Mathlib,
-hence LinearOrderedField does not inherit LinearOrderedDivisionRing, thus we provide a custom
-instance that converts LinearOrderedField to LinearOrderedDivisionRing:
+Note that \texttt{LinearOrderedDivisionRing} is not a part of the algebraic hierarchy provided by Mathlib,
+hence \texttt{LinearOrderedField} does~not~inherit \texttt{LinearOrderedDivisionRing}. 
+Because of that, we provide a custom instance that converts
+\texttt{LinearOrderedField} to \texttt{LinearOrderedDivisionRing}~as~follows:
 \begin{lstlisting}
 instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : LinearOrderedField F] :
   LinearOrderedDivisionRing F := { instF with }
 \end{lstlisting}
 This instance is needed for the step from \ref{coordinateFarkas} to \ref{equalityFarkas}.
-All the classes in this section come from Mathlib; we import them without any modification.
-The only class that we defined on our own is LinearOrderedDivisionRing.
 
 \subsection{Extended linearly ordered fields}
 
@@ -954,9 +963,10 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends Di
   add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
   zero_smul : ∀ x : M, (0 : R) • x = 0
 \end{lstlisting}
-Note the class Module does not extend the class Semiring; it requires Semiring as an argument.
-The abelian monoid is also required separately in the definition. We call such a class ``mixin''.
-Thanks to this design, we do not need to define superclasses of Module in order to require
+Note the class \texttt{Module} does not extend the class \texttt{Semiring}; instead,
+it requires \texttt{Semiring} as an argument.
+The abelian monoid is also required as argument in the definition. We call such a class ``mixin''.
+Thanks to this design, we do not need to define superclasses of \texttt{Module} in order to require
 ``more than a module''. Instead, we use superclasses in the respective arguments, i.e.,
 ``more than a semiring'' and/or ``more than an abelian monoid''. For example, if we replace
 \begin{lstlisting}
@@ -967,7 +977,7 @@ in a theorem statement by
 [Field R] [AddCommGroup M] [Module R M]
 \end{lstlisting}
 we require \texttt{M} to be a vector space over \texttt{R}. We do not need to extend
-Module in order to define what a vector space is.
+\texttt{Module} in order to define what a vector space is.
 
 In our case, to state the theorem \ref{fintypeFarkasBartl},
 we need \texttt{R} to be a linearly ordered division ring,
