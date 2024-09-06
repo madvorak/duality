@@ -1009,27 +1009,29 @@ holds:
 def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
   P.A ₘ* x ≤ P.b
 \end{lstlisting}
-Reaching a value $r$ is defined as follows:
+$P$ reaches a value $r$ if and only if $P$ has solution $x$ with $c \* x = r$:
 \begin{lstlisting}
 def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 \end{lstlisting}
-Feasibility is defined as follows:
+$P$ is feasible if and only if it reaches a value different from $\top$:
 \begin{lstlisting}
 def ExtendedLP.IsFeasible [Fintype J] (P : ExtendedLP I J F) : Prop :=
   ∃ p : F∞, P.Reaches p ∧ p ≠ ⊤
 \end{lstlisting}
-Being bounded by a value $r$ (from below -- we always minimize) is defined as follows:
+$P$ is bounded by a value $r$ (from below -- we always minimize) if and only if
+$P$ reaches only values greater or equal to $r$:
 \begin{lstlisting}
 def ExtendedLP.IsBoundedBy (P : ExtendedLP I J F) (r : F) : Prop :=
   ∀ p : F∞, P.Reaches p → r ≤ p
 \end{lstlisting}
-Being unbounded is defined as follows:
+$P$ is unbounded if and only if $P$ has no finite lower bound:
 \begin{lstlisting}
 def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
   ¬∃ r : F, P.IsBoundedBy r
 \end{lstlisting}
-Valid extended linear programs are defined as follows:
+Valid extended linear programs are defined as follows (the six conditions were
+introduced in \sekt{extensions}):
 \begin{lstlisting}
 structure ValidELP (I J F : Type*) [LinearOrderedField F] extends ExtendedLP I J F where
   hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
@@ -1040,9 +1042,9 @@ structure ValidELP (I J F : Type*) [LinearOrderedField F] extends ExtendedLP I J
   hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
 \end{lstlisting}
 The following definition says how linear programs are dualized (first, the abbreviation
-\texttt{ExtendedLP.dualize} defines the dual program's $A, b, c$; then the definition
-\texttt{ValidELP.dualize} says that the dualization of \texttt{ValidELP}
-is inherited from the dualization of \texttt{ExtendedLP}; the remaining six lines generate
+\texttt{ExtendedLP.dualize} says that $(A, b, c)$ is mapped to $(-A^T, c, b)$;
+then the definition \texttt{ValidELP.dualize} says that the dualization of \texttt{ValidELP}
+is inherited from \texttt{ExtendedLP.dualize}; the remaining six lines generate
 proofs that our six conditions stay satisfied after dualization,
 where \texttt{aeply} is a custom tactic based on \texttt{aesop} \cite{Aesop}
 and \texttt{apply}):
@@ -1059,7 +1061,7 @@ def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
   hAb := by aeply P.hAc
   hAc := by aeply P.hAb
 \end{lstlisting}
-The definition of optimum is, sadly, very complicated (more explained below):
+The definition of optimum is, sadly, very complicated (will be explained below):
 \begin{lstlisting}
 noncomputable def ExtendedLP.optimum [Fintype J] (P : ExtendedLP I J F) : Option F∞ :=
   if ¬P.IsFeasible then
@@ -1109,6 +1111,7 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | (p : F∞), (q : F∞) => p = -q
 | _       , _        => False
 \end{lstlisting}
+For example, \texttt{OppositesOpt (-3) 3} and \texttt{OppositesOpt 5 (-5)} hold.
 The last line says that \texttt{OppositesOpt none none} is \texttt{False}.
 We later show that \texttt{none} is never the optimum of a valid\footnote{
 In principle, we could say that \texttt{none} is never the optimum of any
