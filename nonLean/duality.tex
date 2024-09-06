@@ -783,7 +783,7 @@ for $F_\infty$ and also the notation
 \begin{lstlisting}
 F≥0
 \end{lstlisting}
-for all nonnegative elements of $F$.
+for the type of nonnegative elements of $F$.
 We define a scalar action of the nonnegative elements
 on $F_\infty$ as follows:
 \begin{lstlisting}
@@ -1050,8 +1050,8 @@ introduced in \sekt{extensions}):
 structure ValidELP (I J F : Type*) [LinearOrderedField F] extends ExtendedLP I J F where
   hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
   hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
-  hbi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
-  hcj : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
+  hbA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
+  hcA : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
   hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
   hAc : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ c j = ⊤
 \end{lstlisting}
@@ -1070,8 +1070,8 @@ def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
   toExtendedLP := P.toExtendedLP.dualize
   hAi := by aeply P.hAj
   hAj := by aeply P.hAi
-  hbi := by aeply P.hcj
-  hcj := by aeply P.hbi
+  hbA := by aeply P.hcA
+  hcA := by aeply P.hbA
   hAb := by aeply P.hAc
   hAc := by aeply P.hAb
 \end{lstlisting}
@@ -1084,8 +1084,8 @@ noncomputable def ExtendedLP.optimum [Fintype J] (P : ExtendedLP I J F) : Option
     if P.IsUnbounded then
       some ⊥
     else
-      if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
-        some (toE hf.choose)
+      if hr : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
+        some (toE hr.choose)
       else
         none
 \end{lstlisting}
@@ -1126,8 +1126,8 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | _       , _        => False
 \end{lstlisting}
 For example, \texttt{OppositesOpt (-3) 3} and \texttt{OppositesOpt 5 (-5)} hold.
-The last line says that \texttt{OppositesOpt none none} is \texttt{False}.
-We later show that \texttt{none} is never the optimum of a valid\footnote{
+The last line says that \texttt{OppositesOpt none none} is false.
+We~later~show that \texttt{none} is never the optimum of a valid\footnote{
 In principle, we could say that \texttt{none} is never the optimum of any
 linear program, i.e., $P^\ast$ is defined for every (extended) linear program $P$,
 but we did not bother proving it.} linear program, but we do not know it yet.
@@ -1161,10 +1161,10 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
 \end{lstlisting}
 \begin{lstlisting}
 theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
-    (hA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
-    (hAT : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
+    (hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
+    (hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
     (hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤)
-    (hAb' : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
+    (hbA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
     (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0)
 \end{lstlisting}
 \begin{lstlisting}

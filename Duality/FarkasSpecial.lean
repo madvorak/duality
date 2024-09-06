@@ -287,13 +287,13 @@ theorem extendedFarkas [DecidableEq I]
     -- The upper-bounding vector (RHS)
     (b : I → F∞)
     -- `A` must not have both `⊥` and `⊤` in the same row
-    (hA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
+    (hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
     -- `A` must not have both `⊥` and `⊤` in the same column
-    (hAT : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
+    (hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
     -- `A` must not have `⊤` on any row where `b` has `⊤`
     (hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤)
     -- `A` must not have `⊥` on any row where `b` has `⊥`
-    (hAb' : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
+    (hbA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥) :
     --
     (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0) := by
     --
@@ -315,7 +315,7 @@ theorem extendedFarkas [DecidableEq I]
     else
       push_neg at hi'
       exfalso
-      apply hAb'
+      apply hbA
       exact ⟨i, hi', hi⟩
   else
     let I' : Type _ := { i : I // b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥ } -- non-tautological rows
@@ -463,7 +463,7 @@ theorem extendedFarkas [DecidableEq I]
             have htop : ((-Aᵀ) j) ᵥ⬝ y = ⊤
             · refine Matrix.no_bot_has_top_dotProd_pos ?_ (by simpa using Aij_eq_bot) y hyi
               intro k hk
-              exact hAT ⟨j, ⟨i, Aij_eq_bot⟩, ⟨k, by simpa using hk⟩⟩
+              exact hAj ⟨j, ⟨i, Aij_eq_bot⟩, ⟨k, by simpa using hk⟩⟩
             have ineqality : ((-Aᵀ) j) ᵥ⬝ y ≤ 0 := ineqalities j
             rw [htop, top_le_iff] at ineqality
             exact EF.zero_neq_top ineqality
@@ -473,7 +473,7 @@ theorem extendedFarkas [DecidableEq I]
             have btop : ∃ j : J, A i j = ⊤
             · use j
               simpa using contr
-            refine hA ⟨i, ?_, btop⟩
+            refine hAi ⟨i, ?_, btop⟩
             push_neg at i_not_I'
             apply i_not_I'
             intro bi_eq_top

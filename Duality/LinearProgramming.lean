@@ -19,9 +19,9 @@ structure ValidELP (I J F : Type*) [LinearOrderedField F] extends ExtendedLP I J
   /-- No `⊥` and `⊤` in the same column. -/
   hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤)
   /-- No `⊥` in the row where the right-hand-side vector has `⊥`. -/
-  hbi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
+  hbA : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ b i = ⊥
   /-- No `⊤` in the column where the objective function has `⊥`. -/
-  hcj : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
+  hcA : ¬∃ j : J, (∃ i : I, A i j = ⊤) ∧ c j = ⊥
   /-- No `⊤` in the row where the right-hand-side vector has `⊤`. -/
   hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤
   /-- No `⊥` in the column where the objective function has `⊤`. -/
@@ -67,8 +67,8 @@ noncomputable def ExtendedLP.optimum [Fintype J] (P : ExtendedLP I J F) : Option
     if P.IsUnbounded then
       some ⊥ -- unbounded means that the minimum is `⊥`
     else
-      if hf : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
-        some (toE hf.choose) -- the minimum is finite
+      if hr : ∃ r : F, P.Reaches (toE r) ∧ P.IsBoundedBy r then
+        some (toE hr.choose) -- the minimum is finite
       else
         none -- invalid finite value (infimum is not attained)
 
@@ -88,8 +88,8 @@ def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
   toExtendedLP := P.toExtendedLP.dualize
   hAi := by aeply P.hAj
   hAj := by aeply P.hAi
-  hbi := by aeply P.hcj
-  hcj := by aeply P.hbi
+  hbA := by aeply P.hcA
+  hcA := by aeply P.hbA
   hAb := by aeply P.hAc
   hAc := by aeply P.hAb
 
@@ -172,7 +172,7 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
             | inr => exact P.hAc ⟨j, ⟨iₛ, hjs⟩, hjt⟩
           | inr =>
             cases t with
-            | inl iₜ => exact P.hcj ⟨j, ⟨iₜ, hjt⟩, hjs⟩
+            | inl iₜ => exact P.hcA ⟨j, ⟨iₜ, hjt⟩, hjs⟩
             | inr => simp_all
         )
         (by
@@ -202,7 +202,7 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
         (by
           intro ⟨i, ⟨j, hij⟩, hi⟩
           cases i with
-          | inl i' => exact P.hbi ⟨i', ⟨j, hij⟩, hi⟩
+          | inl i' => exact P.hbA ⟨i', ⟨j, hij⟩, hi⟩
           | inr => exact hc ⟨j, hij⟩
         )
       )
@@ -230,7 +230,7 @@ lemma ValidELP.no_bot_of_reaches [Fintype J] (P : ValidELP I J F) {p : F∞} (hP
   obtain ⟨x, hx, -⟩ := hP
   have impos : P.A i ᵥ⬝ x ≤ ⊥ := contr ▸ hx i
   rw [le_bot_iff, ←Matrix.dotProd_eq_bot] at impos
-  exact P.hbi ⟨i, impos, contr⟩
+  exact P.hbA ⟨i, impos, contr⟩
 
 theorem ValidELP.weakDuality [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J] (P : ValidELP I J F)
     {p : F∞} (hP : P.Reaches p) {q : F∞} (hQ : P.dualize.Reaches q) :
@@ -644,7 +644,7 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
   let I' : Type _ := { i : I // P.b i ≠ ⊤ }
   let A' : Matrix I' J F∞ := Matrix.of (fun i' : I' => P.A i'.val)
   let b' : I' → F∞ := (fun i' : I' => P.b i'.val)
-  cases or_of_neq (extendedFarkas (-A'ᵀ) P.c (by aeply P.hAj) (by aeply P.hAi) (by aeply P.hAc) (by aeply P.hcj)) with
+  cases or_of_neq (extendedFarkas (-A'ᵀ) P.c (by aeply P.hAj) (by aeply P.hAi) (by aeply P.hAc) (by aeply P.hcA)) with
   | inl caseI =>
     exfalso
     obtain ⟨y, hy⟩ := caseI
