@@ -1093,9 +1093,10 @@ The definition \texttt{ExtendedLP.optimum} first asks if $P$ is feasible;
 if not, it returns \texttt{some $\top$} (i.e., the worst value).
 When $P$ is feasible, it asks whether $P$ is unbounded; if yes, it returns \texttt{some $\bot$}
 (i.e., the best value).
-Otherwise, we are in the branch where $P$ is feasible and bounded.
-We ask if there is a finite value $r$ such that $P$ reaches $r$ and, at the same time,
-$P$ is bounded by $r$; is so, $r$ is the optimum.
+When $P$ is feasible and bounded,
+it asks if there is a finite value $r$ such that $P$ reaches $r$ and, at the same time,
+$P$ is bounded by $r$; is so, it returns \texttt{some (toE r)}.
+Otherwise, it returns \texttt{none}.
 Note that we use the verbs ``ask'' and ``return'' metaphorically;
 \texttt{ExtendedLP.optimum} is not a computable function; it is just a mathematical
 definition (see the keyword \texttt{noncomputable def} above) you can prove things about.
