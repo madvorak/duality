@@ -62,8 +62,72 @@
 	{▸}{{$\triangleright$}}1
 }
 
+Gyula Farkas established that a system of linear inequalities has a solution if and only if we cannot obtain
+a contradiction by taking a linear combination of the inequalities:
+\begin{lstlisting}
+theorem equalityFarkas [Fintype I] [Fintype J] [LinearOrderedField F] (A : Matrix I J F) (b : I → F) :
+    (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
+\end{lstlisting}
 
-\noindent In this section, we prove:
+Geometric interpretation of \texttt{equalityFarkas} is as follows.
+The column vectors of \texttt{A} generate a cone in the
+\texttt{|I|}-dimensional Euclidean space from the origin.
+The point \texttt{b} either lies inside this cone (in this case, the entries
+of \texttt{x} give nonnegative coefficients which,
+when applied to the column vectors of \texttt{A},
+give a vector from the origin to the point \texttt{b}),
+or there exists a hyperplane that contains the origin and that
+strictly separates \texttt{b} from given cone
+(in this case, \texttt{y} gives a normal vector of this hyperplane).
+
+The next theorem generalizes \texttt{equalityFarkas} to structures where
+multiplication does not have to be commutative;
+furthermore, it supports infinitely many equations:
+\begin{lstlisting}
+theorem coordinateFarkasBartl {I : Type*} [Fintype J] [LinearOrderedDivisionRing R]
+    (A : (I → R) →ₗ[R] J → R) (b : (I → R) →ₗ[R] R) :
+    (∃ x : J → R, 0 ≤ x ∧ ∀ w : I → R, ∑ j : J, A w j • x j = b w) ≠ (∃ y : I → R, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+
+In the next generalization, the partially ordered module \texttt{I} $\r$ \texttt{R}
+is replaced by a general \texttt{R}-module \texttt{W}:
+\begin{lstlisting}
+theorem almostFarkasBartl [Fintype J] [LinearOrderedDivisionRing R] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] R) :
+    (∃ x : J → R, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+
+In the most general theorem, stated below, certain occurrences of \texttt{R} are replaced by
+a linearly ordered \texttt{R}-module \texttt{V} whose order respects the order on \texttt{R}:
+\begin{lstlisting}
+theorem fintypeFarkasBartl [Fintype J] [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
+    (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+
+Note that \texttt{fintypeFarkasBartl} subsumes \texttt{scalarFarkas} as well as the other versions,
+since \texttt{R} can be viewed as a linearly ordered module over itself.
+
+We have hereby stated a three-fold generalization of the original Farkas' result.
+Let's prove it! Our proof, starting on the next page, is based on
+a modern algebraic proof by David Bartl. We first prove a tiny-bit-less-general
+version \texttt{finFarkasBartl} which uses \texttt{Fin n} (i.e., indexing by natural numbers
+between \texttt{0} inclusive and \texttt{n} exclusive) instead of
+an arbitrary (unordered) finite type \texttt{J}.
+In the end, we obtain \texttt{fintypeFarkasBartl} from \texttt{finFarkasBartl} using
+some boring mechanisms regarding equivalence between finite types.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=120mm]{AI-generated.jpg}
+	\caption{AI-generated image fills the rest of the first page.}
+\end{figure}
+
+\newpage
+\section*{Proving finFarkasBartl}
+
+In this section, we prove:
 \begin{lstlisting}
 theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
     [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
@@ -119,7 +183,7 @@ We define
 \begin{lstlisting}
 a : W →ₗ[R] Fin m → R
 \end{lstlisting}
-as the first \texttt{m} rows of \texttt{A}, i.e., \texttt{A} without the last row:
+as the first \texttt{m} rows of \texttt{A} (i.e., \texttt{A} without the last row):
 \begin{lstlisting}
 a := (fun w : W => fun i : Fin m => A w i)
 \end{lstlisting}
@@ -239,7 +303,7 @@ We split the left-hand side into two parts:
 ∑ i : Fin m, (a w i • x' i) + A w M • (b y - ∑ j : Fin m, a y j • x' j) =
 ∑ i : Fin m, (a w i - A w M * a y i) • x' i + A w M • b y
 \end{lstlisting}
-The rest is just a manipulation with sums.
+The rest is a simple manipulation with sums.
 
 
 \end{document}
