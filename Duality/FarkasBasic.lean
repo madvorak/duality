@@ -9,6 +9,9 @@ instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : Lin
 
 variable {I J F : Type*} [Fintype I] [Fintype J] [LinearOrderedField F]
 
+/- Let's move from linear maps to matrices, which give more familiar
+formulations of the theorems of alternative (albeit less general). -/
+
 open scoped Matrix
 
 macro "finishit" : tactic => `(tactic| -- should be `private macro` which Lean does not allow
@@ -16,6 +19,8 @@ macro "finishit" : tactic => `(tactic| -- should be `private macro` which Lean d
   simp_rw [Finset.sum_mul] <;> rw [Finset.sum_comm] <;>
   congr <;> ext <;> congr <;> ext <;> ring)
 
+/-- A system of linear equalities over nonnegative variables has a solution if and only if
+we cannot obtain a contradiction by taking a linear combination of the inequalities. -/
 theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x = b) ≠ (∃ y : I → F, 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0) := by
   convert
@@ -32,6 +37,13 @@ theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
       rw [←hAx w]
       finishit
 
+/- The following two theorems could be given in much more generality.
+In our work, however, this is the only setting we provide.
+This special case of the Fredholm alternative is not our main focus
+but a byproduct of the other theorems we prove. -/
+
+/-- A system of linear equalities has a solution if and only if
+we cannot obtain a contradiction by taking a linear combination of the equalities. -/
 theorem basicLinearAlgebra_lt (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y < 0) := by
   convert equalityFarkas (Matrix.fromColumns A (-A)) b using 1
@@ -64,6 +76,9 @@ theorem basicLinearAlgebra_lt (A : Matrix I J F) (b : I → F) :
       specialize hAyn i
       rwa [Matrix.transpose_neg, Matrix.neg_mulVec, Pi.zero_apply, Pi.neg_apply, Right.nonneg_neg_iff] at hAyn
 
+/-- A system of linear equalities has a solution if and only if
+we cannot obtain a contradiction by taking a linear combination of the equalities;
+midly reformulated. -/
 theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0) := by
   convert basicLinearAlgebra_lt A b using 1
@@ -77,6 +92,11 @@ theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
     push_neg at hlt
     exact ⟨rfl, lt_of_le_of_ne hlt hby.symm⟩
 
+/- Let's move to the "symmetric" variants now. They will also be used in the upcoming extended setting
+and in the upcoming theory of linear programming. -/
+
+/-- A system of linear inequalities over nonnegative variables has a solution if and only if
+we cannot obtain a contradiction by taking a nonnegative linear combination of the inequalities. -/
 theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0) := by
   let A' : Matrix I (I ⊕ J) F := Matrix.fromColumns 1 A
@@ -118,6 +138,9 @@ theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     intro i
     simpa using h1Ay (Sum.inl i)
 
+/-- A system of linear inequalities over nonnegative variables has a solution if and only if
+we cannot obtain a contradiction by taking a nonnegative linear combination of the inequalities;
+midly reformulated. -/
 theorem inequalityFarkas_neg [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ -Aᵀ *ᵥ y ≤ 0 ∧ b ⬝ᵥ y < 0) := by
   convert inequalityFarkas A b using 5
