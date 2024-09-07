@@ -13,7 +13,7 @@ class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, Divisio
 lemma inv_neg_of_neg {R : Type*} [LinearOrderedDivisionRing R] {a : R} (ha : a < 0) : a⁻¹ < 0 :=
   lt_of_mul_lt_mul_left (by simp [ha.ne]) (neg_nonneg_of_nonpos ha.le)
 
-private def chop {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W] [Module R W]
+private def withoutLastMap {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W] [Module R W]
     (A : W →ₗ[R] Fin m.succ → R) :
     W →ₗ[R] Fin m → R :=
   ⟨⟨
@@ -29,7 +29,7 @@ private def chop {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W] [Module 
     simp
   ⟩
 
-prefix:max "▀" => chop
+prefix:max "▀" => withoutLastMap
 
 private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Module R W]
     (A : W →ₗ[R] Fin m.succ → R) (y : W) :
@@ -39,13 +39,13 @@ private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Modul
   by
     intros
     ext
-    simp only [chop, LinearMap.coe_mk, AddHom.coe_mk, Pi.add_apply, Pi.sub_apply, Pi.smul_apply, map_add, smul_eq_mul, add_mul]
+    simp only [withoutLastMap, LinearMap.coe_mk, AddHom.coe_mk, Pi.add_apply, Pi.sub_apply, Pi.smul_apply, map_add, smul_eq_mul, add_mul]
     abel
   ⟩,
   by
     intros
     ext
-    simp [chop, mul_sub, mul_assoc]
+    simp [withoutLastMap, mul_sub, mul_assoc]
   ⟩
 
 private def auxLinMap {m : ℕ} {R V W : Type*} [Semiring R] [AddCommGroup V] [Module R V] [AddCommMonoid W] [Module R W]
