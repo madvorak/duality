@@ -1,0 +1,289 @@
+\documentclass[]{article}
+\usepackage[portrait, margin=5mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{graphicx}
+\pagenumbering{gobble}
+
+\renewcommand{\.}{\hskip .75pt}
+
+\renewcommand{\arraystretch}{1.25}
+
+\newcommand{\fin}[1]{[\.#1\.]}
+
+\DeclareMathOperator{\aand}{\;\wedge\;}
+\DeclareMathOperator{\st}{,\;}
+\DeclareMathOperator{\ex}{\,\exists}
+
+\let\r=\rightarrow
+\let\*=\cdot
+
+\begin{document}
+	
+\lstset{
+	basicstyle=\ttfamily\small,
+	literate=
+	{→}{{$\rightarrow$}}1
+	{∀}{{$\forall$}}1
+	{∃}{{$\exists$}}1
+	{×}{{$\times$}}1
+	{σ}{{$\sigma$}}1
+	{τ}{{$\tau$}}1
+	{α}{{$\alpha$}}1
+	{γ}{{$\gamma$}}1
+	{≠}{{$\neq$}}1
+	{≤}{{$\leq$}}1
+	{≥}{{$\geq$}}1
+	{↔}{{$\leftrightarrow$}}1
+	{¬}{{$\neg$}}1
+	{∧}{{$\wedge$}}1
+	{∨}{{$\vee$}}1
+	{•}{$\bullet$}1
+	{·}{$\cdot$}1
+	{⬝}{$\cdot$}1
+	{ℕ}{{$\mathbb{N}$}}1
+	{ℤ}{{$\mathbb{Z}$}}1
+	{∈}{{$\in$}}1
+	{ₗ}{{$_l$}}1
+	{₀}{{$_0$}}1
+	{∑}{{$\;\sum$}}1
+	{ᵀ}{{$^\texttt{T}$}}1
+	{ᵥ}{{$_v$}}1
+	{ₘ}{{$_m$}}1
+	{⁻¹}{{$^{-1}$}}1
+	{∞}{{$\infty$}}1
+	{⊤}{{$\top$}}1
+	{⊥}{{$\bot$}}1
+	{⟨}{{$\langle$}}1
+	{⟩}{{$\rangle$}}1
+	{∘}{{$\circ$}}1
+	{▸}{{$\triangleright$}}1
+}
+
+
+\noindent In this section, we prove:
+\begin{lstlisting}
+theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] Fin n → R) (b : W →ₗ[R] V) :
+    (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
+\end{lstlisting}
+We first rephrase the goal to:
+\begin{lstlisting}
+(∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ↔ (∀ y : W, 0 ≤ A y → 0 ≤ b y)
+\end{lstlisting}
+Implication from left to right is satisfied by the following term:
+\begin{lstlisting}
+fun ⟨x, hx, hb⟩ y hy => hb y ▸ Finset.sum_nonneg (fun i _ => smul_nonneg (hy i) (hx i))
+\end{lstlisting}
+Implication from right to left will be proved by induction on \texttt{n} with generalized \texttt{A} and \texttt{b}.
+In case \texttt{n = 0} we immediately have:
+\begin{lstlisting}
+A_tauto (w : W) : 0 ≤ A w
+\end{lstlisting}
+We have an assumption:
+\begin{lstlisting}
+hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y
+\end{lstlisting}
+We set \texttt{x} to be the empty vector family. Now, for every \texttt{w :~W}, we must prove:
+\begin{lstlisting}
+∑ j : Fin 0, A w j • (0 : Fin 0 → V) j = b w
+\end{lstlisting}
+We simplify the goal to:
+\begin{lstlisting}
+0 = b w
+\end{lstlisting}
+We utilize that \texttt{V} is ordered and prove the equality as two inequalities.
+Inequality \texttt{0 $\le$ b w} is directly satisfied by:
+\begin{lstlisting}
+hAb w (A_tauto w)
+\end{lstlisting}
+Inequality \texttt{b w $\le$ 0} is easily reduced to:
+\begin{lstlisting}
+hAb (-w) (A_tauto (-w))
+\end{lstlisting}
+The induction step is stated as a lemma:
+\begin{lstlisting}
+lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (ih : ∀ A₀ : W →ₗ[R] Fin m → R, ∀ b₀ : W →ₗ[R] V,
+      (∀ y₀ : W, 0 ≤ A₀ y₀ → 0 ≤ b₀ y₀) →
+        (∃ x₀ : Fin m → V, 0 ≤ x₀ ∧ ∀ w₀ : W, ∑ i₀ : Fin m, A₀ w₀ i₀ • x₀ i₀ = b₀ w₀))
+    {A : W →ₗ[R] Fin m.succ → R} {b : W →ₗ[R] V} (hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y) :
+    ∃ x : Fin m.succ → V, 0 ≤ x ∧ ∀ w : W, ∑ i : Fin m.succ, A w i • x i = b w
+\end{lstlisting}
+First we introduce an auxiliary definition. Given
+\begin{lstlisting}
+[Semiring R] [AddCommMonoid W] [Module R W] (A : W →ₗ[R] Fin m.succ → R)
+\end{lstlisting}
+we define
+\begin{lstlisting}
+a : W →ₗ[R] Fin m → R
+\end{lstlisting}
+as the first \texttt{m} rows of \texttt{A}, i.e., \texttt{A} without the last row.
+To prove \texttt{industepFarkasBartl} we first consider the easy case:
+\begin{lstlisting}
+is_easy : ∀ y : W, 0 ≤ a y → 0 ≤ b y
+\end{lstlisting}
+From \texttt{ih a b is\_easy} we obtain:
+\begin{lstlisting}
+x : Fin m → V
+hx : 0 ≤ x
+hxb : ∀ w₀ : W, ∑ i₀ : Fin m, a w₀ i₀ • x i₀ = b w₀
+\end{lstlisting}
+The lemma is satisfied by this vector family:
+\begin{lstlisting}
+(fun i : Fin m.succ => if hi : i.val < m then x ⟨i.val, hi⟩ else 0)
+\end{lstlisting}
+Easy case analysis shows that the vector family is nonnegative. In order to prove that, given \texttt{w :~W} in the context,
+\begin{lstlisting}
+∑ i : Fin m.succ, A w i • (fun i : Fin m.succ => if hi : i.val < m then x ⟨i.val, hi⟩ else 0) i = b w
+\end{lstlisting}
+holds, we first transform the goal to:
+\begin{lstlisting}
+∑ i ∈ (Finset.univ.filter (fun k : Fin m.succ => k.val < m)).attach, A w i.val • x ⟨i.val.val, _⟩ = b w
+\end{lstlisting}
+We compare it with \texttt{hxb w} which says:
+\begin{lstlisting}
+∑ i₀ : Fin m, a w i₀ • x i₀ = b w
+\end{lstlisting}
+We finish the proof for the easy case using the following technical lemma (which will also be used in one more place):
+\begin{lstlisting}
+private lemma finishing_piece {m : ℕ} [Semiring R]
+    [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
+    {A : W →ₗ[R] Fin m.succ → R} {w : W} {x : Fin m → V} :
+    ∑ i : Fin m, a w i • x i =
+    ∑ i : { j : Fin m.succ // j ∈ Finset.univ.filter (·.val < m) }, A w i.val • x ⟨i.val.val, by aesop⟩ 
+\end{lstlisting}
+Now for the hard case; negation of \texttt{is\_easy} gives us:
+\begin{lstlisting}
+y' : W
+hay' : 0 ≤ a y'
+hby' : b y' < 0
+\end{lstlisting}
+Let us make an alias for the last (new) index, i.e., the term \texttt{M} is just
+the number \texttt{m} converted to the type \texttt{Fin (m+1)}:
+\begin{lstlisting}
+M : Fin m.succ := ⟨m, lt_add_one m⟩
+\end{lstlisting}
+Let \texttt{y} be flipped and rescaled \texttt{y'} as follows:
+\begin{lstlisting}
+y : W := (A y' M)⁻¹ • y'
+\end{lstlisting}
+From \texttt{hAb} we get:
+\begin{lstlisting}
+hAy' : A y' M < 0
+\end{lstlisting}
+Therefore
+\begin{lstlisting}
+hAy'.ne : A y' M ≠ 0
+\end{lstlisting}
+implies that \texttt{y} has the property that motivated the rescaling:
+\begin{lstlisting}
+hAy : A y M = 1
+\end{lstlisting}
+From \texttt{hAy} we have:
+\begin{lstlisting}
+hAA : ∀ w : W, A (w - (A w M • y)) M = 0
+\end{lstlisting}
+Using \texttt{hAA} and \texttt{hAb} we prove:
+\begin{lstlisting}
+hbA : ∀ w : W, 0 ≤ a (w - (A w M • y)) → 0 ≤ b (w - (A w M • y))
+\end{lstlisting}
+From \texttt{hbA} we have:
+\begin{lstlisting}
+hbAb : ∀ w : W, 0 ≤ (a - (A · M • a y)) w → 0 ≤ (b - (A · M • b y)) w
+\end{lstlisting}
+We observe that these two terms (appearing in \texttt{hbAb} we just proved) are linear maps:
+\begin{lstlisting}
+(a - (A · M • a y))
+(b - (A · M • b y))
+\end{lstlisting}
+Therefore, we can plug them into \texttt{ih} and provide \texttt{hbAb} as the last argument.
+We obtain:
+\begin{lstlisting}
+x' : Fin m → V
+hx' : 0 ≤ x'
+hxb' : ∀ w₀ : W, ∑ i₀ : Fin m, (a - (A · M • a y)) w₀ i₀ • x' i₀ = (b - (A · M • b y)) w₀
+\end{lstlisting}
+We claim that our lemma is satisfied by this vector family:
+\begin{lstlisting}
+(fun i : Fin m.succ => if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, a y i • x' i)
+\end{lstlisting}
+Let us show the nonnegativity first.
+Nonnegativity of everything except of the last vector follows from \texttt{hx'}.
+From \texttt{hAy'} we have:
+\begin{lstlisting}
+hAy'' : (A y' M)⁻¹ ≤ 0
+\end{lstlisting}
+From \texttt{hAy''} with \texttt{hay'} we have:
+\begin{lstlisting}
+hay : a y ≤ 0
+\end{lstlisting}
+From \texttt{hAy''} with \texttt{hby'} converted to nonstrict inequality we have:
+\begin{lstlisting}
+hby : 0 ≤ b y
+\end{lstlisting}
+For the nonnegativity of the last vector, we need to prove:
+\begin{lstlisting}
+∑ i : Fin m, a y i • x' i ≤ b y
+\end{lstlisting}
+It follows from \texttt{hay i} with \texttt{hx' i} and \texttt{hby} using basic properties of inequalities.
+The only remaining task is to show:
+\begin{lstlisting}
+∀ w : W, 
+  ∑ i : Fin m.succ, (A w i •
+    (if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i : Fin m, a y i • x' i)
+  ) =
+  b w
+\end{lstlisting}
+Given general \texttt{w :~W} we make a key observation:
+\begin{lstlisting}
+haAa : ∑ i : Fin m, (a w i - A w M * a y i) • x' i = b w - A w M • b y
+\end{lstlisting}
+It follows from \texttt{hxb' w}. With the help of \texttt{haAa} we transform the goal to:
+\begin{lstlisting}
+∑ i : Fin m.succ,
+  (A w i • (if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i' : Fin m, a y i' • x' i')) =
+∑ i : Fin m, (a w i - A w M * a y i) • x' i + A w M • b y
+\end{lstlisting}
+From here, the direction should be clear; the rest of the proof is just a manipulation
+with the goal without any additional hypotheses.
+We distribute $\bullet$ over \texttt{if} so that the goal becomes:
+\begin{lstlisting}
+∑ i : Fin m.succ,
+  (if hi : i.val < m then A w i • x' ⟨i.val, hi⟩ else A w i • (b y - ∑ i' : Fin m, a y i' • x' i')) =
+∑ i : Fin m, (a w i - A w M * a y i) • x' i + A w M • b y
+\end{lstlisting}
+We split the left-hand side into two parts:
+\begin{lstlisting}
+∑ i ∈ (Finset.univ.filter (fun i : Fin m.succ => i.val < m)).attach, 
+  A w i.val • x' ⟨i.val.val, _⟩ +
+∑ i ∈ (Finset.univ.filter (fun i : Fin m.succ => ¬(i.val < m))).attach, 
+  A w i.val • (b y - ∑ i' : Fin m, a y i' • x' i') =
+∑ i : Fin m, (a w i - A w M * a y i) • x' i + A w M • b y
+\end{lstlisting}
+Since the second sum is singleton, it simplifies to:
+\begin{lstlisting}
+∑ i ∈ (Finset.univ.filter (fun i : Fin m.succ => i.val < m)).attach, A w i.val • x' ⟨i.val.val, _⟩ +
+A w M • (b y - ∑ i : Fin m, a y i • x' i) =
+∑ i : Fin m, (a w i - A w M * a y i) • x' i + A w M • b y
+\end{lstlisting}
+After simplifying the right-hand side:
+\begin{lstlisting}
+∑ i ∈ (Finset.univ.filter (fun i : Fin m.succ => i.val < m)).attach, A w i.val • x' ⟨i.val.val, _⟩ +
+A w M • (b y - ∑ i : Fin m, a y i • x' i) =
+∑ i : Fin m, (a w i • x' i) - A w M • ∑ i : Fin m, (a y i • x' i) + A w M • b y
+\end{lstlisting}
+We distribute $\bullet$ over \texttt{-} on the left-hand side:
+\begin{lstlisting}
+∑ i ∈ (Finset.univ.filter (fun i : Fin m.succ => i.val < m)).attach, A w i.val • x' ⟨i.val.val, _⟩ +
+A w M • b y - A w M • (∑ i : Fin m, a y i • x' i) =
+∑ i : Fin m, (a w i • x' i) - A w M • ∑ i : Fin m, (a y i • x' i) + A w M • b y
+\end{lstlisting}
+Exploiting \texttt{finishing\_piece} again, it is easy to finish the proof.
+
+
+\end{document}

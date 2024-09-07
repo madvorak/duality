@@ -90,7 +90,7 @@ private lemma finishing_piece {m : ℕ} [Semiring R]
     [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
     {A : W →ₗ[R] Fin m.succ → R} {w : W} {x : Fin m → V} :
     ∑ i : Fin m, ▀A w i • x i =
-    ∑ i : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) }, A w i.val • x ⟨i.val.val, by aesop⟩ := by
+    ∑ i : { j : Fin m.succ // j ∈ Finset.univ.filter (·.val < m) }, A w i.val • x ⟨i.val.val, by aesop⟩ := by
   apply
     Finset.sum_bij'
       (fun i : Fin m => fun _ => (⟨⟨i.val, by omega⟩, by aesop⟩ : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) }))
@@ -131,7 +131,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     push_neg at is_easy
     obtain ⟨y', hay', hby'⟩ := is_easy
     let M : Fin m.succ := ⟨m, lt_add_one m⟩ -- the last (new) index
-    let y := (A y' M)⁻¹ • y' -- rescaled `y'`
+    let y : W := (A y' M)⁻¹ • y' -- rescaled `y'`
     have hAy' : A y' M < 0
     · by_contra! contr
       exact (
