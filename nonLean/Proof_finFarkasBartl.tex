@@ -114,15 +114,14 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     {A : W →ₗ[R] Fin m.succ → R} {b : W →ₗ[R] V} (hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y) :
     ∃ x : Fin m.succ → V, 0 ≤ x ∧ ∀ w : W, ∑ i : Fin m.succ, A w i • x i = b w
 \end{lstlisting}
-First we introduce an auxiliary definition. Given
-\begin{lstlisting}
-[Semiring R] [AddCommMonoid W] [Module R W] (A : W →ₗ[R] Fin m.succ → R)
-\end{lstlisting}
-we define
+First we introduce an auxiliary definition. We define
 \begin{lstlisting}
 a : W →ₗ[R] Fin m → R
 \end{lstlisting}
-as the first \texttt{m} rows of \texttt{A}, i.e., \texttt{A} without the last row.
+as the first \texttt{m} rows of \texttt{A}, i.e., \texttt{A} without the last row:
+\begin{lstlisting}
+a := (fun w : W => fun i : Fin m => A w i.castSucc)
+\end{lstlisting}
 To prove \texttt{industepFarkasBartl} we first consider the easy case:
 \begin{lstlisting}
 is_easy : ∀ y : W, 0 ≤ a y → 0 ≤ b y
@@ -148,7 +147,7 @@ holds, we first transform the goal to:
 We compare it with \texttt{hxb w} which says:
 \begin{lstlisting}
 ∑ i₀ : Fin m, a w i₀ • x i₀ = b w
-\end{lstlisting}
+\end{lstlisting} \pagebreak[2]
 We finish the proof for the easy case using the following technical lemma (which will also be used in one more place):
 \begin{lstlisting}
 private lemma finishing_piece {m : ℕ} [Semiring R]
@@ -176,10 +175,7 @@ From \texttt{hAb} we get:
 \begin{lstlisting}
 hAy' : A y' M < 0
 \end{lstlisting}
-Therefore
-\begin{lstlisting}
-hAy'.ne : A y' M ≠ 0
-\end{lstlisting}
+Therefore \texttt{hAy'.ne :~A y' M $\neq$ 0}
 implies that \texttt{y} has the property that motivated the rescaling:
 \begin{lstlisting}
 hAy : A y M = 1
@@ -239,11 +235,11 @@ The only remaining task is to show:
   ) =
   b w
 \end{lstlisting}
-Given general \texttt{w :~W} we make a key observation:
+Given general \texttt{w :~W} we make a key observation (using \texttt{hxb' w}):
 \begin{lstlisting}
 haAa : ∑ i : Fin m, (a w i - A w M * a y i) • x' i = b w - A w M • b y
 \end{lstlisting}
-It follows from \texttt{hxb' w}. With the help of \texttt{haAa} we transform the goal to:
+With the help of \texttt{haAa} we transform the goal to:
 \begin{lstlisting}
 ∑ i : Fin m.succ,
   (A w i • (if hi : i.val < m then x' ⟨i.val, hi⟩ else b y - ∑ i' : Fin m, a y i' • x' i')) =
