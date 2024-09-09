@@ -10,9 +10,8 @@ Instead of multiplication, we define scalar action $c \bullet \bot = \bot$ for e
 $d \bullet \top = \top$ only for $d > 0$ because $0 \bullet \top = 0$.
 We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
 
-![AI-generated image](nonLean/AI-generated.jpg)
-
 ## Main results
 
-* [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/f8bb1a10ee5ff811b057cdcdb50b0b668d6e8d75/Duality/FarkasBartl.lean#L216) with [explanation](FarkasBartl.pdf)
-* [Strong duality for extended LP](https://github.com/madvorak/duality/blob/f8bb1a10ee5ff811b057cdcdb50b0b668d6e8d75/Duality/LinearProgramming.lean#L1021)
+* [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/86026c3f8754a29f32a03864d7377767c7cfe54b/Duality/FarkasBartl.lean#L216) with [explanation](FarkasBartl.pdf)
+* [Extended Farkas theorem](https://github.com/madvorak/duality/blob/86026c3f8754a29f32a03864d7377767c7cfe54b/Duality/FarkasSpecial.lean#L284)
+* [Strong duality for extended linear programs](https://github.com/madvorak/duality/blob/86026c3f8754a29f32a03864d7377767c7cfe54b/Duality/LinearProgramming.lean#L1083)
