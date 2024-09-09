@@ -1759,7 +1759,7 @@ the Fundamental theorem of linear inequalities as well
 as both \ref{equalityFarkas} and \ref{inequalityFarkas}
 for all linearly ordered fields, alongside with
 the Carathéodory’s theorem and the Farkas-Minkowski-Weyl theorem.
-They also investigated systems of mixed-integer inequalities.
+They also investigated systems of linear mixed-integer inequalities.
 \item 
 Thiemann himself \cite{Duality-AFP} then proved the strong LP duality
 in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
@@ -1767,11 +1767,11 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 % https://link.springer.com/chapter/10.1007/11541868_15 ?
 
 Sakaguchi \cite{Vass-Coq} proved a version of \ref{equalityFarkas}
-in Rocq, using the Fourier-Motzkin elimination.
+for real field types in Rocq, using the Fourier-Motzkin elimination.
 Allamigeon and Katz \cite{Simplex-Coq} made a large contribution to
 the study of convex polyhedra in Rocq.
 Among other results, they proved a version of \ref{equalityFarkas}
-for linearly ordered fields as well as the strong LP duality
+for real field types as well as the strong LP duality
 in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 % I have no idea what "Boolean reflection" is.
 
@@ -1780,7 +1780,8 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 In Lean, it would be possible to prove Farkas for reals using the
 Hahn-Banach separation theorem. However, we do not yet know that
 the set of feasible solutions is closed.
-% Also exists in Mizar? https://mizar.uwb.edu.pl/JFM/Vol5/hahnban.html
+% Also exists in Mizar: https://mizar.uwb.edu.pl/JFM/Vol5/hahnban.html
+% Also in Rocq: https://www.ii.uib.no/~bezem/abstracts/TYPES_2019_paper_50
 
 
 \section {Conclusion}
