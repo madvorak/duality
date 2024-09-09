@@ -30,10 +30,10 @@
 
 \makeatletter
 \newcommand{\thickhline}{%
-	\noalign {\ifnum 0=`}\fi \hrule height 1.5pt
+	\noalign {\ifnum 0=`}\fi \hrule height 2pt
 	\futurelet \reserved@a \@xhline
 }
-\newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1.5pt\hskip\tabcolsep}}
+\newcolumntype{"}{@{\hskip\tabcolsep\vrule width 2pt\hskip\tabcolsep}}
 \makeatother
 
 
@@ -103,11 +103,10 @@
 
 \title{Duality theory in linear optimization and its extensions\:---\:formally verified}
 
-\author{Martin Dvorak \hspace{30pt} Vladimir Kolmogorov \\ \normalsize Institute of Science and Technology Austria \\ {\normalsize\tt $\{$martin.dvorak,vnk$\}$@ista.ac.at}}
+\author{Martin Dvorak \hspace{30pt} Vladimir Kolmogorov \\
+\normalsize Institute of Science and Technology Austria \\ {\normalsize\tt $\{$martin.dvorak,vnk$\}$@ista.ac.at}}
 \date{}
 
-%\author{Martin Dvorak, Vladimir Kolmogorov}
-%\date{2024}
 \maketitle
 
 
@@ -173,7 +172,7 @@ Exactly one of the following exists:
 
 For optimization problems, duality asserts a correspondence between
 the optimal value of a linear program and the optimal value of its dual
-(originally studied in the context of zero-sum games by Dantzig, von Neumann~\cite{Discussion};
+(originally discussed in the context of zero-sum games by Dantzig and von Neumann~\cite{Discussion};
 later in Gale, Kuhn, Tucker~\cite{GaleKuhnTucker}).
 The strong duality theorem, the cornerstone of linear programming, can be stated as follows.
 % maybe "which is a cornerstone of linear programming"
@@ -203,9 +202,11 @@ which is probably a more familiar formulation of strong LP duality.
 Later it will be clear why we chose the ``$\min\,$/$\,\min$''
 rather than the more idiomatic ``$\max\,$/$\,\min$'' formulation. Also, we do not investigate
 ``asymmetric versions'' such as:
-$$ \max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x = b \,\}
+\begin{equation}
+\max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x = b \,\}
 = \min \,\{\, b \* y ~|~ A^T \!\* y \ge c \,\}
-$$
+\label{eq:StandardLP.strongDuality:assym}
+\end{equation}
 
 For many more Farkas-like theorems (beyond the scope of this paper),
 see for example \cite{Perng2017}.
@@ -438,8 +439,9 @@ If at least one of them is feasible, i.e., $(P^\star, D^\star) \ne (\top, \top)$
 then $P^\star = -D^\star$.
 \end{theorem}
 \begin{sloppypar} % ``unrecognized environment''
-Similar to~\ref{extendedFarkas}, all six conditions in the definition of a valid LP are necessary:
-omitting any one of them makes~\ref{ExtendedLP.strongDuality} false (see counterexamples in \sekt{sec:ExtendedLP.strongDuality:counterexamples}).
+Similar to~\ref{extendedFarkas}, all six conditions in the definition of a valid LP are necessary;
+omitting any one of them makes \ref{ExtendedLP.strongDuality} false
+(see counterexamples in \sekt{sec:ExtendedLP.strongDuality:counterexamples}).
 \end{sloppypar}
 
 Note that the conclusion of the theorem ($P^\star = -D^\star$) can be reformulated,
@@ -469,7 +471,7 @@ to prove the results.
 In \sekt{statements}, we formally state theorems from \sekt{introduction}
 using definitions from \sekt{preliminaries}.
 In \sekt{bartl}, we prove \ref{fintypeFarkasBartl} (stated in \sekt{generalizations}),
-from which be obtain \ref{equalityFarkas} as a corollary.
+from which we obtain \ref{equalityFarkas} as a corollary.
 In \sekt{extended}, we prove \ref{extendedFarkas} (stated in \sekt{extensions}).
 In \sekt{dualityELP}, we prove \ref{ExtendedLP.strongDuality}
 (stated in \sekt{extensions}), from which we obtain
@@ -477,8 +479,8 @@ In \sekt{dualityELP}, we prove \ref{ExtendedLP.strongDuality}
 In \sekt{counterexamples}, we show what happens when various preconditions
 are not satisfied.
 
-Repository \texttt{https://github.com/madvorak/duality}
-contains full version of all definitions, statements,
+Repository \texttt{https://github.com/madvorak/duality/tree/v2}
+contains the full version of all definitions, statements,
 and proofs. They are written in a formal language called
 Lean 4, which provides a guarantee that every step of
 every proof follows from valid logical axioms.\footnote{
@@ -1147,7 +1149,7 @@ theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ 0 ≤ Aᵀ *ᵥ y ∧ b ⬝ᵥ y < 0)
 \end{lstlisting}
 \begin{lstlisting}
-theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+theorem StandardLP.strongDuality (P : StandardLP I J R) (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum
 \end{lstlisting}
 
@@ -1168,7 +1170,7 @@ theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
     (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0)
 \end{lstlisting}
 \begin{lstlisting}
-theorem ExtendedLP.strongDuality {P : ExtendedLP I J F} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+theorem ExtendedLP.strongDuality (P : ExtendedLP I J F) (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
   OppositesOpt P.optimum P.dualize.optimum
 \end{lstlisting}
 
@@ -1611,9 +1613,10 @@ Recall that~\ref{extendedFarkas} has four preconditions on matrix $A$ and vector
 The following examples show that omitting any of these preconditions makes the theorem
 false\:---\:there may exist nonnegative vectors $x,y$ such that 
 $A \* x \le b$, $(-A^T) \* y \le 0$, and $b \* y < 0$.
+\vspace{-9pt}
  
 $$
-\begin{array}{cc@{\hspace{30pt}}ccc@{\hspace{60pt}}l}
+\begin{array}{c@{\hspace{30pt}}c@{\hspace{60pt}}c@{\hspace{30pt}}c@{\hspace{60pt}}l}
 A =
 \begin{pmatrix}
 	\bot & \top \\
@@ -1626,7 +1629,7 @@ x = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 &
 y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 &
-&\mbox{ $A$ has $\bot$ and $\top$ in the same row}
+\mbox{ $A$ has $\bot$ and $\top$ in the same row}
 %
 \vspace{5pt} \\
 %
@@ -1638,7 +1641,7 @@ x = \begin{pmatrix} 0 \end{pmatrix}
 &
 y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 &
-&\mbox{ $A$ has $\bot$ and $\top$ in the same column}
+\mbox{ $A$ has $\bot$ and $\top$ in the same column}
 %
 \vspace{5pt} \\
 %
@@ -1650,7 +1653,7 @@ x = \begin{pmatrix} 1 \end{pmatrix}
 &
 y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 &
-&\mbox{ $A$ has $\top$ in a row where $b$ has $\top$}
+\mbox{ $A$ has $\top$ in a row where $b$ has $\top$}
 %
 \vspace{5pt} \\
 %
@@ -1662,7 +1665,7 @@ x = \begin{pmatrix} 1 \end{pmatrix}
 &
 y = \begin{pmatrix} 0 \end{pmatrix}
 &
-&\mbox{ $A$ has $\bot$ in a row where $b$ has $\bot$}
+\mbox{ $A$ has $\bot$ in a row where $b$ has $\bot$}
 \end{array}
 $$
 
@@ -1670,7 +1673,7 @@ We also claimed in \sekt{extensions} that changing condition $(-A^T) \* y \le 0$
 to  $A^T \* y \ge 0$ in  \ref{extendedFarkas} would cause the theorem
 to fail even when $A$ has a single $\bot$ entry. The counterexample is as follows:
 $$
-\begin{array}{cc}
+\begin{array}{c@{\hspace{30pt}}c}
 A =
 \begin{pmatrix}
 	\bot  \\
@@ -1739,14 +1742,45 @@ in the definition of a valid LP.
 
 \section {Related work}
 
-Isabelle \cite{Farkas-AFP} \cite{Linear-AFP} \cite{Duality-AFP}
-Rocq \cite{Simplex-Coq}
+There is a substantial body of work on linear inequalities and
+linear programming formalized in Isabelle.
+While our work is focused only on proving mathematical theorems,
+the work in Isabelle is motivated by the development of SMT solvers.
+
+\begin{itemize}
+\item 
+Bottesch, Haslbeck, Thiemann \cite{Farkas-AFP} proved a variant of
+\ref{equalityFarkas} for $\delta$-rationals
+by analyzing a specific implementation of the Simplex algorithm
+\cite{Simplex-AFP} by Marić, Spasić, Thiemann.
+\item
+Bottesch, Raynaud, Thiemann \cite{Linear-AFP} proved
+the Fundamental theorem of linear inequalities as well
+as both \ref{equalityFarkas} and \ref{inequalityFarkas}
+for all linearly ordered fields, alongside with
+the Carathéodory’s theorem and the Farkas-Minkowski-Weyl theorem.
+They also investigated systems of mixed-integer inequalities.
+\item 
+Thiemann himself \cite{Duality-AFP} then proved the strong LP duality
+in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
+\end{itemize}
+% https://link.springer.com/chapter/10.1007/11541868_15 ?
+
+Sakaguchi \cite{Vass-Coq} proved a version of \ref{equalityFarkas}
+in Rocq, using the Fourier-Motzkin elimination.
+Allamigeon and Katz \cite{Simplex-Coq} made a large contribution to
+the study of convex polyhedra in Rocq.
+Among other results, they proved a version of \ref{equalityFarkas}
+for linearly ordered fields as well as the strong LP duality
+in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
+% I have no idea what "Boolean reflection" is.
+
+\subsection{?}
 
 In Lean, it would be possible to prove Farkas for reals using the
 Hahn-Banach separation theorem. However, we do not yet know that
 the set of feasible solutions is closed.
-
-TODO more about existing formalizations of Farkas-like theorems.
+% Also exists in Mizar? https://mizar.uwb.edu.pl/JFM/Vol5/hahnban.html
 
 
 \section {Conclusion}
