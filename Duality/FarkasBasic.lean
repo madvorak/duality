@@ -7,10 +7,10 @@ import Duality.FarkasBartl
 instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : LinearOrderedField F] :
     LinearOrderedDivisionRing F := { instF with }
 
-variable {I J F : Type*} [Fintype I] [Fintype J] [LinearOrderedField F]
-
 /- Let's move from linear maps to matrices, which give more familiar
-formulations of the theorems of alternative (albeit less general). -/
+(albeit less general) formulations of the theorems of alternative. -/
+
+variable {I J F : Type*} [Fintype I] [Fintype J] [LinearOrderedField F]
 
 open scoped Matrix
 

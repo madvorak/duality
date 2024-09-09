@@ -28,9 +28,9 @@ open scoped Matrix
 
 variable {J : Type*} [Fintype J]
 
-/-- Vector `x` is a solution to linear program `P` iff all entries of `x` are nonnegative and its
-    multiplication by matrix `A` from the left yields a vector whose all entries are less or equal
-    to corresponding entries of the vector `b`. -/
+/-- A nonnegative vector `x` is a solution to a linear program `P` iff
+    its multiplication by matrix `A` from the left yields a vector whose
+    all entries are less or equal to corresponding entries of the vector `b`. -/
 def StandardLP.IsSolution [OrderedSemiring R] (P : StandardLP I J R) (x : J → R≥0) : Prop :=
   P.A *ᵥ x ≤ P.b
 
@@ -40,7 +40,7 @@ def StandardLP.IsSolution [OrderedSemiring R] (P : StandardLP I J R) (x : J → 
 def StandardLP.Reaches [OrderedSemiring R] (P : StandardLP I J R) (r : R) : Prop :=
   ∃ x : J → R≥0, P.IsSolution x ∧ P.c ⬝ᵥ x = r
 
-/-- Linear program `P` is feasible iff there exists a vector `x` that is a solution to `P`. -/
+/-- Linear program `P` is feasible iff there exists a solution to `P`. -/
 def StandardLP.IsFeasible [OrderedSemiring R] (P : StandardLP I J R) : Prop :=
   ∃ r : R, P.Reaches r
 
@@ -53,7 +53,11 @@ def StandardLP.IsBoundedBy [OrderedSemiring R] (P : StandardLP I J R) (r : R) : 
 def StandardLP.IsUnbounded [OrderedSemiring R] (P : StandardLP I J R) : Prop :=
   ¬∃ r : R, P.IsBoundedBy r
 
-/-- Dualize a linear program in the standard form. Both LPs are intended to be minimized. -/
+/-- Dualize a linear program in the standard form.
+    The matrix gets transposed and its values flip signs.
+    The original objective function becomes the new right-hand-side vector.
+    The original right-hand-side vector becomes the new objective function.
+    Both linear programs are intended to be minimized. -/
 def StandardLP.dualize [Ring R] (P : StandardLP I J R) : StandardLP J I R :=
   ⟨-P.Aᵀ, P.c, P.b⟩
 
@@ -197,7 +201,7 @@ theorem StandardLP.optimum_neq_none (P : StandardLP I J R) :
     P.optimum ≠ none :=
   StandardLP.toValidELP.optimum_eq P ▸ P.toValidELP.optimum_neq_none
 
-theorem StandardLP.strongDuality {P : StandardLP I J R} (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+theorem StandardLP.strongDuality (P : StandardLP I J R) (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
   simpa [StandardLP.toValidELP.optimum_eq, StandardLP.toValidELP.dualize_eq] using
     P.toValidELP.strongDuality (by

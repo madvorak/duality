@@ -13,6 +13,7 @@ structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   /-- The objective function coefficients. -/
   c : J → F∞
 
+/-- Extended linear program with properties that are needed for duality theorems. -/
 structure ValidELP (I J F : Type*) [LinearOrderedField F] extends ExtendedLP I J F where
   /-- No `⊥` and `⊤` in the same row. -/
   hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤)
@@ -33,9 +34,9 @@ variable {I J F : Type*} [LinearOrderedField F]
 
 section extended_LP_definitions
 
-/-- Vector `x` is a solution to linear program `P` iff all entries of `x` are nonnegative and its
-    multiplication by matrix `A` from the left yields a vector whose all entries are less or equal
-    to corresponding entries of the vector `b`. -/
+/-- A nonnegative vector `x` is a solution to a linear program `P` iff
+    its multiplication by matrix `A` from the left yields a vector whose
+    all entries are less or equal to corresponding entries of the vector `b`. -/
 def ExtendedLP.IsSolution [Fintype J] (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
   P.A ₘ* x ≤ P.b
 
@@ -45,12 +46,12 @@ def ExtendedLP.IsSolution [Fintype J] (P : ExtendedLP I J F) (x : J → F≥0) :
 def ExtendedLP.Reaches [Fintype J] (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 
-/-- Linear program `P` is feasible iff `P` reaches a finite value. -/
+/-- Linear program `P` is feasible iff `P` reaches a value that is not `⊤`. -/
 def ExtendedLP.IsFeasible [Fintype J] (P : ExtendedLP I J F) : Prop :=
   ∃ p : F∞, P.Reaches p ∧ p ≠ ⊤
 
 /-- Linear program `P` is bounded by `r` iff every value reached by `P` is
-    greater or equal to `r` (i.e., `P` is bounded from below). -/
+    greater or equal to `r` (i.e., `P` is bounded by `r` from below). -/
 def ExtendedLP.IsBoundedBy [Fintype J] (P : ExtendedLP I J F) (r : F) : Prop :=
   ∀ p : F∞, P.Reaches p → r ≤ p
 
@@ -77,13 +78,15 @@ def OppositesOpt : Option F∞ → Option F∞ → Prop
 | (p : F∞), (q : F∞) => p = -q  -- opposite values; includes `⊥ = -⊤` and `⊤ = -⊥`
 | _       , _        => False   -- namely `OppositesOpt none none` is `False`
 
-/-- Dualize a linear program in the standard form.
+/-- Dualize an extended linear program in the standard form.
     The matrix gets transposed and its values flip signs.
     The original objective function becomes the new right-hand-side vector.
-    The original right-hand-side vector becomes the new objective function. -/
+    The original right-hand-side vector becomes the new objective function.
+    Both linear programs are intended to be minimized. -/
 abbrev ExtendedLP.dualize (P : ExtendedLP I J F) : ExtendedLP J I F :=
   ⟨-P.Aᵀ, P.c, P.b⟩
 
+/-- Dualize a valid extended linear program. -/
 def ValidELP.dualize (P : ValidELP I J F) : ValidELP J I F where
   toExtendedLP := P.toExtendedLP.dualize
   hAi := by aeply P.hAj
