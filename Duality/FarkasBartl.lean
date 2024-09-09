@@ -220,13 +220,13 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
   convert
     finFarkasBartl ⟨⟨fun w : W => fun j' => A w ((Fintype.equivFin J).symm j'), by aesop⟩, by aesop⟩ b
       using 1
-  · constructor <;> intro ⟨x, hx, hyp⟩
+  · constructor <;> intro ⟨x, hx, hA⟩
     · use x ∘ (Fintype.equivFin J).invFun
       constructor
       · intro j
         simpa using hx ((Fintype.equivFin J).invFun j)
       · intro w
-        convert hyp w
+        convert hA w
         apply Finset.sum_equiv (Fintype.equivFin J).symm <;>
         · intros
           simp
@@ -235,9 +235,9 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
       · intro j
         simpa using hx ((Fintype.equivFin J).toFun j)
       · intro w
-        convert hyp w
+        convert hA w
         apply Finset.sum_equiv (Fintype.equivFin J) <;>
-        · intros
+        · intro
           simp
   · constructor <;> intro ⟨y, hAy, hby⟩ <;> refine ⟨y, fun j => ?_, hby⟩
     · simpa using hAy ((Fintype.equivFin J).invFun j)

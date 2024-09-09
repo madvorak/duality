@@ -42,7 +42,7 @@ def ExtendedLP.IsSolution [Fintype J] (P : ExtendedLP I J F) (x : J → F≥0) :
 
 /-- Linear program `P` reaches objective value `r` iff there is a solution `x` such that,
     when its entries are elementwise multiplied by the the coefficients `c` and summed up,
-    the result is the value `r`. Note that `⊤` can be reached but `⊥` cannot. -/
+    the result is the value `r`. -/
 def ExtendedLP.Reaches [Fintype J] (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 

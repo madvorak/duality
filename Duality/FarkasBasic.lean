@@ -40,7 +40,9 @@ theorem equalityFarkas (A : Matrix I J F) (b : I → F) :
 /- The following two theorems could be given in much more generality.
 In our work, however, this is the only setting we provide.
 This special case of the Fredholm alternative is not our main focus
-but a byproduct of the other theorems we prove. -/
+but a byproduct of the other theorems we prove.
+You can use `basicLinearAlgebra_lt` to gain intuition for understanding
+what `equalityFarkas` says. -/
 
 /-- A system of linear equalities has a solution if and only if
 we cannot obtain a contradiction by taking a linear combination of the equalities. -/
@@ -82,8 +84,7 @@ midly reformulated. -/
 theorem basicLinearAlgebra (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, A *ᵥ x = b) ≠ (∃ y : I → F, Aᵀ *ᵥ y = 0 ∧ b ⬝ᵥ y ≠ 0) := by
   convert basicLinearAlgebra_lt A b using 1
-  refine ⟨?_, by aesop⟩
-  intro ⟨y, hAy, hby⟩
+  refine ⟨fun ⟨y, hAy, hby⟩ => ?_, by aesop⟩
   if hlt : b ⬝ᵥ y < 0 then
     aesop
   else
@@ -145,4 +146,4 @@ theorem inequalityFarkas_neg [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     (∃ x : J → F, 0 ≤ x ∧ A *ᵥ x ≤ b) ≠ (∃ y : I → F, 0 ≤ y ∧ -Aᵀ *ᵥ y ≤ 0 ∧ b ⬝ᵥ y < 0) := by
   convert inequalityFarkas A b using 5
   rw [Matrix.neg_mulVec, ←neg_zero]
-  constructor <;> intro hyp i <;> simpa using hyp i
+  constructor <;> intro hAx i <;> simpa using hAx i

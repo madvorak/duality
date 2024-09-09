@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Order.Pi
 import Duality.LinearProgramming
 
 /-!
@@ -45,7 +44,7 @@ def StandardLP.IsFeasible [OrderedSemiring R] (P : StandardLP I J R) : Prop :=
   ∃ r : R, P.Reaches r
 
 /-- Linear program `P` is bounded by `r` iff every value reached by `P` is
-    greater or equal to `r` (i.e., `P` is bounded from below). -/
+    greater or equal to `r` (i.e., `P` is bounded by `r` from below). -/
 def StandardLP.IsBoundedBy [OrderedSemiring R] (P : StandardLP I J R) (r : R) : Prop :=
   ∀ p : R, P.Reaches p → r ≤ p
 

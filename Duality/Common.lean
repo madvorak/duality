@@ -13,10 +13,11 @@ lemma Finset.subtype_univ_sum_eq_subtype_univ_sum {p q : α → Prop} (hpq : p =
   subst hpq
   convert rfl
   ext
-  simp_all only
+  symm
+  apply hfg
 
 -- Andrew Yang proved this lemma:
-lemma Finset.univ_sum_of_zero_when_neg [Fintype α] [AddCommMonoid β]
+lemma Finset.univ_sum_of_zero_when_not [Fintype α] [AddCommMonoid β]
     {f : α → β} (p : α → Prop) [DecidablePred p] (hpf : ∀ a : α, ¬(p a) → f a = 0) :
     Finset.univ.sum f = Finset.univ.sum (fun a : { a : α // p a } => f a.val) := by
   classical
@@ -51,7 +52,7 @@ lemma neg_iff_neg (hpq : P ↔ Q) : ¬P ↔ ¬Q := by
 end logic_with_neq
 
 
-section uncategorized_stuff
+section miscellaneous
 
 lemma le_of_nneg_add {α : Type*} [OrderedAddCommGroup α] {a b c : α} (habc : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
   aesop
@@ -60,4 +61,4 @@ macro "change " h:ident " to " t:term : tactic => `(tactic| change $t at $h:iden
 
 macro "aeply" t:term : tactic => `(tactic| intro <;> apply $t <;> aesop)
 
-end uncategorized_stuff
+end miscellaneous

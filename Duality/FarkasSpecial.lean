@@ -354,7 +354,7 @@ theorem extendedFarkas [DecidableEq I]
             apply i'.property.left
             exact hbi
         simp only [Matrix.mulVec, Matrix.dotProduct, Matrix.mulWeig, Matrix.dotProd]
-        rw [Finset.sum_toE, Finset.univ_sum_of_zero_when_neg (fun j : J => ∀ i' : I', A i'.val j ≠ ⊤)]
+        rw [Finset.sum_toE, Finset.univ_sum_of_zero_when_not (fun j : J => ∀ i' : I', A i'.val j ≠ ⊤)]
         · congr
           ext j'
           rw [mul_comm]
@@ -481,7 +481,7 @@ theorem extendedFarkas [DecidableEq I]
             use i
           intro j'
           have inequality : ∑ i : I, y i • (-Aᵀ) j'.val i ≤ 0 := ineqalities j'
-          rw [Finset.univ_sum_of_zero_when_neg (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at inequality
+          rw [Finset.univ_sum_of_zero_when_not (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at inequality
           · rw [←EF.coe_le_coe_iff]
             convert inequality
             simp only [Matrix.mulVec, Matrix.dotProduct]
@@ -504,7 +504,7 @@ theorem extendedFarkas [DecidableEq I]
             apply hnb
             exact hi
         · unfold Matrix.dotProd at sharpine
-          rw [Finset.univ_sum_of_zero_when_neg (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at sharpine
+          rw [Finset.univ_sum_of_zero_when_not (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at sharpine
           · unfold Matrix.dotProduct
             rw [←EF.coe_lt_coe_iff, Finset.sum_toE]
             convert sharpine with i'
