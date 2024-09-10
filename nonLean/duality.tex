@@ -1769,20 +1769,14 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 
 \subsection{Hahn-Banach theorems}
 
-In Lean, it would have been be possible to prove \ref{equalityFarkas}
-for reals using the Hahn-Banach separation theorem \cite{HahnBanach-Lean}:
-
-Let $E$ be a topological vector space over reals.
-Let $s$ be a closed convex set in $E$.
-Let $x$ be an element of $E$. If $x \notin s$
-then there exists a continuous linear map $f : E \r \mathbb{R}$
-and a number $u : \mathbb{R}$ such that, for all $a \in s$,
-$f~a < u < f~x$.
-
+Several Hahn-Banach theorems have been formalized in Lean.
+In particular, it would have been be possible to prove \ref{equalityFarkas}
+for reals using the Hahn-Banach separation theorem for a convex closed set
+and a point \cite{HahnBanach-Lean}.
 It would then have been possible to extend the result to other
-duality theorems for reals (and for extended reals).
+duality theorems for reals.
 To our knowledge, the theorem \cite{HahnBanach-Lean} cannot be used
-to prove \ref{equalityFarkas} for all linearly ordered fields.
+to prove \ref{equalityFarkas} for an arbitrary linearly ordered field.
 Therefore, we decided to prove \ref{equalityFarkas} without appealing to
 the geometry and topology.
 
