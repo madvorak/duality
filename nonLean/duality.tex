@@ -111,19 +111,11 @@
 
 
 \noindent \textbf{Abstract:}\;
-%\begin{abstract}
 Farkas established that a system of linear inequalities has a solution if and only if we cannot obtain
 a contradiction by taking a linear combination of the inequalities.
 We state and formally prove several Farkas-like theorems over linearly ordered fields in Lean 4.
 Furthermore, we extend duality theory to the case when some coefficients are allowed to take
 ``infinite values''.
-%Furthermore, we consider a linearly ordered field extended with two special elements denoted by $\bot$ and $\top$
-%where $\bot$ is below every element and $\top$ is above every element.
-%We define $\bot + a = \bot = a + \bot$ for all $a$ and we define $\top + b = \top = b + \top$ for all $b \neq \bot$.
-%Instead of multiplication, we define scalar action $c \cdot \bot = \bot$ for every $c \ge 0$ but we define
-%$d \cdot \top = \top$ only for $d > 0$ because $0 \cdot \top = 0$.
-%We extend certain Farkas-like theorems to a setting where coefficients are from an extended linearly ordered field.
-%\end{abstract}
 \medskip
 
 
@@ -1742,6 +1734,8 @@ in the definition of a valid LP.
 
 \section {Related work}
 
+\subsection{Farkas-like theorems}
+
 There is a substantial body of work on linear inequalities and
 linear programming formalized in Isabelle.
 While our work is focused only on proving mathematical theorems,
@@ -1764,7 +1758,6 @@ They also investigated systems of linear mixed-integer inequalities.
 Thiemann himself \cite{Duality-AFP} then proved the strong LP duality
 in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 \end{itemize}
-% https://link.springer.com/chapter/10.1007/11541868_15 ?
 
 Sakaguchi \cite{Vass-Coq} proved a version of \ref{equalityFarkas}
 for linearly ordered fields in Rocq, using the Fourier-Motzkin elimination.
@@ -1773,15 +1766,23 @@ the study of convex polyhedra in Rocq\:---\:among
 other results, they proved a version of \ref{equalityFarkas}
 for linearly ordered fields as well as the strong LP duality
 in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
-% I have no idea what "Boolean reflection" is.
 
-\subsection{?}
+\subsection{Hahn-Banach theorems}
 
-In Lean, it would be possible to prove Farkas for reals using the
-Hahn-Banach separation theorem. However, we do not yet know that
-the set of feasible solutions is closed.
-% Also exists in Mizar: https://mizar.uwb.edu.pl/JFM/Vol5/hahnban.html
-% Also in Rocq: https://www.ii.uib.no/~bezem/abstracts/TYPES_2019_paper_50
+In Lean, it would have been be possible to prove \ref{equalityFarkas}
+for reals using the Hahn-Banach separation theorem \cite{HahnBanach-Lean}.
+It would then have been possible to extend the result to other
+duality theorems for reals and possibly for extended reals.
+However, we would first need to prove that the set defined by linear
+inequalities is closed, which is not for free. Moreover, we do not
+know how to extend the result to other linearly ordered fields if obtained
+using the Hahn-Banach separation theorem for reals.
+Therefore, we decided to prove \ref{equalityFarkas} without appealing to
+the geometry.
+Note that certain Hahn-Banach theorems have also
+been formalized in Mizar \cite{HahnBanach-Mizar},
+Alf \cite{HahnBanach-Alf}, Isabelle \cite{HahnBanach-Isabelle},
+and Rocq \cite{HahnBanach-Coq}.
 
 
 \section {Conclusion}
@@ -1801,8 +1802,8 @@ us developed a lot of ad-hoc machinery which we would have
 preferred to be handled by existing tactics. Another area
 where Lean 4 is not yet helpful is the search for counterexamples.
 Despite these difficulties, we find Lean 4 to be an excellent
-tool for elegant expressions of mathematical theorems and
-for proving them formally.
+tool for elegant expressions and organization of
+mathematical theorems and for proving them formally.
 
 
 
