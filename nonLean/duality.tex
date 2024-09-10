@@ -431,7 +431,7 @@ We say that the linear program $(-A^T, c, b)$ is the \emph{dual} of $P$.
 \end{definition}
 It is straightforward to check that the dual of a valid LP is valid.
 
-\begin{theorem}[\customlabel{ExtendedLP.strongDuality}{\texttt{ExtendedLP.strongDuality}}]
+\begin{theorem}[\customlabel{ExtendedLP.strongDuality}{\texttt{ValidELP.strongDuality}}]
 Let $F$ be a linearly ordered field,
 $P$ be a valid linear program over $F_\infty$ and $D$ be its dual.
 Then $P^\star$ and $D^\star$ are defined.
@@ -1814,16 +1814,16 @@ for proving them formally.
 %
 %\includegraphics[width=\textwidth]{algebraic_hierarchy.png}
 
-\section{Appendix: dependencies between theorems}
+\section*{Appendix: dependencies between theorems}
 
-\includegraphics[width=0.9\textwidth]{theorems.png}
+\includegraphics[width=0.8\textwidth]{theorems.png}
 
+\noindent
 Theorems are in black. Selected lemmas are in gray.
 What we consider to be the main theorems are
+denoted by blue background.
+What we consider to be the main corollaries are
 denoted by yellow background.
-
-TODO yellow extendedFarkas.
-{\color{blue} TODO some names and some arrows changed.}
 
 
 \end{document}
