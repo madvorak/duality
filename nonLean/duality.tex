@@ -1329,7 +1329,7 @@ We need to do the following steps in the given order:
 (they force respective variables to be zero).
 \item If $b$ contains $\bot$, then $A \* x \le b$ cannot be satisfied,
 but $y = 0$ satisfies $(-A^T) \* y \le 0$ and $b \* y < 0$. Stop here.
-\item Assume there is no $\bot$ in $b$. Use inequalityFarkas\_neg.
+\item Assume there is no $\bot$ in $b$. Use \ref{inequalityFarkas-neg}.
 In either case, extend $x$ or $y$ with zeros on all deleted positions.
 \end{enumerate}
 
@@ -1767,11 +1767,11 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 % https://link.springer.com/chapter/10.1007/11541868_15 ?
 
 Sakaguchi \cite{Vass-Coq} proved a version of \ref{equalityFarkas}
-for real field types in Rocq, using the Fourier-Motzkin elimination.
+for linearly ordered fields in Rocq, using the Fourier-Motzkin elimination.
 Allamigeon and Katz \cite{Simplex-Coq} made a large contribution to
-the study of convex polyhedra in Rocq.
-Among other results, they proved a version of \ref{equalityFarkas}
-for real field types as well as the strong LP duality
+the study of convex polyhedra in Rocq\:---\:among
+other results, they proved a version of \ref{equalityFarkas}
+for linearly ordered fields as well as the strong LP duality
 in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 % I have no idea what "Boolean reflection" is.
 
