@@ -267,7 +267,7 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \end{theorem}
 In the most general theorem, stated below, certain occurrences of $R$ are replaced by
 a linearly ordered $R$-module $V$ whose order respects the order on $R$
-(for a formal definition, see the end of \sekt{modules}).
+(for a formal definition, see the end of \sekt{preliminaries-modules}).
 
 \begin{theorem}[\customlabel{fintypeFarkasBartl}{\texttt{fintypeFarkasBartl}}]
 Let $J$ be a finite type.
@@ -490,12 +490,17 @@ However, in case of any discrepancy, the code shall prevail.
 There are many layers of definitions that are built before say
 what a linearly ordered field $F$ is (used e.g.~in \ref{equalityFarkas}),
 what a linearly ordered division ring $R$ is (used e.g.~in \ref{scalarFarkas}), and
-what linearly ordered abelian group $V$ is (used in \ref{fintypeFarkasBartl}).
-%We need these three algebraic structures for stating our main results.
-This section mainly documents existing Mathlib definitions.
-We also highlight custom definitions added to our project only.
+what a linearly ordered abelian group $V$ is (used in \ref{fintypeFarkasBartl}).
+\sekt{preliminaries-typeclasses} mainly documents existing Mathlib definitions;
+we also highlight how we added linearly ordered division rings into our project.
+\sekt{preliminaries-ef} then explains how we defined extended linearly ordered fields.
+\sekt{preliminaries-vectors} reviews vectors and matrices; we especially focus on
+how multiplication between them is defined.
+\sekt{preliminaries-modules} explains how modules are implemented.
+\sekt{preliminaries-lp} provides the formal definition of extended linear programs.
 
 \subsection{Review of algebraic typeclasses that our project depends on}
+\label{preliminaries-typeclasses}
 
 Additive semigroup is a structure on any type with addition where the addition is associative:
 \begin{lstlisting}
@@ -543,7 +548,7 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 \end{lstlisting}
 Similarly, division monoid is a monoid that adds two more operations (inverse and divide)
 that satisfy some basic properties (please note that ``multiplication by an inverse gives one''
-is not required yet; that will be required e.g.~in a group):
+is not required yet):
 \begin{lstlisting}
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   div := DivInvMonoid.div'
@@ -558,11 +563,6 @@ Additive group is a subtractive monoid in which the unary minus acts as a left i
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 \end{lstlisting}
-%Similarly, a group is a division monoid in which the inverse operation acts as a left inverse with respect to multiplication:
-%\begin{lstlisting}
-%class Group (G : Type u) extends DivInvMonoid G where
-%  inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
-%\end{lstlisting}
 Abelian magma is a structure on any type that has commutative addition:
 \begin{lstlisting}
 class AddCommMagma (G : Type u) extends Add G where
@@ -608,7 +608,7 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 \end{lstlisting}
 Nonunital-semiring is a nonunital-nonassociative-semiring that forms a semigroup with zero (i.e., the
-semiring requirement makes it associative):
+semigroup-with-zero requirement makes it associative):
 \begin{lstlisting}
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
@@ -638,7 +638,7 @@ class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M�
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
   AddCommMonoidWithOne α
 \end{lstlisting}
-Semiring is the combination of nonunital-semiring and nonassociative-semiring that forms a monoid with zero:
+Semiring is a nonunital-semiring and nonassociative-semiring that forms a monoid with zero:
 \begin{lstlisting}
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
@@ -732,6 +732,7 @@ instance LinearOrderedField.toLinearOrderedDivisionRing {F : Type*} [instF : Lin
 This instance is needed for the step from \ref{coordinateFarkas} to \ref{equalityFarkas}.
 
 \subsection{Extended linearly ordered fields}
+\label{preliminaries-ef}
 
 Given any type $F$, we construct $F \cup \{ \bot, \top \}$ as follows:
 \begin{lstlisting}
@@ -798,6 +799,7 @@ Scalar action on $F_\infty$ by negative elements from the left is undefined.
 Multiplication between two elements of $F_\infty$ is also undefined.
 
 \subsection{Vectors and matrices}
+\label{preliminaries-vectors}
 
 We distinguish two types of vectors; implicit vectors and explicit vectors.
 Implicit vectors (called just ``vectors'') are members of a vector space;
@@ -855,6 +857,11 @@ Note that, when multiplying two vectors,
 the left vector is not transposed\:---\:a vector is not
 defined as a special case of matrix, and transposition is not
 defined as an operation on explicit vectors, only on matrices.
+Explicit vectors are neither row vectors nor column vectors;
+they are just maps. It is only in our imagination that we
+treat certain occurrences of vectors as rows or columns;
+in reality, it is the position of the vector in the term that
+determines what the vector does there.
 
 Infix notation for these two operations is defined as follows
 (the keyword \texttt{infixl} when defining an operator $\circ$ means that
@@ -929,7 +936,7 @@ For similar reasons, we did not generalize the Mathlib definition of
 It was still a lot of lemmas.
 
 \subsection{Modules and how to order them}
-\label{modules}
+\label{preliminaries-modules}
 
 Given types $\alpha$ and $\beta$ such that $\alpha$ has a scalar action on $\beta$
 and $\alpha$ forms a monoid, Mathlib defines multiplicative action where
@@ -1003,6 +1010,7 @@ The code, however, does distinguish between them.
 
 
 \subsection{Linear programming}
+\label{preliminaries-lp}
 
 Extended linear programs are defined as follows: {\color{blue} TODO Matrix was not defined!}
 \begin{lstlisting}
@@ -1769,7 +1777,8 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 
 \subsection{Hahn-Banach theorems}
 
-Several Hahn-Banach theorems have been formalized in Lean.
+Several Hahn-Banach theorems have been formalized in Lean as a part of
+Mathlib \cite{Mathlib}.
 In particular, it would have been be possible to prove \ref{equalityFarkas}
 for reals using the Hahn-Banach separation theorem for a convex closed set
 and a point \cite{HahnBanach-Lean}.
