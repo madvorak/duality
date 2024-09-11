@@ -71,6 +71,7 @@
 	{α}{{$\alpha$}}1
 	{β}{{$\beta$}}1
 	{γ}{{$\gamma$}}1
+	{ι}{{$\iota$}}1
 	{≠}{{$\neq$}}1
 	{≤}{{$\leq$}}1
 	{≥}{{$\geq$}}1
@@ -457,7 +458,7 @@ given in~\ref{ExtendedLP.strongDuality}.
 In \sekt{preliminaries}, we explain all underlying definitions and
 comment on the formalization process;
 following the philosophy of \cite{Believe}
-we review almost all the declarations needed for the reader to believe
+we review most of the declarations needed for the reader to believe
 our results, leaving out many declarations that were used in order
 to prove the results.
 In \sekt{statements}, we formally state theorems from \sekt{introduction}
@@ -839,8 +840,33 @@ definition of multiplication between matrices and vectors; they do not even
 have to be of the same type; we only require the elements of the vector
 to have an action on the elements of the matrix (this is not a typo\:---\:normally,
 we would want matrices to have an action on vectors\:---\:not in our work).
+\sekt{versus} provides more details on multiplication between matrices and vectors
+and on the dot product.
+
+One thing to be said about the implementation of matrices is that we lied
+a little bit when we wrote things like $A : (I \times J) \r F$.
+In reality, \texttt{A : Matrix I J F} is implemented as $A : \,I \r (J \r F)$.
+This technique \cite{Currying} is called currying and makes it easier to
+pass individual rows of the matrix into functions and lemmas.
+
+The following instance in Mathlib defines how explicit vectors are compared
+(it is, in fact, more general than we said because it talks about $\Pi$-types
+\cite{MLTT}, i.e., the \textit{type} of \texttt{x i} can depend on the
+\textit{value} of \texttt{i}):
+\begin{lstlisting}
+instance Pi.hasLe {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] :
+  LE (∀ i, α i) where le x y := ∀ i, x i ≤ y i
+\end{lstlisting}
+This way Mathlib naturally defines $x \le y$ to hold if and only if
+$x_i \le y_i$ holds for every $i$.
+Comparison between matrices is not defined, only equality for matrices is.
+
+Throughout the paper, we do not distinguish between
+nonnegative explicit vectors and explicit vectors of nonnegative elements.
+The code, however, does distinguish between them.
 
 \subsubsection{Mathlib definitions versus our definitions}
+\label{versus}
 
 Mathlib defines dot product (i.e., a product of an explicit vector with an explicit vector) as follows:
 \begin{lstlisting}
@@ -876,7 +902,8 @@ scoped infixr:73 " *ᵥ " => Matrix.mulVec
 These definitions are sufficient for stating results based on linearly ordered fields.
 However, our results from \sekt{extensions} require a more general notion of
 multiplication between matrices and vectors.
-They are defined in the section hetero\_matrix\_products\_defs as follows:
+We define them in the section \texttt{hetero\_matrix\_products\_defs}
+as follows:
 \begin{lstlisting}
 variable {α γ : Type*} [AddCommMonoid α] [SMul γ α]
 
@@ -1000,19 +1027,12 @@ Adding \texttt{[PosSMulMono R V]} to the list of requirements solves the issue.
 We encourage the reader to try and delete various assumptions and see which parts of the proofs
 get underlined in red.
 
-{\color{blue}
-TODO explain ordering (specifically, nonnegativity) on explicit vectors.
-}
-
-Throughout the paper, we do not distinguish between
-nonnegative explicit vectors and explicit vectors of nonnegative elements.
-The code, however, does distinguish between them.
-
 
 \subsection{Linear programming}
 \label{preliminaries-lp}
 
-Extended linear programs are defined as follows: {\color{blue} TODO Matrix was not defined!}
+Extended linear programs are defined by a matrix $A$ and vectors $b$ and $c$
+(all of them over an extended linearly ordered field):
 \begin{lstlisting}
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   A : Matrix I J F∞
