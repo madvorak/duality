@@ -6,9 +6,7 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{array}
-
 \usepackage{hyperref}
-\usepackage{xcolor}
 
 \pagenumbering{gobble}
 
@@ -163,12 +161,12 @@ Exactly one of the following exists:
 \end{itemize}
 \end{theorem}
 
-For optimization problems, duality asserts a correspondence between
+For optimization problems, we obtain a correspondence between
 the optimal value of a linear program and the optimal value of its dual
 (originally discussed in the context of zero-sum games by Dantzig and von Neumann~\cite{Discussion};
 later in Gale, Kuhn, Tucker~\cite{GaleKuhnTucker}).
-The strong duality theorem, the cornerstone of linear programming, can be stated as follows.
-% maybe "which is a cornerstone of linear programming"
+The strong duality theorem, which is a cornerstone of linear programming,
+can be stated as follows.
 
 \begin{theorem}[\customlabel{StandardLP.strongDuality}{\texttt{StandardLP.strongDuality}}]
 Let $I$ and $J$ be finite types.
@@ -204,11 +202,10 @@ rather than the more idiomatic ``$\max\,$/$\,\min$'' formulation. Also, we do no
 For many more Farkas-like theorems (beyond the scope of this paper),
 see for example \cite{Perng2017}.
 
-This paper makes the following contributions.
+\noindent This paper makes the following contributions.
 \begin{itemize}
 \item We formally prove several existing duality results (including the three theorems above) in Lean 4.
 In fact, we prove a more general version of \ref{equalityFarkas} due to Bartl~\cite{Bartl2007}.
-%This version allows, in particular, allows structures with a non-commutative multiplication, and also allows infinitely many equations.
 \sekt{generalizations} says more about it.
 \item We establish (and formally prove in Lean 4) a new generalization
 of~\ref{inequalityFarkas} and~\ref{StandardLP.strongDuality}
@@ -250,7 +247,7 @@ can be obtained by applying \ref{coordinateFarkas} to the $F$-linear maps
 $(A^T \* \phantom{v})$ and $(b \* \phantom{v})$ utilizing the fact that
 two linear maps are equal if and only if they map the basis vectors equally.
 
-In the next generalization (similar to \cite{Chernikov}), 
+In the next generalization (a similar theorem is in \cite{Chernikov}), 
 the partially ordered module $I \r R$ is replaced by a general $R$-module $W$.
 
 \begin{theorem}[\customlabel{scalarFarkas}{\texttt{almostFarkasBartl}}]
@@ -568,7 +565,7 @@ Abelian magma is a structure on any type that has commutative addition:
 \begin{lstlisting}
 class AddCommMagma (G : Type u) extends Add G where
   add_comm : ∀ a b : G, a + b = b + a
-\end{lstlisting}
+\end{lstlisting} \pagebreak[2]
 Similarly, commutative magma is a structure on any type that has commutative multiplication:
 \begin{lstlisting}
 class CommMagma (G : Type u) extends Mul G where
@@ -648,8 +645,8 @@ Ring is a semiring and an abelian group at the same time that has ``one'' that b
 \begin{lstlisting}
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 \end{lstlisting}
-Commutative ring is a ring (guarantees commutative addition) and a commutative monoid (guarantees commutative multiplication)
-at the same time.
+Commutative ring is a ring (guarantees commutative addition) and a commutative monoid
+(guarantees commutative multiplication) at the same time:
 \begin{lstlisting}
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 \end{lstlisting}
@@ -811,11 +808,12 @@ Explicit vectors are functions from coordinates to values (again, we use the wor
 ``explicit vector`` (or just ``vector'' when it is clear from context that our vector
 is a map) not only when they form a vector space).
 The type of coordinates does not have to be ordered.
+
 Matrices live next to explicit vectors. They are also functions; they take a row index
 and a column index and they output a value at the given spot.
 Neither the row indices nor the column vertices are required to form an ordered type.
 This is why multiplication between matrices and vectors is defined only in structures
-where addition forms a commutative semigroup. Consider the following example:
+where addition forms an abelian monoid. Consider the following example:
 $$
 \begin{pmatrix}
 	1 & 2 & 3 \\
@@ -849,16 +847,16 @@ In reality, \texttt{A : Matrix I J F} is implemented as $A : \,I \r (J \r F)$.
 This technique \cite{Currying} is called currying and makes it easier to
 pass individual rows of the matrix into functions and lemmas.
 
-The following instance in Mathlib defines how explicit vectors are compared
-(it is, in fact, more general than we said because it talks about $\Pi$-types
-\cite{MLTT}, i.e., the \textit{type} of \texttt{x i} can depend on the
-\textit{value} of \texttt{i}):
+The following instance defines how explicit vectors are compared;
+Mathlib defines $x \le y$ to hold if and only if
+$x_i \le y_i$ holds for~every~$i$ %lb
+(it is, in fact, more general than we said because the following instance
+talks about $\Pi$-types \cite{MLTT}, i.e.,
+the \textit{type} of \texttt{x i} can depend on the \textit{value} of \texttt{i}):
 \begin{lstlisting}
 instance Pi.hasLe {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] :
   LE (∀ i, α i) where le x y := ∀ i, x i ≤ y i
 \end{lstlisting}
-This way Mathlib naturally defines $x \le y$ to hold if and only if
-$x_i \le y_i$ holds for every $i$.
 Comparison between matrices is not defined, only equality for matrices is.
 
 Throughout the paper, we do not distinguish between
@@ -1340,8 +1338,8 @@ Exactly one of the following exists:
 \end{itemize}
 \end{theorem}
 
-\subsection{Proof idea}
-We need to do the following steps in the given order:
+\noindent
+Proof idea: We need to do the following steps in the given order.
 \begin{enumerate}
 \item Delete all rows of both $A$ and $b$ where $A$ has $\bot$ or $b$ has $\top$
 (they are tautologies).
