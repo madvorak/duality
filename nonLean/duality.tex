@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{hyperref}
+\usepackage{titling}
 
 \pagenumbering{gobble}
 
@@ -69,6 +70,7 @@
 	{α}{{$\alpha$}}1
 	{β}{{$\beta$}}1
 	{γ}{{$\gamma$}}1
+	{π}{{$\pi$}}1
 	{ι}{{$\iota$}}1
 	{≠}{{$\neq$}}1
 	{≤}{{$\leq$}}1
@@ -106,7 +108,14 @@
 \normalsize Institute of Science and Technology Austria \\ {\normalsize\tt $\{$martin.dvorak,vnk$\}$@ista.ac.at}}
 \date{}
 
+\setlength{\droptitle}{-14mm} %pb
+
 \maketitle
+
+% Ugly hack for arXiv submission:
+\vspace{-5mm}
+\noindent\hspace{9mm}\makebox[0pt][l]{\rule{9mm}{0pt}}% White rectangle
+\parbox{\dimexpr\linewidth-9mm}{%
 
 
 \noindent \textbf{Abstract:}\;
@@ -121,7 +130,7 @@ Furthermore, we extend duality theory to the case when some coefficients are all
 \noindent \textbf{Keywords:}\;
 Farkas lemma, linear programming, extended rationals, extended reals, calculus of inductive constructions
 
-
+\vspace{-2.4mm} %pb
 \section{Introduction}
 \label{introduction}
 
@@ -138,25 +147,29 @@ Two well-known theorems of alternatives are as follows
 (Farkas~\cite{Farkas1894,Farkas1898}; Minkowski~\cite{Minkowski}).
 
 \begin{theorem}[\customlabel{equalityFarkas}{\texttt{equalityFarkas}}]
-Let $I$ and $J$ be finite types.
+Let $I, J$ be finite types. %lb
 Let $F$ be a linearly ordered field.
-Let $A$ be a matrix of type $(I \times J) \r F$.
+Let $A$ be a matrix of type $(I \!\times\! J) \r F$.
 Let $b$ be a vector of type $I \r F$.
 Exactly one of the following exists:
 \begin{itemize}
+\vspace{-1mm} %pb
 \item nonnegative vector $x : J \r F$ such that $A \* x = b$
+\vspace{-1mm} %pb
 \item vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
 \end{theorem}
 
 \begin{theorem}[\customlabel{inequalityFarkas}{\texttt{inequalityFarkas}}]
-Let $I$ and $J$ be finite types.
+Let $I, J$ be finite types. %lb
 Let $F$ be a linearly ordered field.
-Let $A$ be a matrix of type $(I \times J) \r F$.
+Let $A$ be a matrix of type $(I \!\times\! J) \r F$.
 Let $b$ be a vector of type $I \r F$.
 Exactly one of the following exists:
 \begin{itemize}
+\vspace{-1mm} %pb
 \item nonnegative vector $x : J \r F$ such that $A \* x \le b$
+\vspace{-1mm} %pb
 \item nonnegative vector $y : I \r F$ such that $A^T\! \* y \ge 0$ and $b \* y < 0$
 \end{itemize}
 \end{theorem}
@@ -182,7 +195,7 @@ Then
 \end{equation}
 holds if at least one of the systems has a solution (very roughly paraphrased).
 \end{theorem}
-Using identity  $\min\{c\*x~|~\ldots\}=-\max\{-c\*x~|~\ldots\}$ and replacing $c$ with $-c$,
+Using identity $\min\{c\*x~|~\ldots\}=-\max\{-c\*x~|~\ldots\}$ and replacing $c$ with $-c$,
 eq.~\eqref{eq:StandardLP.strongDuality:minmin} can be equivalently transformed to
 \begin{equation}
 \max \,\{\, c \* x ~|~ x \ge 0 \aand A \* x \le b \,\}
@@ -201,12 +214,15 @@ rather than the more idiomatic ``$\max\,$/$\,\min$'' formulation. Also, we do no
 
 For many more Farkas-like theorems (beyond the scope of this paper),
 see for example \cite{Perng2017}.
+} % arXiv submission hack
+\vspace*{0.001mm}
 
 \noindent This paper makes the following contributions.
 \begin{itemize}
 \item We formally prove several existing duality results (including the three theorems above) in Lean 4.
 In fact, we prove a more general version of \ref{equalityFarkas} due to Bartl~\cite{Bartl2007}.
 \sekt{generalizations} says more about it.
+\vspace{-0.5mm} %pb
 \item We establish (and formally prove in Lean 4) a new generalization
 of~\ref{inequalityFarkas} and~\ref{StandardLP.strongDuality}
 to the case when some of the coefficients are allowed to have infinite values. 
@@ -242,7 +258,7 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \end{itemize}
 \end{theorem}
 
-Note that \ref{equalityFarkas} for matrix $A: I \times J \r F$ and vector $b : I \r F$
+Note that \ref{equalityFarkas} for matrix $A: (I \times J) \r F$ and vector $b : I \r F$
 can be obtained by applying \ref{coordinateFarkas} to the $F$-linear maps
 $(A^T \* \phantom{v})$ and $(b \* \phantom{v})$ utilizing the fact that
 two linear maps are equal if and only if they map the basis vectors equally.
@@ -472,12 +488,15 @@ are not satisfied.
 Repository \texttt{https://github.com/madvorak/duality/tree/v2}
 contains the full version of all definitions, statements,
 and proofs. They are written in a formal language called
-Lean 4, which provides a guarantee that every step of
+Lean, which provides a guarantee that every step of
 every proof follows from valid logical axioms.\footnote{
 The only axioms used in our proofs are
 \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}, which you can check by the
 \texttt{\#print axioms} command.}
+We use Lean version 4.11.0 together with the Lean
+mathematical library \texttt{Mathlib} \cite{Mathlib}
+revision \texttt{00df099} (dated 2024-09-02).
 This paper attempts to be an accurate description of
 the \texttt{duality} project.
 However, in case of any discrepancy, the code shall prevail.
@@ -537,7 +556,6 @@ that satisfy some basic properties (please note that ``adding minus itself gives
 is not required yet; that will be required e.g.~in an additive group):
 \begin{lstlisting}
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
-  sub := SubNegMonoid.sub'
   sub_eq_add_neg : ∀ a b : G, a - b = a + -b 
   zsmul : ℤ → G → G
   zsmul_zero' : ∀ a : G, zsmul 0 a = 0 
@@ -549,28 +567,27 @@ that satisfy some basic properties (please note that ``multiplication by an inve
 is not required yet):
 \begin{lstlisting}
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
-  div := DivInvMonoid.div'
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ 
   zpow : ℤ → G → G
   zpow_zero' : ∀ a : G, zpow 0 a = 1 
-  zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a  * a
+  zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a * a
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ 
 \end{lstlisting}
 Additive group is a subtractive monoid in which the unary minus acts as a left inverse with respect to addition:
 \begin{lstlisting}
 class AddGroup (A : Type u) extends SubNegMonoid A where
-  add_left_neg : ∀ a : A, -a + a = 0
+  neg_add_cancel : ∀ a : A, -a + a = 0
 \end{lstlisting}
 Abelian magma is a structure on any type that has commutative addition:
 \begin{lstlisting}
 class AddCommMagma (G : Type u) extends Add G where
   add_comm : ∀ a b : G, a + b = b + a
-\end{lstlisting} \pagebreak[2]
+\end{lstlisting}
 Similarly, commutative magma is a structure on any type that has commutative multiplication:
 \begin{lstlisting}
 class CommMagma (G : Type u) extends Mul G where
   mul_comm : ∀ a b : G, a * b = b * a
-\end{lstlisting}
+\end{lstlisting} \pagebreak[2]
 Abelian semigroup is an abelian magma and an additive semigroup at the same time:
 \begin{lstlisting}
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G
@@ -617,7 +634,6 @@ and abelian monoid, equipped with the symbol ``one'' and embedding of natural nu
 for all our purposes):
 \begin{lstlisting}
 class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
-  natCast := Nat.unaryCast
   natCast_zero : natCast 0 = 0
   natCast_succ : ∀ n : ℕ, natCast (n + 1) = (natCast n) + 1 
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
@@ -625,7 +641,6 @@ class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid
 Additive group with one is an additive monoid with one and additive group, and embeds all integers:
 \begin{lstlisting}
 class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
-  intCast := Int.castDef
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n 
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) 
 \end{lstlisting}
@@ -660,7 +675,6 @@ class Nontrivial (α : Type*) : Prop where
 class DivisionRing (α : Type*) extends Ring α, DivInvMonoid α, Nontrivial α, NNRatCast α, RatCast α where
   mul_inv_cancel : ∀ (a : α), a ≠ 0 → a * a⁻¹ = 1
   inv_zero : (0 : α)⁻¹ = 0
-  nnratCast := NNRat.castRec
 \end{lstlisting}
 Field is a commutative ring and a division ring at the same time:
 \begin{lstlisting}
@@ -746,7 +760,7 @@ that $F_\infty$ forms a linearly ordered abelian monoid:
 \begin{lstlisting}
 instance : LinearOrderedAddCommMonoid (Extend F) :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop F)))
-\end{lstlisting}
+\end{lstlisting} \pagebreak[2]
 The following definition embeds $F$ in $F_\infty$ and registers
 this canonical embedding as a type coercion:
 \begin{lstlisting}
@@ -846,6 +860,7 @@ a little bit when we wrote things like $A : (I \times J) \r F$.
 In reality, \texttt{A : Matrix I J F} is implemented as $A : \,I \r (J \r F)$.
 This technique \cite{Currying} is called currying and makes it easier to
 pass individual rows of the matrix into functions and lemmas.
+\pagebreak[2]
 
 The following instance defines how explicit vectors are compared;
 Mathlib defines $x \le y$ to hold if and only if
@@ -854,8 +869,8 @@ $x_i \le y_i$ holds for~every~$i$ %lb
 talks about $\Pi$-types \cite{MLTT}, i.e.,
 the \textit{type} of \texttt{x i} can depend on the \textit{value} of \texttt{i}):
 \begin{lstlisting}
-instance Pi.hasLe {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] :
-  LE (∀ i, α i) where le x y := ∀ i, x i ≤ y i
+instance Pi.hasLe {ι : Type u} {π : ι → Type v} [∀ i, LE (π i)] :
+  LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
 \end{lstlisting}
 Comparison between matrices is not defined, only equality for matrices is.
 
@@ -897,7 +912,7 @@ whether or not it makes sense; the numbers 72 and 73 determine precedence):
 scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 \end{lstlisting}
-These definitions are sufficient for stating results based on linearly ordered fields.
+The definitions above are sufficient for stating results based on linearly ordered fields.
 However, our results from \sekt{extensions} require a more general notion of
 multiplication between matrices and vectors.
 We define them in the section \texttt{hetero\_matrix\_products\_defs}
@@ -1017,7 +1032,7 @@ The only missing assumption is the relationship between
 how \texttt{R} is ordered and how \texttt{V} is ordered.
 For that, we use another mixin, defined in Mathlib as follows:
 \begin{lstlisting}
-class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] : Prop where
+class PosSMulMono (α β : Type*) [SMul α β] [Preorder α] [Preorder β] [Zero α] : Prop where
   elim {a : α} (ha : 0 ≤ a) {b₁ b₂ : β} (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
 \end{lstlisting}
 Adding \texttt{[PosSMulMono R V]} to the list of requirements solves the issue.
@@ -1136,6 +1151,7 @@ Otherwise, it returns \texttt{none}.
 Note that we use the verbs ``ask'' and ``return'' metaphorically;
 \texttt{ExtendedLP.optimum} is not a computable function; it is just a mathematical
 definition (see the keyword \texttt{noncomputable def} above) you can prove things about.
+\pagebreak[2]
 
 Finally, we define what opposite values of the type \texttt{Option F$\infty$} are
 (note that for any values except \texttt{none} we directly follow the definition
@@ -1293,7 +1309,7 @@ such that, for all $w : W$, we have
 $ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $.
 We choose $x_m = b~y - \sum_{i : \fin{m}} (A_{<m}~y)_i \cdot x'_i$
 and otherwise $x$ copies $x'$. We check that our $x$ has the required
-properties. Qed.
+properties. \qed
 
 \medskip
 We complete the proof of \ref{finFarkasBartl} by applying \ref{industepFarkasBartl}
@@ -1355,7 +1371,7 @@ In either case, extend $x$ or $y$ with zeros on all deleted positions.
 \section {Proving the Extended strong LP duality}
 \label{dualityELP}
 
-We start with the weak duality and then move to the strong duality.
+We start with the weak LP duality and then move to the strong LP duality.
 We will use \ref{extendedFarkas} in several places.
 
 \begin{lemma}[\customlabel{weakDuality-of-no-bot}{\texttt{weakDuality\_of\_no\_bot}}]
@@ -1378,7 +1394,7 @@ c
 \qquad \qquad
 \begin{pmatrix}
 b \\
-c \* x
+p
 \end{pmatrix}
 $$
 
@@ -1649,7 +1665,7 @@ y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 &
 \mbox{ $A$ has $\bot$ and $\top$ in the same row}
 %
-\vspace{5pt} \\
+\vspace{12pt} \\
 %
 A = \begin{pmatrix} \bot \\ \top \end{pmatrix}
 &
@@ -1661,7 +1677,7 @@ y = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 &
 \mbox{ $A$ has $\bot$ and $\top$ in the same column}
 %
-\vspace{5pt} \\
+\vspace{12pt} \\
 %
 A = \begin{pmatrix} \top \\ -1 \end{pmatrix}
 &
@@ -1673,7 +1689,7 @@ y = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 &
 \mbox{ $A$ has $\top$ in a row where $b$ has $\top$}
 %
-\vspace{5pt} \\
+\vspace{12pt} \\
 %
 A = \begin{pmatrix} \bot \end{pmatrix}
 &
@@ -1685,6 +1701,7 @@ y = \begin{pmatrix} 0 \end{pmatrix}
 &
 \mbox{ $A$ has $\bot$ in a row where $b$ has $\bot$}
 \end{array}
+\vspace{12pt} \\
 $$
 
 We also claimed in \sekt{extensions} that changing condition $(-A^T) \* y \le 0$
@@ -1710,6 +1727,7 @@ and the definition of a valid LP has six conditions.
 In this section we show that omitting any of these six conditions
 makes the theorem false.
 
+\noindent %pb
 Let us consider the following six LPs over $F_\infty$;
 all of them are written in the format $P=(A,b,c)$.
 $$
@@ -1796,7 +1814,7 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 \subsection{Hahn-Banach theorems}
 
 Several Hahn-Banach theorems have been formalized in Lean as a part of
-Mathlib \cite{Mathlib}.
+Mathlib.
 In particular, it would have been be possible to prove \ref{equalityFarkas}
 for reals using the Hahn-Banach separation theorem for a convex closed set
 and a point \cite{HahnBanach-Lean}.
@@ -1832,6 +1850,21 @@ where Lean 4 is not yet helpful is the search for counterexamples.
 Despite these difficulties, we find Lean 4 to be an excellent
 tool for elegant expressions and organization of
 mathematical theorems and for proving them formally.
+
+
+
+\section*{Acknowledgements}
+
+We would like to thank David Bartl and Jasmin Blanchette for
+frequent consultations.
+We would also like to express gratitude to Andrew Yang for
+the proof of \texttt{Finset.univ\_sum\_of\_zero\_when\_not}
+and to Henrik Böving for a help with generalization from
+extended rationals to extended linearly ordered fields.
+We would also like to acknowledge Antoine Chambert-Loir,
+Apurva Nakade, Yaël Dillies, Richard Copley,
+Edward van de Meent, Markus Himmel, Mario Carneiro,
+and Kevin Buzzard.
 
 
 
