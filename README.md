@@ -12,11 +12,18 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 ![AI-generated image](nonLean/AI-generated.jpg)
 
+[Technical report](https://arxiv.org/abs/2409.08119)
+
+
+## Main corollaries
+
+* [Farkas for equalities](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/FarkasBasic.lean#L24)
+* [Farkas for inequalities](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/FarkasBasic.lean#L101)
+* [Strong duality for standard LP](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/LinearProgrammingB.lean#L203)
+
+
 ## Main results
 
-* [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/f8bb1a10ee5ff811b057cdcdb50b0b668d6e8d75/Duality/FarkasBartl.lean#L216)
-* [Strong duality for extended LP](https://github.com/madvorak/duality/blob/f8bb1a10ee5ff811b057cdcdb50b0b668d6e8d75/Duality/LinearProgramming.lean#L1021)
-
-## Technical report
-
-[work in progress](https://github.com/madvorak/duality/blob/main/nonLean/duality.pdf)
+* [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/FarkasBartl.lean#L216)
+* [Extended Farkas theorem](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/FarkasSpecial.lean#L284)
+* [Strong duality for extended LP](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/LinearProgramming.lean#L1083)
