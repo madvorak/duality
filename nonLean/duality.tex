@@ -128,7 +128,7 @@ Furthermore, we extend duality theory to the case when some coefficients are all
 
 
 \noindent \textbf{Keywords:}\;
-Farkas lemma, linear programming, extended rationals, extended reals, calculus of inductive constructions
+Farkas lemma, linear programming, extended reals, calculus of inductive constructions
 
 \vspace{-2.4mm} %pb
 \section{Introduction}
@@ -609,7 +609,9 @@ Abelian group is an additive group and an abelian monoid at the same time:
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 \end{lstlisting}
 Distrib is a structure on any type with addition and multiplication where
-both left distributivity and right distributivity hold:
+both left distributivity and right distributivity hold
+(please ignore the difference between \texttt{Type u} and \texttt{Type*} as it is the same thing
+for all our purposes):
 \begin{lstlisting}
 class Distrib (R : Type*) extends Mul R, Add R where
   left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
@@ -629,9 +631,7 @@ class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S�
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 \end{lstlisting}
 Additive monoid with one and abelian monoid with one are defined from additive monoid
-and abelian monoid, equipped with the symbol ``one'' and embedding of natural numbers
-(please ignore the difference between \texttt{Type u} and \texttt{Type*} as it is the same thing
-for all our purposes):
+and abelian monoid, equipped with the symbol ``one'' and embedding of natural numbers:
 \begin{lstlisting}
 class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast_zero : natCast 0 = 0
