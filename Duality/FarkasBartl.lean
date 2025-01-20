@@ -2,6 +2,9 @@ import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Have
 import Duality.Common
@@ -35,7 +38,7 @@ private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Modul
     (A : W →ₗ[R] Fin m.succ → R) (y : W) :
     W →ₗ[R] Fin m → R :=
   ⟨⟨
-    ▀A - (A · ⟨m, lt_add_one m⟩ • ▀A y),
+    ▀A - (A · ⟨m, m.lt_add_one⟩ • ▀A y),
   by
     intros
     ext
@@ -51,7 +54,7 @@ private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Modul
 private def auxLinMap {m : ℕ} {R V W : Type*} [Semiring R] [AddCommGroup V] [Module R V] [AddCommMonoid W] [Module R W]
     (A : W →ₗ[R] Fin m.succ → R) (b : W →ₗ[R] V) (y : W) : W →ₗ[R] V :=
   ⟨⟨
-    b - (A · ⟨m, lt_add_one m⟩ • b y),
+    b - (A · ⟨m, m.lt_add_one⟩ • b y),
   by
     intros
     simp only [Pi.add_apply, Pi.sub_apply, map_add, add_smul]
@@ -66,8 +69,8 @@ private def auxLinMap {m : ℕ} {R V W : Type*} [Semiring R] [AddCommGroup V] [M
 private lemma filter_yielding_singleton_attach_sum {m : ℕ} {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
     (f : Fin m.succ → R) (v : V) :
     ∑ j ∈ (Finset.univ.filter (fun i : Fin m.succ => ¬(i.val < m))).attach, f j.val • v =
-    f ⟨m, lt_add_one m⟩ • v := by
-  have singlet : Finset.univ.filter (fun i : Fin m.succ => ¬(i.val < m)) = {⟨m, lt_add_one m⟩}
+    f ⟨m, m.lt_add_one⟩ • v := by
+  have singlet : Finset.univ.filter (fun i : Fin m.succ => ¬(i.val < m)) = {⟨m, m.lt_add_one⟩}
   · rw [Finset.ext_iff]
     intro i
     constructor <;> rw [Finset.mem_singleton, Finset.mem_filter] <;> intro hi
@@ -80,7 +83,7 @@ private lemma filter_yielding_singleton_attach_sum {m : ℕ} {R V : Type*} [Semi
       rfl
   rw [singlet, Finset.sum_attach _ (fun j : Fin m.succ => f j • v), Finset.sum_singleton]
 
-private lemma impossible_index {m : ℕ} {i : Fin m.succ} (hi : ¬(i.val < m)) (i_neq_m : i ≠ ⟨m, lt_add_one m⟩) : False := by
+private lemma impossible_index {m : ℕ} {i : Fin m.succ} (hi : ¬(i.val < m)) (i_neq_m : i ≠ ⟨m, m.lt_add_one⟩) : False := by
   push_neg at hi
   exact i_neq_m (eq_of_le_of_le (Fin.succ_le_succ_iff.mp i.isLt) hi)
 
@@ -183,7 +186,8 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
       · simpa using hxb' w
       rw [←add_eq_of_eq_sub haAa]
       simp_rw [smul_dite]
-      rw [Finset.sum_dite, filter_yielding_singleton_attach_sum]
+      rw [Finset.sum_dite]
+      erw [filter_yielding_singleton_attach_sum]
       simp_rw [sub_smul]
       rw [Finset.sum_sub_distrib]
       simp_rw [←smul_smul, ←Finset.smul_sum]

@@ -30,7 +30,7 @@ instance : BoundedOrder (Extend F) := inferInstanceAs (BoundedOrder (WithBot (Wi
 
 instance : DenselyOrdered (Extend F) := inferInstanceAs (DenselyOrdered (WithBot (WithTop F)))
 
-instance : DecidableRel ((· < ·) : Extend F → (Extend F) → Prop) := WithBot.decidableLT
+instance : DecidableRel ((· < ·) : Extend F → Extend F → Prop) := WithBot.decidableLT
 
 
 /-- The canonical inclusion from `F` to `Extend F` is registered as a coercion. -/

@@ -353,7 +353,7 @@ theorem extendedFarkas [DecidableEq I]
           · exfalso
             apply i'.property.left
             exact hbi
-        simp only [Matrix.mulVec, Matrix.dotProduct, Matrix.mulWeig, Matrix.dotProd]
+        simp only [Matrix.mulVec, dotProduct, Matrix.mulWeig, Matrix.dotProd]
         rw [Finset.sum_toE, Finset.univ_sum_of_zero_when_not (fun j : J => ∀ i' : I', A i'.val j ≠ ⊤)]
         · congr
           ext j'
@@ -393,7 +393,7 @@ theorem extendedFarkas [DecidableEq I]
         intro i
         if hi : (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥) then
           convert EF.coe_le_coe_iff.mpr (ineqalities ⟨i, hi⟩)
-          · unfold Matrix.mulVec Matrix.dotProduct Matrix.mulWeig Matrix.dotProd
+          · unfold Matrix.mulVec dotProduct Matrix.mulWeig Matrix.dotProd
             simp_rw [dite_smul]
             rw [Finset.sum_dite]
             convert add_zero _
@@ -401,9 +401,11 @@ theorem extendedFarkas [DecidableEq I]
               intro j _
               apply EF.zero_smul_nonbot
               exact hi.right j.val
-            · rw [←Finset.sum_coe_sort_eq_attach, Finset.sum_toE]
+            · erw [←Finset.sum_coe_sort_eq_attach]
+              rw [Finset.sum_toE]
               apply Finset.subtype_univ_sum_eq_subtype_univ_sum
-              · simp [Finset.mem_filter]
+              · ext
+                simp
               · intro j hj _
                 rw [mul_comm]
                 simp only [A', Matrix.of_apply]
@@ -484,7 +486,7 @@ theorem extendedFarkas [DecidableEq I]
           rw [Finset.univ_sum_of_zero_when_not (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at inequality
           · rw [←EF.coe_le_coe_iff]
             convert inequality
-            simp only [Matrix.mulVec, Matrix.dotProduct]
+            simp only [Matrix.mulVec, dotProduct]
             rw [Finset.sum_toE]
             congr
             ext i'
@@ -505,7 +507,7 @@ theorem extendedFarkas [DecidableEq I]
             exact hi
         · unfold Matrix.dotProd at sharpine
           rw [Finset.univ_sum_of_zero_when_not (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at sharpine
-          · unfold Matrix.dotProduct
+          · unfold dotProduct
             rw [←EF.coe_lt_coe_iff, Finset.sum_toE]
             convert sharpine with i'
             simp only [b']
@@ -540,7 +542,7 @@ theorem extendedFarkas [DecidableEq I]
               intro contr
               rw [Matrix.neg_apply, EF.neg_eq_bot_iff] at contr
               exact hj i contr
-            · simp only [Matrix.mulVec, Matrix.dotProduct, Matrix.neg_apply, Matrix.transpose_apply, EF.coe_neg]
+            · simp only [Matrix.mulVec, dotProduct, Matrix.neg_apply, Matrix.transpose_apply, EF.coe_neg]
               rw [Finset.sum_toE]
               apply Finset.subtype_univ_sum_eq_subtype_univ_sum
               · ext i
@@ -564,7 +566,7 @@ theorem extendedFarkas [DecidableEq I]
             · apply bot_le
             · rwa [Matrix.neg_apply, Matrix.transpose_apply, EF.neg_eq_bot_iff]
         · convert EF.coe_lt_coe_iff.mpr sharpine
-          unfold Matrix.dotProduct Matrix.dotProd
+          unfold dotProduct Matrix.dotProd
           simp_rw [dite_smul]
           rw [Finset.sum_dite]
           convert add_zero _
@@ -573,9 +575,11 @@ theorem extendedFarkas [DecidableEq I]
             apply EF.zero_smul_nonbot
             intro contr
             exact hbot ⟨j.val, contr⟩
-          · rw [←Finset.sum_coe_sort_eq_attach, Finset.sum_toE]
+          · erw [←Finset.sum_coe_sort_eq_attach]
+            rw [Finset.sum_toE]
             apply Finset.subtype_univ_sum_eq_subtype_univ_sum
-            · simp [Finset.mem_filter]
+            · ext
+              simp
             · intro i hi _
               rw [mul_comm]
               simp only [b', Matrix.of_apply]

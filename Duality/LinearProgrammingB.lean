@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Peel
 import Duality.LinearProgramming
 
 /-!
@@ -63,7 +64,7 @@ def StandardLP.dualize [Ring R] (P : StandardLP I J R) : StandardLP J I R :=
 
 lemma Matrix.transpose_mulVec_dotProduct [Fintype I] [CommSemiring R] (M : Matrix I J R) (v : I → R) (w : J → R) :
     Mᵀ *ᵥ v ⬝ᵥ w = M *ᵥ w ⬝ᵥ v := by
-  rw [Matrix.dotProduct_comm, Matrix.dotProduct_mulVec, Matrix.vecMul_transpose]
+  rw [dotProduct_comm, Matrix.dotProduct_mulVec, Matrix.vecMul_transpose]
 
 theorem StandardLP.weakDuality [Fintype I] [OrderedCommRing R] {P : StandardLP I J R}
     {p : R} (hP : P.Reaches p) {q : R} (hQ : P.dualize.Reaches q) :
@@ -71,10 +72,10 @@ theorem StandardLP.weakDuality [Fintype I] [OrderedCommRing R] {P : StandardLP I
   obtain ⟨x, hxb, rfl⟩ := hP
   obtain ⟨y, hyc, rfl⟩ := hQ
   have hyxx : (-P.Aᵀ) *ᵥ ↑y ⬝ᵥ ↑x ≤ P.c ⬝ᵥ ↑x :=
-    Matrix.dotProduct_le_dotProduct_of_nonneg_right hyc (fun j : J => (x j).property)
+    dotProduct_le_dotProduct_of_nonneg_right hyc (fun j : J => (x j).property)
   have hxyy : P.A *ᵥ ↑x ⬝ᵥ ↑y ≤ P.b ⬝ᵥ ↑y :=
-    Matrix.dotProduct_le_dotProduct_of_nonneg_right hxb (fun i : I => (y i).property)
-  rw [Matrix.neg_mulVec, Matrix.neg_dotProduct, neg_le] at hyxx
+    dotProduct_le_dotProduct_of_nonneg_right hxb (fun i : I => (y i).property)
+  rw [Matrix.neg_mulVec, neg_dotProduct, neg_le] at hyxx
   rw [Matrix.transpose_mulVec_dotProduct] at hyxx
   exact neg_le_iff_add_nonneg'.mp (hyxx.trans hxyy)
 
@@ -101,12 +102,12 @@ private def StandardLP.toValidELP (P : StandardLP I J R) : ValidELP I J R :=
 
 private lemma StandardLP.toE_dotProduct_apply (P : StandardLP I J R) (x : J → R≥0) :
     toE (P.c ⬝ᵥ ↑x) = (toE ∘ P.c ᵥ⬝ x) := by
-  simp_rw [Matrix.dotProduct, Matrix.dotProd, mul_comm]
+  simp_rw [dotProduct, Matrix.dotProd, mul_comm]
   apply Finset.sum_toE
 
 private lemma StandardLP.toE_mulVec_apply (P : StandardLP I J R) (x : J → R≥0) (i : I) :
     toE ((P.A *ᵥ ↑x) i) = (P.A.map toE ₘ* x) i := by
-  simp_rw [Matrix.mulVec, Matrix.mulWeig, Matrix.map, Matrix.dotProduct, Matrix.dotProd, Matrix.of_apply, mul_comm]
+  simp_rw [Matrix.mulVec, Matrix.mulWeig, Matrix.map, dotProduct, Matrix.dotProd, Matrix.of_apply, mul_comm]
   apply Finset.sum_toE
 
 private lemma StandardLP.toValidELP.IsSolution_iff (P : StandardLP I J R) (x : J → R≥0) :

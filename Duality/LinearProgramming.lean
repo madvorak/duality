@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Linarith
 import Duality.FarkasSpecial
 
 
@@ -133,11 +134,11 @@ lemma Matrix.fromRows_mulWeig [Fintype J] {I₁ I₂ : Type*} (M₁ : Matrix I�
   ext i
   cases i <;> rfl
 
-lemma Matrix.fromColumns_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fintype J₂]
+lemma Matrix.fromCols_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fintype J₂]
     (M₁ : Matrix I J₁ F∞) (M₂ : Matrix I J₂ F∞) (w₁ : J₁ → F≥0) (w₂ : J₂ → F≥0) :
-    Matrix.fromColumns M₁ M₂ ₘ* Sum.elim w₁ w₂ = M₁ ₘ* w₁ + M₂ ₘ* w₂ := by
+    Matrix.fromCols M₁ M₂ ₘ* Sum.elim w₁ w₂ = M₁ ₘ* w₁ + M₂ ₘ* w₂ := by
   ext
-  simp [Matrix.fromColumns, Matrix.mulWeig, Matrix.dotProd]
+  simp [Matrix.fromCols, Matrix.mulWeig, Matrix.dotProd]
 
 lemma Matrix.dotProd_eq_bot [Fintype J] {v : J → F∞} {w : J → F≥0} :
     (∃ j : J, v j = ⊥) ↔ v ᵥ⬝ w = ⊥ := by
@@ -215,7 +216,7 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
     exact ⟨hx, by rfl⟩
   · use Sum.elim y 1
     constructor
-    · rw [Matrix.transpose_fromRows, Matrix.fromColumns_neg, Matrix.fromColumns_mulWeig_sumElim]
+    · rw [Matrix.transpose_fromRows, Matrix.fromCols_neg, Matrix.fromCols_mulWeig_sumElim]
       have hle0 : (-P.Aᵀ) ₘ* y + (-P.c) ≤ 0
       · rwa [EF.vec_sub_nonpos_iff]
       convert hle0
@@ -669,9 +670,10 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
           apply EF.zero_smul_nonbot
           intro contr
           exact P.hAb ⟨i.val, by aesop, by aesop⟩
-        · rw [←Finset.sum_coe_sort_eq_attach]
+        · erw [←Finset.sum_coe_sort_eq_attach]
           apply Finset.subtype_univ_sum_eq_subtype_univ_sum
-          · simp [Finset.mem_filter]
+          · ext
+            simp
           · intros
             rfl
       · simp only [Matrix.dotProd, dite_not, dite_smul]
@@ -683,9 +685,11 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
           intro contr
           exact P.no_bot_of_feasible hP i.val contr
         · change hby to b' ᵥ⬝ y = toE q
-          rw [←Finset.sum_coe_sort_eq_attach, ←hby]
+          erw [←Finset.sum_coe_sort_eq_attach]
+          rw [←hby]
           apply Finset.subtype_univ_sum_eq_subtype_univ_sum
-          · simp [Finset.mem_filter]
+          · ext
+            simp
           · intros
             rfl
   | inr caseJ =>
@@ -831,8 +835,8 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     obtain ⟨X, hX⟩ := case_X
     rw [
       Matrix.fromRows_mulWeig, Sum.elim_le_elim_iff,
-      ←Matrix.fromRows_fromColumn_eq_fromBlocks, Matrix.fromRows_mulWeig, Sum.elim_le_elim_iff,
-      ←Sum.elim_comp_inl_inr X, Matrix.fromColumns_mulWeig_sumElim, Matrix.fromColumns_mulWeig_sumElim,
+      ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromRows_mulWeig, Sum.elim_le_elim_iff,
+      ←Sum.elim_comp_inl_inr X, Matrix.fromCols_mulWeig_sumElim, Matrix.fromCols_mulWeig_sumElim,
       Matrix.zero_mulWeig, add_zero, Matrix.zero_mulWeig, zero_add
     ] at hX
     set x := X ∘ Sum.inl
@@ -876,11 +880,11 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     obtain ⟨Y, hAY, hbc⟩ := case_Y
     rw [
       Matrix.transpose_fromRows, Matrix.fromBlocks_transpose, Matrix.transpose_zero, Matrix.transpose_zero,
-      Matrix.transpose_neg, Matrix.transpose_transpose, Matrix.transpose_row, Matrix.fromColumns_neg,
-      ←Sum.elim_comp_inl_inr Y, Matrix.fromColumns_mulWeig_sumElim,
+      Matrix.transpose_neg, Matrix.transpose_transpose, Matrix.transpose_row, Matrix.fromCols_neg,
+      ←Sum.elim_comp_inl_inr Y, Matrix.fromCols_mulWeig_sumElim,
       Matrix.fromBlocks_neg, Matrix.EF_neg_neg, Matrix.EF_neg_zero, Matrix.EF_neg_zero,
-      ←Matrix.fromRows_fromColumn_eq_fromBlocks, Matrix.fromRows_mulWeig,
-      ←Sum.elim_comp_inl_inr (Y ∘ Sum.inl), Matrix.fromColumns_mulWeig_sumElim, Matrix.fromColumns_mulWeig_sumElim,
+      ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromRows_mulWeig,
+      ←Sum.elim_comp_inl_inr (Y ∘ Sum.inl), Matrix.fromCols_mulWeig_sumElim, Matrix.fromCols_mulWeig_sumElim,
       Matrix.zero_mulWeig, add_zero, Matrix.zero_mulWeig, zero_add,
     ] at hAY
     rw [←Sum.elim_comp_inl_inr Y, ←Sum.elim_comp_inl_inr (Y ∘ Sum.inl)] at hbc
