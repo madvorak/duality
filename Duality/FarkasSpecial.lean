@@ -184,12 +184,12 @@ variable {I J : Type*} [Fintype I] [Fintype J]
 section hetero_matrix_products_defs
 variable {α γ : Type*} [AddCommMonoid α] [SMul γ α] -- elements come from `α` but weights (coefficients) from `γ`
 
-/-- `Matrix.dotProd v w` is the sum of the element-wise products `w i • v i` akin the dot product but heterogeneous
+/-- `dotWeig v w` is the sum of the element-wise products `w i • v i` akin the dot product but heterogeneous
     (mnemonic: "vector times weights").
     Note that the order of arguments (also with the infix notation) is opposite than in the `SMul` it builds upon. -/
-def Matrix.dotProd (v : I → α) (w : I → γ) : α := ∑ i : I, w i • v i
+def dotWeig (v : I → α) (w : I → γ) : α := ∑ i : I, w i • v i
 
-infixl:72 " ᵥ⬝ " => Matrix.dotProd
+infixl:72 " ᵥ⬝ " => dotWeig
 
 /-- `Matrix.mulWeig M w` is the heterogeneous analogue of the matrix-vector product `Matrix.mulVec M w`
     (mnemonic: "matrix times weights").
@@ -204,7 +204,7 @@ end hetero_matrix_products_defs
 
 section hetero_matrix_products_EF
 
-lemma Matrix.no_bot_dotProd_zero {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) :
+lemma no_bot_dotWeig_zero {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) :
     v ᵥ⬝ (0 : I → F≥0) = (0 : F∞) :=
   Finset.sum_eq_zero (fun (i : I) _ =>
     match hvi : v i with
@@ -212,16 +212,16 @@ lemma Matrix.no_bot_dotProd_zero {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) :
     | ⊥ => False.elim (hv i hvi)
     | (f : F) => EF.zero_smul_coe f)
 
-lemma Matrix.has_bot_dotProd_nneg {v : I → F∞} {i : I} (hvi : v i = ⊥) (w : I → F≥0) :
+lemma has_bot_dotWeig_nneg {v : I → F∞} {i : I} (hvi : v i = ⊥) (w : I → F≥0) :
     v ᵥ⬝ w = (⊥ : F∞) := by
-  simp only [Matrix.dotProd, Finset.sum, Multiset.sum_eq_EF_bot_iff, Multiset.mem_map, Finset.mem_val, Finset.mem_univ, true_and]
+  simp only [dotWeig, Finset.sum, Multiset.sum_eq_EF_bot_iff, Multiset.mem_map, Finset.mem_val, Finset.mem_univ, true_and]
   use i
   rw [hvi]
   rfl
 
-lemma Matrix.no_bot_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w : I → F≥0) :
+lemma no_bot_dotWeig_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w : I → F≥0) :
     v ᵥ⬝ w ≠ (⊥ : F∞) := by
-  simp only [Matrix.dotProd, Finset.sum]
+  simp only [dotWeig, Finset.sum]
   intro contr
   simp only [Multiset.sum_eq_EF_bot_iff, Multiset.mem_map, Finset.mem_val, Finset.mem_univ, true_and] at contr
   obtain ⟨i, hi⟩ := contr
@@ -230,7 +230,7 @@ lemma Matrix.no_bot_dotProd_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w :
   | ⊤ => rw [hvi] at hi; exact EF.smul_top_neq_bot (w i) hi
   | (f : F) => rw [hvi] at hi; exact EF.smul_coe_neq_bot (w i) f hi
 
-lemma Matrix.no_bot_has_top_dotProd_pos {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
+lemma no_bot_has_top_dotWeig_pos {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
     (w : I → F≥0) (hwi : 0 < w i) :
     v ᵥ⬝ w = ⊤ := by
   apply Multiset.sum_eq_EF_top
@@ -246,25 +246,25 @@ lemma Matrix.no_bot_has_top_dotProd_pos {v : I → F∞} (hv : ∀ a, v a ≠ �
     obtain ⟨b, -, hb⟩ := contr
     exact EF.smul_nonbot_neq_bot (w b) (hv b) hb
 
-lemma Matrix.no_bot_has_top_dotProd_le {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
+lemma no_bot_has_top_dotWeig_le {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
     (w : I → F≥0) {f : F} (hq : v ᵥ⬝ w ≤ f) :
     w i ≤ 0 := by
   by_contra! contr
-  rw [Matrix.no_bot_has_top_dotProd_pos hv hvi w contr, top_le_iff] at hq
+  rw [no_bot_has_top_dotWeig_pos hv hvi w contr, top_le_iff] at hq
   exact EF.coe_neq_top f hq
 
-lemma Matrix.no_bot_has_top_dotProd_nneg_le {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
+lemma no_bot_has_top_dotWeig_nneg_le {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
     (w : I → F≥0) {f : F} (hq : v ᵥ⬝ w ≤ f) :
     w i = 0 :=
-  eq_of_le_of_le (Matrix.no_bot_has_top_dotProd_le hv hvi w hq) (w i).property
+  eq_of_le_of_le (no_bot_has_top_dotWeig_le hv hvi w hq) (w i).property
 
-lemma Matrix.dotProd_zero_le_zero (v : I → F∞) :
+lemma dotWeig_zero_le_zero (v : I → F∞) :
     v ᵥ⬝ (0 : I → F≥0) ≤ (0 : F∞) := by
   if hv : ∀ i, v i ≠ ⊥ then
-    rw [Matrix.no_bot_dotProd_zero hv]
+    rw [no_bot_dotWeig_zero hv]
   else
     push_neg at hv
-    rw [Matrix.has_bot_dotProd_nneg]
+    rw [has_bot_dotWeig_nneg]
     · apply bot_le
     · exact hv.choose_spec
 
@@ -272,7 +272,7 @@ omit [Fintype I] in
 lemma Matrix.mulWeig_zero_le_zero (M : Matrix I J F∞) :
     M ₘ* (0 : J → F≥0) ≤ (0 : I → F∞) := by
   intro i
-  apply Matrix.dotProd_zero_le_zero
+  apply dotWeig_zero_le_zero
 
 end hetero_matrix_products_EF
 
@@ -305,12 +305,12 @@ theorem extendedFarkas [DecidableEq I]
         intro x hAxb
         specialize hAxb i
         rw [hi, le_bot_iff] at hAxb
-        exact Matrix.no_bot_dotProd_nneg hi' x hAxb
+        exact no_bot_dotWeig_nneg hi' x hAxb
       · rw [iff_true]
         use 0
         constructor
         · apply Matrix.mulWeig_zero_le_zero
-        · rw [Matrix.has_bot_dotProd_nneg hi]
+        · rw [has_bot_dotWeig_nneg hi]
           exact EF.bot_lt_zero
     else
       push_neg at hi'
@@ -353,7 +353,7 @@ theorem extendedFarkas [DecidableEq I]
           · exfalso
             apply i'.property.left
             exact hbi
-        simp only [Matrix.mulVec, dotProduct, Matrix.mulWeig, Matrix.dotProd]
+        simp only [Matrix.mulVec, dotProduct, Matrix.mulWeig, dotWeig]
         rw [Finset.sum_toE, Finset.univ_sum_of_zero_when_not (fun j : J => ∀ i' : I', A i'.val j ≠ ⊤)]
         · congr
           ext j'
@@ -384,7 +384,7 @@ theorem extendedFarkas [DecidableEq I]
                 exfalso
                 apply t.property.left
                 exact hbt
-            exact Matrix.no_bot_has_top_dotProd_nneg_le (t.property.right) ht x (he ▸ ineqalities t.val)
+            exact no_bot_has_top_dotWeig_nneg_le (t.property.right) ht x (he ▸ ineqalities t.val)
           rw [hxj]
           apply EF.zero_smul_nonbot
           apply i'.property.right
@@ -393,7 +393,7 @@ theorem extendedFarkas [DecidableEq I]
         intro i
         if hi : (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥) then
           convert EF.coe_le_coe_iff.mpr (ineqalities ⟨i, hi⟩)
-          · unfold Matrix.mulVec dotProduct Matrix.mulWeig Matrix.dotProd
+          · unfold Matrix.mulVec dotProduct Matrix.mulWeig dotWeig
             simp_rw [dite_smul]
             rw [Finset.sum_dite]
             convert add_zero _
@@ -434,7 +434,7 @@ theorem extendedFarkas [DecidableEq I]
           else
             obtain ⟨j, hAij⟩ := hi hbi
             convert_to ⊥ ≤ b i
-            · apply Matrix.has_bot_dotProd_nneg hAij
+            · apply has_bot_dotWeig_nneg hAij
             apply bot_le
     · constructor
       · intro ⟨y, ineqalities, sharpine⟩
@@ -456,14 +456,14 @@ theorem extendedFarkas [DecidableEq I]
           if bi_top : b i = ⊤ then
             have impos : b ᵥ⬝ y = ⊤
             · push_neg at hbot
-              exact Matrix.no_bot_has_top_dotProd_pos hbot bi_top y hyi
+              exact no_bot_has_top_dotWeig_pos hbot bi_top y hyi
             rw [impos] at sharpine
             exact not_top_lt sharpine
           else
             push_neg at i_not_I'
             obtain ⟨j, Aij_eq_bot⟩ := i_not_I' bi_top
             have htop : ((-Aᵀ) j) ᵥ⬝ y = ⊤
-            · refine Matrix.no_bot_has_top_dotProd_pos ?_ (by simpa using Aij_eq_bot) y hyi
+            · refine no_bot_has_top_dotWeig_pos ?_ (by simpa using Aij_eq_bot) y hyi
               intro k hk
               exact hAj ⟨j, ⟨i, Aij_eq_bot⟩, ⟨k, by simpa using hk⟩⟩
             have ineqality : ((-Aᵀ) j) ᵥ⬝ y ≤ 0 := ineqalities j
@@ -505,7 +505,7 @@ theorem extendedFarkas [DecidableEq I]
             apply EF.zero_smul_nonbot
             apply hnb
             exact hi
-        · unfold Matrix.dotProd at sharpine
+        · unfold dotWeig at sharpine
           rw [Finset.univ_sum_of_zero_when_not (fun i : I => b i ≠ ⊤ ∧ ∀ (j : J), A i j ≠ ⊥)] at sharpine
           · unfold dotProduct
             rw [←EF.coe_lt_coe_iff, Finset.sum_toE]
@@ -533,7 +533,7 @@ theorem extendedFarkas [DecidableEq I]
           if hj : (∀ i : I, A i j ≠ ⊤) then
             convert EF.coe_le_coe_iff.mpr (ineqalities ⟨j, fun i' => hj i'.val⟩)
             simp only [Matrix.mulWeig, Matrix.neg_apply, Matrix.transpose_apply, Pi.zero_apply]
-            simp only [Matrix.dotProd, dite_smul]
+            simp only [dotWeig, dite_smul]
             rw [Finset.sum_dite]
             convert add_zero _
             · apply Finset.sum_eq_zero
@@ -562,11 +562,11 @@ theorem extendedFarkas [DecidableEq I]
             push_neg at hj
             obtain ⟨i, Aij_eq_top⟩ := hj
             unfold Matrix.mulWeig
-            rw [Matrix.has_bot_dotProd_nneg]
+            rw [has_bot_dotWeig_nneg]
             · apply bot_le
             · rwa [Matrix.neg_apply, Matrix.transpose_apply, EF.neg_eq_bot_iff]
         · convert EF.coe_lt_coe_iff.mpr sharpine
-          unfold dotProduct Matrix.dotProd
+          unfold dotProduct dotWeig
           simp_rw [dite_smul]
           rw [Finset.sum_dite]
           convert add_zero _

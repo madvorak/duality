@@ -125,9 +125,9 @@ lemma EF.sub_nonpos_iff (r s : F∞) : r + (-s) ≤ 0 ↔ r ≤ s := by
 lemma EF.vec_sub_nonpos_iff (u v : I → F∞) : u + (-v) ≤ 0 ↔ u ≤ v := by
   constructor <;> intro huv i <;> simpa [EF.sub_nonpos_iff] using huv i
 
-lemma Matrix.sumElim_dotProd_sumElim [Fintype I] [Fintype J] (u : I → F∞) (v : J → F∞) (x : I → F≥0) (y : J → F≥0) :
+lemma sumElim_dotWeig_sumElim [Fintype I] [Fintype J] (u : I → F∞) (v : J → F∞) (x : I → F≥0) (y : J → F≥0) :
     Sum.elim u v ᵥ⬝ Sum.elim x y = u ᵥ⬝ x + v ᵥ⬝ y := by
-  simp [Matrix.dotProd]
+  simp [dotWeig]
 
 lemma Matrix.fromRows_mulWeig [Fintype J] {I₁ I₂ : Type*} (M₁ : Matrix I₁ J F∞) (M₂ : Matrix I₂ J F∞) (w : J → F≥0) :
     Matrix.fromRows M₁ M₂ ₘ* w = Sum.elim (M₁ ₘ* w) (M₂ ₘ* w) := by
@@ -138,16 +138,16 @@ lemma Matrix.fromCols_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fintyp
     (M₁ : Matrix I J₁ F∞) (M₂ : Matrix I J₂ F∞) (w₁ : J₁ → F≥0) (w₂ : J₂ → F≥0) :
     Matrix.fromCols M₁ M₂ ₘ* Sum.elim w₁ w₂ = M₁ ₘ* w₁ + M₂ ₘ* w₂ := by
   ext
-  simp [Matrix.fromCols, Matrix.mulWeig, Matrix.dotProd]
+  simp [Matrix.fromCols, Matrix.mulWeig, dotWeig]
 
-lemma Matrix.dotProd_eq_bot [Fintype J] {v : J → F∞} {w : J → F≥0} :
+lemma dotWeig_eq_bot [Fintype J] {v : J → F∞} {w : J → F≥0} :
     (∃ j : J, v j = ⊥) ↔ v ᵥ⬝ w = ⊥ := by
   constructor
   · intro ⟨j, hvj⟩
-    apply Matrix.has_bot_dotProd_nneg hvj
+    apply has_bot_dotWeig_nneg hvj
   · intro hvw
     by_contra! contr
-    exact Matrix.no_bot_dotProd_nneg contr w hvw
+    exact no_bot_dotWeig_nneg contr w hvw
 
 lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J]
     (P : ValidELP I J F) (hb : ¬∃ i : I, P.b i = ⊥) (hc : ¬∃ j : J, P.c j = ⊥)
@@ -190,7 +190,7 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
             match hby : P.b ᵥ⬝ y with
             | ⊥ =>
               change hby to P.b ᵥ⬝ y = ⊥
-              rw [←Matrix.dotProd_eq_bot] at hby
+              rw [←dotWeig_eq_bot] at hby
               exact hb hby
             | ⊤ =>
               dsimp only [ValidELP.dualize] at contr
@@ -221,19 +221,19 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
       · rwa [EF.vec_sub_nonpos_iff]
       convert hle0
       ext
-      simp [Matrix.mulWeig, Matrix.dotProd, EF.one_smul]
+      simp [Matrix.mulWeig, dotWeig, EF.one_smul]
     · have hlt0 : P.b ᵥ⬝ y + P.c ᵥ⬝ x < 0
       · push_neg at contr
         rwa [add_comm]
-      rw [Matrix.sumElim_dotProd_sumElim]
-      simp [Matrix.dotProd, EF.one_smul]
+      rw [sumElim_dotWeig_sumElim]
+      simp [dotWeig, EF.one_smul]
       exact hlt0
 
 lemma ValidELP.no_bot_of_reaches [Fintype J] (P : ValidELP I J F) {p : F∞} (hP : P.Reaches p) (i : I) : P.b i ≠ ⊥ := by
   intro contr
   obtain ⟨x, hx, -⟩ := hP
   have impos : P.A i ᵥ⬝ x ≤ ⊥ := contr ▸ hx i
-  rw [le_bot_iff, ←Matrix.dotProd_eq_bot] at impos
+  rw [le_bot_iff, ←dotWeig_eq_bot] at impos
   exact P.hbA ⟨i, impos, contr⟩
 
 theorem ValidELP.weakDuality [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J] (P : ValidELP I J F)
@@ -496,18 +496,18 @@ lemma Finset.smul_EF_sum [Fintype J] {k : F≥0} (hk : 0 < k) (v : J → F∞) :
 
 end misc_EF_properties
 
-section dotProd_EF_properties
+section dotWeig_EF_properties
 
-lemma Matrix.zero_dotProd [Fintype J] (w : J → F≥0) : (0 : J → F∞) ᵥ⬝ w = 0 := by
+lemma zero_dotWeig [Fintype J] (w : J → F≥0) : (0 : J → F∞) ᵥ⬝ w = 0 := by
   apply Finset.sum_eq_zero
   intro j _
   exact smul_zero (w j)
 
-lemma Matrix.dotProd_add [Fintype J] (x : J → F∞) (v w : J → F≥0) :
+lemma dotWeig_add [Fintype J] (x : J → F∞) (v w : J → F≥0) :
     x ᵥ⬝ (v + w) = x ᵥ⬝ v + x ᵥ⬝ w := by
-  simp [Matrix.dotProd, EF.add_smul, Finset.sum_add_distrib]
+  simp [dotWeig, EF.add_smul, Finset.sum_add_distrib]
 
-lemma Matrix.dotProd_smul [Fintype J] {k : F≥0} (hk : 0 < k) (x : J → F∞) (v : J → F≥0) :
+lemma dotWeig_smul [Fintype J] {k : F≥0} (hk : 0 < k) (x : J → F∞) (v : J → F≥0) :
     x ᵥ⬝ (k • v) = k • (x ᵥ⬝ v) := by
   show ∑ j : J, (k * v j) • x j = k • ∑ j : J, v j • x j
   rw [←Finset.smul_EF_sum hk]
@@ -515,7 +515,7 @@ lemma Matrix.dotProd_smul [Fintype J] {k : F≥0} (hk : 0 < k) (x : J → F∞) 
   ext
   apply EF.mul_smul
 
-lemma Matrix.no_top_dotProd_nneg [Fintype J] {v : J → F∞} (hv : ∀ j, v j ≠ ⊤) (w : J → F≥0) :
+lemma no_top_dotWeig_nneg [Fintype J] {v : J → F∞} (hv : ∀ j, v j ≠ ⊤) (w : J → F≥0) :
     v ᵥ⬝ w ≠ (⊤ : F∞) := by
   apply Multiset.sum_neq_EF_top
   rw [Multiset.mem_map]
@@ -525,7 +525,7 @@ lemma Matrix.no_top_dotProd_nneg [Fintype J] {v : J → F∞} (hv : ∀ j, v j �
   | ⊤ => exact false_of_ne (hvi ▸ hv i)
   | (_ : F) => exact EF.coe_neq_top _ (hvi ▸ hi)
 
-end dotProd_EF_properties
+end dotWeig_EF_properties
 
 section matrix_EF_properties
 
@@ -539,17 +539,17 @@ lemma Matrix.EF_neg_neg (M : Matrix I J F∞) : -(-M) = M := by
 
 lemma Matrix.zero_mulWeig [Fintype J] (v : J → F≥0) : (0 : Matrix I J F∞) ₘ* v = 0 := by
   ext
-  simp [Matrix.mulWeig, Matrix.dotProd]
+  simp [Matrix.mulWeig, dotWeig]
 
 lemma Matrix.mulWeig_add [Fintype J] (M : Matrix I J F∞) (v w : J → F≥0) :
     M ₘ* (v + w) = M ₘ* v + M ₘ* w := by
   ext
-  apply Matrix.dotProd_add
+  apply dotWeig_add
 
 lemma Matrix.mulWeig_smul [Fintype J] {k : F≥0} (hk : 0 < k) (M : Matrix I J F∞) (v : J → F≥0) :
     M ₘ* (k • v) = k • (M ₘ* v) := by
   ext
-  apply Matrix.dotProd_smul hk
+  apply dotWeig_smul hk
 
 end matrix_EF_properties
 
@@ -596,7 +596,7 @@ lemma ValidELP.unbounded_of_feasible_of_neg (P : ValidELP I J F) (hP : P.IsFeasi
       | ⊥ =>
         refine ⟨⊥, ⟨xₚ, hxₚ, ?_⟩, bot_le⟩
         change hcx₀ to P.c ᵥ⬝ x₀ = ⊥
-        rwa [←Matrix.dotProd_eq_bot] at hcx₀ ⊢
+        rwa [←dotWeig_eq_bot] at hcx₀ ⊢
       | ⊤ =>
         exfalso
         rw [hcx₀] at hx₀
@@ -631,7 +631,7 @@ lemma ValidELP.unbounded_of_feasible_of_neg (P : ValidELP I J F) (hP : P.IsFeasi
               · exact hi.symm
               exact hxₚ i
             · exact EF.smul_nonpos zeros k
-        · rw [Matrix.dotProd_add, hce, Matrix.dotProd_smul k_pos, hcx₀]
+        · rw [dotWeig_add, hce, dotWeig_smul k_pos, hcx₀]
           show toE (e + ((s - e) / d) * d) = toE s
           rw [EF.coe_eq_coe_iff, div_mul_cancel_of_imp]
           exact add_sub_cancel e s
@@ -653,15 +653,15 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
     exfalso
     obtain ⟨y, hy⟩ := caseI
     match hby : b' ᵥ⬝ y with
-    | ⊥ => exact Matrix.no_bot_dotProd_nneg (fun i hi => P.no_bot_of_feasible hP i.val hi) y hby
-    | ⊤ => exact Matrix.no_top_dotProd_nneg (·.property) y hby
+    | ⊥ => exact no_bot_dotWeig_nneg (fun i hi => P.no_bot_of_feasible hP i.val hi) y hby
+    | ⊤ => exact no_top_dotWeig_nneg (·.property) y hby
     | (q : F) =>
       apply hQ
       refine ⟨toE q, ⟨fun i : I => if hi : (P.b i ≠ ⊤) then y ⟨i, hi⟩ else 0, ?_⟩, EF.coe_neq_top q⟩
       constructor
       · unfold ValidELP.dualize ExtendedLP.IsSolution Matrix.mulWeig
         convert hy
-        simp only [Matrix.mulWeig, Matrix.dotProd, dite_not, dite_smul]
+        simp only [Matrix.mulWeig, dotWeig, dite_not, dite_smul]
         rw [Finset.sum_dite]
         convert zero_add _ using 1
         apply congr_arg₂
@@ -676,7 +676,7 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
             simp
           · intros
             rfl
-      · simp only [Matrix.dotProd, dite_not, dite_smul]
+      · simp only [dotWeig, dite_not, dite_smul]
         rw [Finset.sum_dite]
         convert zero_add _
         · apply Finset.sum_eq_zero
@@ -844,17 +844,17 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     obtain ⟨⟨hx, hy⟩, hxy⟩ := hX
     specialize hxy 0
     change hxy to Sum.elim P.c P.b ᵥ⬝ Sum.elim x y ≤ 0
-    rw [Matrix.sumElim_dotProd_sumElim] at hxy
+    rw [sumElim_dotWeig_sumElim] at hxy
     match hcx : P.c ᵥ⬝ x with
     | ⊥ =>
       exfalso
-      obtain ⟨j, hj⟩ := Matrix.dotProd_eq_bot.mpr hcx
+      obtain ⟨j, hj⟩ := dotWeig_eq_bot.mpr hcx
       exact P.dualize.no_bot_of_feasible hQ j hj
     | ⊤ =>
       exfalso
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
-        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         rw [hcx, hby] at hxy
@@ -866,7 +866,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
         exfalso
-        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         exfalso
@@ -894,14 +894,14 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     have hAyx : Sum.elim (-P.Aᵀ ₘ* y) (P.A ₘ* x) + z • (-Sum.elim P.c P.b) ≤ 0
     · convert hAY
       ext
-      simp [Matrix.col, Matrix.mulWeig, Matrix.dotProd, z]
+      simp [Matrix.col, Matrix.mulWeig, dotWeig, z]
     have hAyx' : Sum.elim (-P.Aᵀ ₘ* y) (P.A ₘ* x) + Sum.elim (z • (-P.c)) (z • (-P.b)) ≤ 0
     · convert hAyx
       aesop
     clear hAY hAyx
     rw [←Sum.elim_add_add, Sum.elim_nonpos_iff] at hAyx'
     obtain ⟨hy, hx⟩ := hAyx'
-    rw [Matrix.sumElim_dotProd_sumElim, Matrix.zero_dotProd, add_zero, Matrix.sumElim_dotProd_sumElim] at hbc
+    rw [sumElim_dotWeig_sumElim, zero_dotWeig, add_zero, sumElim_dotWeig_sumElim] at hbc
     have z_pos : 0 < z
     · by_contra contr
       have z_eq_0 : z = 0
@@ -920,13 +920,13 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     match hcx : P.c ᵥ⬝ x with
     | ⊥ =>
       exfalso
-      obtain ⟨j, hj⟩ := Matrix.dotProd_eq_bot.mpr hcx
+      obtain ⟨j, hj⟩ := dotWeig_eq_bot.mpr hcx
       exact P.dualize.no_bot_of_feasible hQ j hj
     | ⊤ =>
       exfalso
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
-        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         rw [hcx, hby] at hbc
@@ -938,7 +938,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
         exfalso
-        obtain ⟨i, hi⟩ := Matrix.dotProd_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         exfalso
@@ -953,7 +953,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
             EF.smul_add_vec z_inv_pos, ←Matrix.mulWeig_smul z_inv_pos, ←EF.mul_smul_vec,
             inv_mul_cancel₀ (ne_of_lt z_pos).symm, EF.one_smul_vec, EF.vec_sub_nonpos_iff
           ] at hx
-        · rewrite [Matrix.dotProd_smul z_inv_pos, hcx]
+        · rewrite [dotWeig_smul z_inv_pos, hcx]
           rfl
         · rwa [
             ←EF.vec_smul_le_smul_left z_inv_pos, smul_zero,
@@ -961,7 +961,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
             inv_mul_cancel₀ (ne_of_lt z_pos).symm, EF.one_smul_vec, EF.vec_sub_nonpos_iff
           ] at hy
         · dsimp only [ValidELP.dualize]
-          rewrite [Matrix.dotProd_smul z_inv_pos, hby]
+          rewrite [dotWeig_smul z_inv_pos, hby]
           rfl
         rw [hcx, hby] at hbc
         show z⁻¹ * p + z⁻¹ * q ≤ 0

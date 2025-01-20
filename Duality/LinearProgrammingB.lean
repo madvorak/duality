@@ -102,12 +102,12 @@ private def StandardLP.toValidELP (P : StandardLP I J R) : ValidELP I J R :=
 
 private lemma StandardLP.toE_dotProduct_apply (P : StandardLP I J R) (x : J → R≥0) :
     toE (P.c ⬝ᵥ ↑x) = (toE ∘ P.c ᵥ⬝ x) := by
-  simp_rw [dotProduct, Matrix.dotProd, mul_comm]
+  simp_rw [dotProduct, dotWeig, mul_comm]
   apply Finset.sum_toE
 
 private lemma StandardLP.toE_mulVec_apply (P : StandardLP I J R) (x : J → R≥0) (i : I) :
     toE ((P.A *ᵥ ↑x) i) = (P.A.map toE ₘ* x) i := by
-  simp_rw [Matrix.mulVec, Matrix.mulWeig, Matrix.map, dotProduct, Matrix.dotProd, Matrix.of_apply, mul_comm]
+  simp_rw [Matrix.mulVec, Matrix.mulWeig, Matrix.map, dotProduct, dotWeig, Matrix.of_apply, mul_comm]
   apply Finset.sum_toE
 
 private lemma StandardLP.toValidELP.IsSolution_iff (P : StandardLP I J R) (x : J → R≥0) :
@@ -129,7 +129,7 @@ private lemma StandardLP.toValidELP.IsFeasible_iff (P : StandardLP I J R) :
     match r with
     | ⊥ =>
       exfalso
-      rw [←Matrix.dotProd_eq_bot] at hxr
+      rw [←dotWeig_eq_bot] at hxr
       simp [StandardLP.toValidELP] at hxr
     | ⊤ =>
       exfalso
@@ -153,7 +153,7 @@ private lemma StandardLP.toValidELP.IsBoundedBy_iff (P : StandardLP I J R) (r : 
     | ⊥ =>
       exfalso
       obtain ⟨_, -, impos⟩ := hPp
-      rw [←Matrix.dotProd_eq_bot] at impos
+      rw [←dotWeig_eq_bot] at impos
       simp [StandardLP.toValidELP] at impos
     | ⊤ =>
       apply le_top
