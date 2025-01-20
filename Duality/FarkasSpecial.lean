@@ -46,7 +46,7 @@ def EF.smulNN (c : F≥0) : F∞ → F∞
 
 instance : SMulZeroClass F≥0 F∞ where
   smul := EF.smulNN
-  smul_zero (c : F≥0) := EF.coe_eq_coe_iff.mpr (mul_zero c.val)
+  smul_zero (c : F≥0) := EF.coe_eq_coe_iff.← (mul_zero c.val)
 
 lemma EF.pos_smul_top {c : F≥0} (hc : 0 < c) : c • (⊤ : F∞) = ⊤ := by
   show EF.smulNN c ⊤ = ⊤
@@ -392,7 +392,7 @@ theorem extendedFarkas [DecidableEq I]
         use (fun j : J => if hj : (∀ i' : I', A i'.val j ≠ ⊤) then ⟨x ⟨j, hj⟩, hx ⟨j, hj⟩⟩ else 0)
         intro i
         if hi : (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥) then
-          convert EF.coe_le_coe_iff.mpr (ineqalities ⟨i, hi⟩)
+          convert EF.coe_le_coe_iff.← (ineqalities ⟨i, hi⟩)
           · unfold Matrix.mulVec dotProduct Matrix.mulWeig dotWeig
             simp_rw [dite_smul]
             rw [Finset.sum_dite]
@@ -531,7 +531,7 @@ theorem extendedFarkas [DecidableEq I]
         constructor
         · intro j
           if hj : (∀ i : I, A i j ≠ ⊤) then
-            convert EF.coe_le_coe_iff.mpr (ineqalities ⟨j, fun i' => hj i'.val⟩)
+            convert EF.coe_le_coe_iff.← (ineqalities ⟨j, fun i' => hj i'.val⟩)
             simp only [Matrix.mulWeig, Matrix.neg_apply, Matrix.transpose_apply, Pi.zero_apply]
             simp only [dotWeig, dite_smul]
             rw [Finset.sum_dite]
@@ -565,7 +565,7 @@ theorem extendedFarkas [DecidableEq I]
             rw [has_bot_dotWeig_nneg]
             · apply bot_le
             · rwa [Matrix.neg_apply, Matrix.transpose_apply, EF.neg_eq_bot_iff]
-        · convert EF.coe_lt_coe_iff.mpr sharpine
+        · convert EF.coe_lt_coe_iff.← sharpine
           unfold dotProduct dotWeig
           simp_rw [dite_smul]
           rw [Finset.sum_dite]

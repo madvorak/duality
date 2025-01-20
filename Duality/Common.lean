@@ -57,6 +57,9 @@ section miscellaneous
 lemma le_of_nneg_add {α : Type*} [OrderedAddCommGroup α] {a b c : α} (habc : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
   aesop
 
+postfix:max ".→" => Iff.mp
+postfix:max ".←" => Iff.mpr
+
 macro "change " h:ident " to " t:term : tactic => `(tactic| change $t at $h:ident)
 
 macro "aeply" t:term : tactic => `(tactic| intro <;> apply $t <;> aesop)

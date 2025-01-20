@@ -85,7 +85,7 @@ private lemma filter_yielding_singleton_attach_sum {m : ℕ} {R V : Type*} [Semi
 
 private lemma impossible_index {m : ℕ} {i : Fin m.succ} (hi : ¬(i.val < m)) (i_neq_m : i ≠ ⟨m, m.lt_add_one⟩) : False := by
   push_neg at hi
-  exact i_neq_m (eq_of_le_of_le (Fin.succ_le_succ_iff.mp i.isLt) hi)
+  exact i_neq_m (eq_of_le_of_le (Fin.succ_le_succ_iff.→ i.isLt) hi)
 
 variable {R V W : Type*}
 

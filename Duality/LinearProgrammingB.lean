@@ -77,7 +77,7 @@ theorem StandardLP.weakDuality [Fintype I] [OrderedCommRing R] {P : StandardLP I
     dotProduct_le_dotProduct_of_nonneg_right hxb (fun i : I => (y i).property)
   rw [Matrix.neg_mulVec, neg_dotProduct, neg_le] at hyxx
   rw [Matrix.transpose_mulVec_dotProduct] at hyxx
-  exact neg_le_iff_add_nonneg'.mp (hyxx.trans hxyy)
+  exact neg_le_iff_add_nonneg'.→ (hyxx.trans hxyy)
 
 
 variable [LinearOrderedField R]

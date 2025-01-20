@@ -275,7 +275,7 @@ lemma EF.smul_nonpos {r : F∞} (hr : r ≤ 0) (k : F≥0) :
   match r with
   | ⊥ => apply bot_le
   | ⊤ => simp at hr
-  | (_ : F) => exact EF.coe_le_coe_iff.mpr (mul_nonpos_of_nonneg_of_nonpos k.property (coe_nonpos.mp hr))
+  | (_ : F) => exact EF.coe_le_coe_iff.← (mul_nonpos_of_nonneg_of_nonpos k.property (coe_nonpos.→ hr))
 
 lemma EF.smul_lt_smul_left {k : F≥0} (hk : 0 < k) (r s : F∞) :
     k • r < k • s ↔ r < s := by
@@ -377,7 +377,7 @@ lemma EF.smul_smul {k : F≥0} (hk : 0 < k) (l : F≥0) (r : F∞) :
       exfalso
       simp_all only [not_lt, nonpos_iff_eq_zero]
   | (f : F) =>
-    exact EF.coe_eq_coe_iff.mpr (mul_left_comm l.val k.val f)
+    exact EF.coe_eq_coe_iff.← (mul_left_comm l.val k.val f)
 
 lemma EF.add_smul (k l : F≥0) (r : F∞) :
     (k + l) • r = k • r + l • r := by
@@ -573,7 +573,7 @@ lemma ValidELP.unbounded_of_reaches_le (P : ValidELP I J F) (hP : ∀ r : F, ∃
   rw [ValidELP.IsUnbounded.iff]
   intro r
   obtain ⟨p, hPp, hpr⟩ := hP (r-1)
-  exact ⟨p, hPp, hpr.trans_lt (EF.coe_lt_coe_iff.mpr (sub_one_lt r))⟩
+  exact ⟨p, hPp, hpr.trans_lt (EF.coe_lt_coe_iff.← (sub_one_lt r))⟩
 
 lemma ValidELP.unbounded_of_feasible_of_neg (P : ValidELP I J F) (hP : P.IsFeasible)
     {x₀ : J → F≥0} (hx₀ : P.c ᵥ⬝ x₀ < 0) (hAx₀ : P.A ₘ* x₀ + (0 : F≥0) • (-P.b) ≤ 0) :
@@ -848,13 +848,13 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     match hcx : P.c ᵥ⬝ x with
     | ⊥ =>
       exfalso
-      obtain ⟨j, hj⟩ := dotWeig_eq_bot.mpr hcx
+      obtain ⟨j, hj⟩ := dotWeig_eq_bot.← hcx
       exact P.dualize.no_bot_of_feasible hQ j hj
     | ⊤ =>
       exfalso
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
-        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.← hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         rw [hcx, hby] at hxy
@@ -866,7 +866,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
         exfalso
-        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.← hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         exfalso
@@ -906,7 +906,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     · by_contra contr
       have z_eq_0 : z = 0
       · push_neg at contr
-        exact nonpos_iff_eq_zero.mp contr
+        exact nonpos_iff_eq_zero.→ contr
       rw [z_eq_0] at hx hy
       clear contr z_eq_0 z
       if hxc : P.c ᵥ⬝ x < 0 then
@@ -920,13 +920,13 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     match hcx : P.c ᵥ⬝ x with
     | ⊥ =>
       exfalso
-      obtain ⟨j, hj⟩ := dotWeig_eq_bot.mpr hcx
+      obtain ⟨j, hj⟩ := dotWeig_eq_bot.← hcx
       exact P.dualize.no_bot_of_feasible hQ j hj
     | ⊤ =>
       exfalso
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
-        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.← hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         rw [hcx, hby] at hbc
@@ -938,7 +938,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
       match hby : P.b ᵥ⬝ y with
       | ⊥ =>
         exfalso
-        obtain ⟨i, hi⟩ := dotWeig_eq_bot.mpr hby
+        obtain ⟨i, hi⟩ := dotWeig_eq_bot.← hby
         exact P.no_bot_of_feasible hP i hi
       | ⊤ =>
         exfalso
