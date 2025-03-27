@@ -56,13 +56,13 @@ theorem basicLinearAlgebra_lt (A : Matrix I J F) (b : I → F) :
       constructor
       · rw [Sum.nonneg_elim_iff]
         exact ⟨posPart_nonneg x, negPart_nonneg x⟩
-      · rw [Matrix.fromCols_mulVec_sum_elim, Matrix.neg_mulVec, ←Matrix.mulVec_neg, ←Matrix.mulVec_add, ←sub_eq_add_neg]
+      · rw [Matrix.fromCols_mulVec_sumElim, Matrix.neg_mulVec, ←Matrix.mulVec_neg, ←Matrix.mulVec_add, ←sub_eq_add_neg]
         convert hAx
         aesop
     · intro ⟨x, _, hAx⟩
       use x ∘ Sum.inl - x ∘ Sum.inr
       rw [Matrix.mulVec_sub]
-      rwa [←Sum.elim_comp_inl_inr x, Matrix.fromCols_mulVec_sum_elim, Matrix.neg_mulVec, ←sub_eq_add_neg] at hAx
+      rwa [←Sum.elim_comp_inl_inr x, Matrix.fromCols_mulVec_sumElim, Matrix.neg_mulVec, ←sub_eq_add_neg] at hAx
   · constructor
     · intro ⟨y, hAy, hby⟩
       refine ⟨y, ?_, hby⟩
