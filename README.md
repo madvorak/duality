@@ -12,6 +12,6 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 ## Main results
 
-* [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/86026c3f8754a29f32a03864d7377767c7cfe54b/Duality/FarkasBartl.lean#L216) with [explanation](FarkasBartl.pdf)
-* [Extended Farkas theorem](https://github.com/madvorak/duality/blob/86026c3f8754a29f32a03864d7377767c7cfe54b/Duality/FarkasSpecial.lean#L284)
-* [Strong duality for extended linear programs](https://github.com/madvorak/duality/blob/86026c3f8754a29f32a03864d7377767c7cfe54b/Duality/LinearProgramming.lean#L1083)
+* [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/281d67d9898c9a88377ea7f679780b001cdadb51/Duality/FarkasBartl.lean#L220) with [explanation](FarkasBartl.pdf)
+* [Extended Farkas theorem](https://github.com/madvorak/duality/blob/281d67d9898c9a88377ea7f679780b001cdadb51/Duality/FarkasSpecial.lean#L284)
+* [Strong duality for extended linear programs](https://github.com/madvorak/duality/blob/281d67d9898c9a88377ea7f679780b001cdadb51/Duality/LinearProgramming.lean#L1087)
