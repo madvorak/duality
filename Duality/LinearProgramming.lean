@@ -159,7 +159,7 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
   apply
     not_and_of_neq
       (extendedFarkas
-        (Matrix.fromRows P.A (Matrix.row Unit P.c))
+        (Matrix.fromRows P.A (Matrix.replicateRow Unit P.c))
         (Sum.elim P.b (fun _ => P.c ᵥ⬝ x))
         (by
           intro ⟨i, ⟨s, his⟩, ⟨t, hit⟩⟩
@@ -744,7 +744,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
       (extendedFarkas
         (Matrix.fromRows
           (Matrix.fromBlocks P.A 0 0 (-P.Aᵀ))
-          (Matrix.row Unit (Sum.elim P.c P.b)))
+          (Matrix.replicateRow Unit (Sum.elim P.c P.b)))
         (Sum.elim (Sum.elim P.b P.c) 0)
         (by
           intro ⟨k, ⟨s, hks⟩, ⟨t, hkt⟩⟩
@@ -880,7 +880,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     obtain ⟨Y, hAY, hbc⟩ := case_Y
     rw [
       Matrix.transpose_fromRows, Matrix.fromBlocks_transpose, Matrix.transpose_zero, Matrix.transpose_zero,
-      Matrix.transpose_neg, Matrix.transpose_transpose, Matrix.transpose_row, Matrix.fromCols_neg,
+      Matrix.transpose_neg, Matrix.transpose_transpose, Matrix.transpose_replicateRow, Matrix.fromCols_neg,
       ←Sum.elim_comp_inl_inr Y, Matrix.fromCols_mulWeig_sumElim,
       Matrix.fromBlocks_neg, Matrix.EF_neg_neg, Matrix.EF_neg_zero, Matrix.EF_neg_zero,
       ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromRows_mulWeig,
@@ -894,7 +894,7 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
     have hAyx : Sum.elim (-P.Aᵀ ₘ* y) (P.A ₘ* x) + z • (-Sum.elim P.c P.b) ≤ 0
     · convert hAY
       ext
-      simp [Matrix.col, Matrix.mulWeig, dotWeig, z]
+      simp [Matrix.replicateCol, Matrix.mulWeig, dotWeig, z]
     have hAyx' : Sum.elim (-P.Aᵀ ₘ* y) (P.A ₘ* x) + Sum.elim (z • (-P.c)) (z • (-P.b)) ≤ 0
     · convert hAyx
       aesop

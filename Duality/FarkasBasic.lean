@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Order.Sum
+import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.LinearAlgebra.Matrix.ToLin
