@@ -168,7 +168,7 @@ lemma Multiset.sum_eq_EF_top {s : Multiset F∞} (htop : ⊤ ∈ s) (hbot : ⊥ 
         rw [←Multiset.sum_eq_EF_bot_iff]
         exact hm
     | inr hm =>
-      rw [ih hm ((hbot ∘ mem_cons_of_mem) ·)]
+      rw [ih hm ((hbot ∘ Multiset.mem_cons_of_mem) ·)]
       match a with
       | (f : F) => rfl
       | ⊤ => rfl

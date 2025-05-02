@@ -1,3 +1,4 @@
+import Duality.Linters.ImplicitNamespace
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Group.Defs
 

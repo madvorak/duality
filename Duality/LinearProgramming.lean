@@ -275,7 +275,7 @@ lemma EF.smul_nonpos {r : F∞} (hr : r ≤ 0) (k : F≥0) :
   match r with
   | ⊥ => apply bot_le
   | ⊤ => simp at hr
-  | (_ : F) => exact EF.coe_le_coe_iff.← (mul_nonpos_of_nonneg_of_nonpos k.property (coe_nonpos.→ hr))
+  | (_ : F) => exact EF.coe_le_coe_iff.← (mul_nonpos_of_nonneg_of_nonpos k.property (EF.coe_nonpos.→ hr))
 
 lemma EF.smul_lt_smul_left {k : F≥0} (hk : 0 < k) (r s : F∞) :
     k • r < k • s ↔ r < s := by
@@ -302,7 +302,7 @@ lemma EF.smul_lt_smul_left {k : F≥0} (hk : 0 < k) (r s : F∞) :
     | (_ : F) =>
       convert_to True ↔ True
       · rw [EF.pos_smul_top hk, iff_true]
-        apply coe_lt_top
+        apply EF.coe_lt_top
       · simp
       rfl
   | (q : F) =>
@@ -310,7 +310,7 @@ lemma EF.smul_lt_smul_left {k : F≥0} (hk : 0 < k) (r s : F∞) :
     | ⊥ =>
       convert_to True ↔ True
       · rw [iff_true]
-        apply bot_lt_coe
+        apply EF.bot_lt_coe
       · simp
       rfl
     | ⊤ =>
@@ -333,7 +333,7 @@ lemma EF.smul_neg {k : F≥0} {r : F∞} (hkr : k = 0 → r ≠ ⊥ ∧ r ≠ �
     k • (-r) = -(k • r) := by
   match r with
   | ⊥ =>
-    rw [neg_bot]
+    rw [EF.neg_bot]
     if hk : 0 < k then
       rewrite [EF.pos_smul_top hk]
       rfl
@@ -341,9 +341,9 @@ lemma EF.smul_neg {k : F≥0} {r : F∞} (hkr : k = 0 → r ≠ ⊥ ∧ r ≠ �
       exfalso
       simp_all
   | ⊤ =>
-    rw [neg_top]
+    rw [EF.neg_top]
     if hk : 0 < k then
-      rewrite [EF.pos_smul_top hk, neg_top]
+      rewrite [EF.pos_smul_top hk, EF.neg_top]
       rfl
     else
       exfalso
