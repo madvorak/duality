@@ -15,11 +15,11 @@ We extend certain Farkas-like theorems to a setting where coefficients are from 
 
 * [Farkas for equalities](https://github.com/madvorak/duality/blob/0cc3ca1fb564adab101c37b93947279c48037c67/Duality/FarkasBasic.lean#L26)
 * [Farkas for inequalities](https://github.com/madvorak/duality/blob/0cc3ca1fb564adab101c37b93947279c48037c67/Duality/FarkasBasic.lean#L103)
-* [Strong duality for standard LP](https://github.com/madvorak/duality/blob/0cc3ca1fb564adab101c37b93947279c48037c67/Duality/LinearProgramming.lean#L1087)
+* [Strong duality for standard LP](https://github.com/madvorak/duality/blob/152e01ab3bf7b52ffa97d786216ceb904b6005ed/Duality/LinearProgrammingB.lean#L204)
 
 
 ## Main results
 
 * [Farkas-Bartl theorem](https://github.com/madvorak/duality/blob/0cc3ca1fb564adab101c37b93947279c48037c67/Duality/FarkasBartl.lean#L217)
 * [Extended Farkas theorem](https://github.com/madvorak/duality/blob/0cc3ca1fb564adab101c37b93947279c48037c67/Duality/FarkasSpecial.lean#L284)
-* [Strong duality for extended LP](https://github.com/madvorak/duality/blob/ea1887033d86c29999f64a6d5c056d2267f3814c/Duality/LinearProgramming.lean#L1083)
+* [Strong duality for extended LP](https://github.com/madvorak/duality/blob/152e01ab3bf7b52ffa97d786216ceb904b6005ed/Duality/LinearProgramming.lean#L1087)
