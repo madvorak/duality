@@ -5,7 +5,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "7060edb21af230f756cb38a2e56090eb05145b52",
+   "rev": "5c96bb9e936750e584186c1dfd0095e5249bb1a2",
    "name": "linters",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
