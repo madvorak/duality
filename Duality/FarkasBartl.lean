@@ -1,10 +1,7 @@
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Have
 import Duality.Common

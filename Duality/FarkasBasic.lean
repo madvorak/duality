@@ -137,9 +137,9 @@ theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     · intro k
       simp only [A', Matrix.transpose_fromCols, Matrix.transpose_one] at hAy
       apply hAy
-    refine ⟨y, ?_, fun j => h1Ay (Sum.inr j), hby⟩
+    refine ⟨y, ?_, fun j : J => h1Ay ◪j, hby⟩
     intro i
-    simpa using h1Ay (Sum.inl i)
+    simpa using h1Ay ◩i
 
 /-- A system of linear inequalities over nonnegative variables has a solution if and only if
 we cannot obtain a contradiction by taking a nonnegative linear combination of the inequalities;

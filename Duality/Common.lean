@@ -53,13 +53,27 @@ lemma neg_iff_neg (hpq : P ↔ Q) : ¬P ↔ ¬Q := by
 end logic_with_neq
 
 
+section notations
+
+/-- The left-to-right direction of `↔`. -/
+postfix:max ".→" => Iff.mp
+
+/-- The right-to-left direction of `↔`. -/
+postfix:max ".←" => Iff.mpr
+
+/-- The "left" or "top" variant. -/
+prefix:max "◩" => Sum.inl
+
+/-- The "right" or "bottom" variant. -/
+prefix:max "◪" => Sum.inr
+
+end notations
+
+
 section miscellaneous
 
 lemma le_of_nneg_add {α : Type*} [OrderedAddCommGroup α] {a b c : α} (habc : a + b = c) (ha : 0 ≤ a) : b ≤ c := by
   aesop
-
-postfix:max ".→" => Iff.mp
-postfix:max ".←" => Iff.mpr
 
 macro "change " h:ident " to " t:term : tactic => `(tactic| change $t at $h:ident)
 
