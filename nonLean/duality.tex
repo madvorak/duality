@@ -497,6 +497,7 @@ The only axioms used in our proofs are
 We use Lean version 4.11.0 together with the Lean
 mathematical library \texttt{Mathlib} \cite{Mathlib}
 revision \texttt{00df099} (dated 2024-09-02).
+% TODO update version info !!!!
 This paper attempts to be an accurate description of
 the \texttt{duality} project.
 However, in case of any discrepancy, the code shall prevail.
@@ -505,10 +506,11 @@ However, in case of any discrepancy, the code shall prevail.
 \label{preliminaries}
 
 There are many layers of definitions that are built before say
-what a linearly ordered field $F$ is (used e.g.~in \ref{equalityFarkas}),
-what a linearly ordered division ring $R$ is (used e.g.~in \ref{scalarFarkas}), and
-what a linearly ordered abelian group $V$ is (used in \ref{fintypeFarkasBartl}).
-\sekt{preliminaries-typeclasses} mainly documents existing Mathlib definitions;
+what a linearly ordered field is (used e.g.~in \ref{equalityFarkas}),
+what a linearly ordered division ring is (used e.g.~in \ref{scalarFarkas}), and
+what a linearly ordered abelian group is (used in \ref{fintypeFarkasBartl}).
+\sekt{preliminaries-typeclasses} mainly documents existing Mathlib definitions
+(but omitting declarations of default values);
 we also highlight how we added linearly ordered division rings into our project.
 \sekt{preliminaries-ef} then explains how we defined extended linearly ordered fields.
 \sekt{preliminaries-vectors} reviews vectors and matrices; we especially focus on
@@ -547,7 +549,7 @@ class MulOneClass (M : Type u) extends One M, Mul M where
   one_mul : ∀ a : M, 1 * a = a
   mul_one : ∀ a : M, a * 1 = a
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
-  npow : ℕ → M → M 
+  npow : ℕ → M → M
   npow_zero : ∀ x : M, npow 0 x = 1 
   npow_succ : ∀ (n : ℕ) (x : M), npow (n + 1) x = npow n x * x 
 \end{lstlisting}
@@ -559,7 +561,7 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   sub_eq_add_neg : ∀ a b : G, a - b = a + -b 
   zsmul : ℤ → G → G
   zsmul_zero' : ∀ a : G, zsmul 0 a = 0 
-  zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a
+  zsmul_succ' (n : ℕ) (a : G) : zsmul n.succ a = zsmul n a + a
   zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -(zsmul n.succ a)
 \end{lstlisting}
 Similarly, division monoid is a monoid that adds two more operations (inverse and divide)
@@ -570,7 +572,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ 
   zpow : ℤ → G → G
   zpow_zero' : ∀ a : G, zpow 0 a = 1 
-  zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a * a
+  zpow_succ' (n : ℕ) (a : G) : zpow n.succ a = zpow n a * a
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ 
 \end{lstlisting}
 Additive group is a subtractive monoid in which the unary minus acts as a left inverse with respect to addition:
@@ -638,14 +640,14 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast_succ : ∀ n : ℕ, natCast (n + 1) = (natCast n) + 1 
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 \end{lstlisting}
-Additive group with one is an additive monoid with one and additive group, and embeds all integers:
+Additive group with one is an additive monoid with ``one'' and additive group, and embeds all integers:
 \begin{lstlisting}
 class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n 
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) 
 \end{lstlisting}
 Nonassociative-semiring is a nonunital-nonassociative-semiring that has a well-behaved multiplication
-by both zero and one and forms an abelian monoid with one (i.e., the unit is finally defined):
+by both zero and one and forms an abelian monoid with ``one'' (i.e., the unit is finally defined):
 \begin{lstlisting}
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
@@ -672,9 +674,9 @@ and embeds rational numbers:
 \begin{lstlisting}
 class Nontrivial (α : Type*) : Prop where
   exists_pair_ne : ∃ x y : α, x ≠ y
-class DivisionRing (α : Type*) extends Ring α, DivInvMonoid α, Nontrivial α, NNRatCast α, RatCast α where
-  mul_inv_cancel : ∀ (a : α), a ≠ 0 → a * a⁻¹ = 1
-  inv_zero : (0 : α)⁻¹ = 0
+class DivisionRing (K : Type*) extends Ring K, DivInvMonoid K, Nontrivial K, NNRatCast K, RatCast K where
+  mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1
+  inv_zero : (0 : K)⁻¹ = 0
 \end{lstlisting}
 Field is a commutative ring and a division ring at the same time:
 \begin{lstlisting}
@@ -689,7 +691,7 @@ class Preorder (α : Type u) extends LE α, LT α where
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt_iff_le_not_le : ∀ a b : α, a < b  ↔  a ≤ b ∧ ¬b ≤ a 
 \end{lstlisting}
-Partial order is a reflexive \& antisymmetric \& transitive relation:
+Partial order is an antisymmetric preoder (that is, a reflexive \& antisymmetric \& transitive relation):
 \begin{lstlisting}
 class PartialOrder (α : Type u) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
@@ -869,7 +871,7 @@ $x_i \le y_i$ holds for~every~$i$ %lb
 talks about $\Pi$-types \cite{MLTT}, i.e.,
 the \textit{type} of \texttt{x i} can depend on the \textit{value} of \texttt{i}):
 \begin{lstlisting}
-instance Pi.hasLe {ι : Type u} {π : ι → Type v} [∀ i, LE (π i)] :
+instance Pi.hasLe {ι : Type*} {π : ι → Type*} [∀ i, LE (π i)] :
   LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
 \end{lstlisting}
 Comparison between matrices is not defined, only equality for matrices is.
@@ -883,7 +885,7 @@ The code, however, does distinguish between them.
 
 Mathlib defines dot product (i.e., a product of an explicit vector with an explicit vector) as follows:
 \begin{lstlisting}
-def Matrix.dotProduct [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
+def dotProduct [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 \end{lstlisting}
 Mathlib defines a product of a matrix with an explicit vector as follows:
@@ -909,7 +911,7 @@ whether or not it makes sense, whereas the keyword \texttt{infixr} when defining
 \hbox{\texttt{A $\circ$ B $\circ$ v}} gets parsed as \texttt{A $\circ$ (B $\circ$ v)}
 whether or not it makes sense; the numbers 72 and 73 determine precedence):
 \begin{lstlisting}
-scoped infixl:72 " ⬝ᵥ " => Matrix.dotProduct
+infixl:72 " ⬝ᵥ " => dotProduct
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 \end{lstlisting}
 The definitions above are sufficient for stating results based on linearly ordered fields.
@@ -920,9 +922,9 @@ as follows:
 \begin{lstlisting}
 variable {α γ : Type*} [AddCommMonoid α] [SMul γ α]
 
-def Matrix.dotProd (v : I → α) (w : I → γ) : α :=
+def dotWeig (v : I → α) (w : I → γ) : α :=
   ∑ i : I, w i • v i
-infixl:72 " ᵥ⬝ " => Matrix.dotProd
+infixl:72 " ᵥ⬝ " => dotWeig
 
 def Matrix.mulWeig (M : Matrix I J α) (w : J → γ) (i : I) : α :=
   M i ᵥ⬝ w
@@ -959,16 +961,8 @@ Mathlib definitions and our definitions by observing that Mathlib
 operators put the letter $_v$ to the right of the symbol whereas
 our operators put a letter to the left of the symbol.
 
-We find it unfortunate that the Mathlib name of \texttt{dotProduct}
-is prefixed by the \texttt{Matrix} namespace.
-While \texttt{Matrix.mulVec} allows for the use of dot notation
-in places where infix notation is not used, the full name
-\texttt{Matrix.dotProduct} only clutters the code.
-Even though we do not like it, we decided to namespace our definitions
-in the same way for consistency.
-
 Since we have new definitions, we have to rebuild all API (a lot of lemmas)
-for \texttt{Matrix.dotProd} and \texttt{Matrix.mulWeig} from scratch.
+for \texttt{dotWeig} and \texttt{Matrix.mulWeig} from scratch.
 This process was very tiresome. We decided not to develop a full reusable
 library, but prove only those lemmas we wanted to use in our project.
 For similar reasons, we did not generalize the Mathlib definition of
@@ -1055,12 +1049,12 @@ structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
 Vector $x$ made of finite nonnegative values is a solution if and only if $A \* x \le b$
 holds:
 \begin{lstlisting}
-def ExtendedLP.IsSolution (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
+def ExtendedLP.IsSolution [Fintype J] (P : ExtendedLP I J F) (x : J → F≥0) : Prop :=
   P.A ₘ* x ≤ P.b
 \end{lstlisting}
 $P$ reaches a value $r$ if and only if $P$ has solution $x$ such that $c \* x = r$ holds:
 \begin{lstlisting}
-def ExtendedLP.Reaches (P : ExtendedLP I J F) (r : F∞) : Prop :=
+def ExtendedLP.Reaches [Fintype J] (P : ExtendedLP I J F) (r : F∞) : Prop :=
   ∃ x : J → F≥0, P.IsSolution x ∧ P.c ᵥ⬝ x = r
 \end{lstlisting}
 $P$ is feasible if and only if $P$ reaches a value different from $\top$:
@@ -1071,12 +1065,12 @@ def ExtendedLP.IsFeasible [Fintype J] (P : ExtendedLP I J F) : Prop :=
 $P$ is bounded by a value $r$ (from below -- we always minimize) if and only if
 $P$ reaches only values greater or equal to $r$:
 \begin{lstlisting}
-def ExtendedLP.IsBoundedBy (P : ExtendedLP I J F) (r : F) : Prop :=
+def ExtendedLP.IsBoundedBy [Fintype J] (P : ExtendedLP I J F) (r : F) : Prop :=
   ∀ p : F∞, P.Reaches p → r ≤ p
 \end{lstlisting}
 $P$ is unbounded if and only if $P$ has no finite lower bound:
 \begin{lstlisting}
-def ExtendedLP.IsUnbounded (P : ExtendedLP I J F) : Prop :=
+def ExtendedLP.IsUnbounded [Fintype J] (P : ExtendedLP I J F) : Prop :=
   ¬∃ r : F, P.IsBoundedBy r
 \end{lstlisting}
 Valid extended linear programs are defined as follows (the six conditions were
@@ -1169,7 +1163,7 @@ linear program, i.e., $P^\ast$ is defined for every (extended) linear program $P
 but we did not bother proving it.} linear program, but we do not know it yet.
 
 
-\section{Formal statements of selected results}
+\section{Formal statements of selected theorems}
 \label{statements}
 
 \subsection{Main corollaries}
@@ -1196,7 +1190,7 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0)
 \end{lstlisting}
 \begin{lstlisting}
-theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
+theorem extendedFarkas [DecidableEq I] (A : Matrix I J F∞) (b : I → F∞)
     (hAi : ¬∃ i : I, (∃ j : J, A i j = ⊥) ∧ (∃ j : J, A i j = ⊤))
     (hAj : ¬∃ j : J, (∃ i : I, A i j = ⊥) ∧ (∃ i : I, A i j = ⊤))
     (hAb : ¬∃ i : I, (∃ j : J, A i j = ⊤) ∧ b i = ⊤)
@@ -1204,8 +1198,8 @@ theorem extendedFarkas (A : Matrix I J F∞) (b : I → F∞)
     (∃ x : J → F≥0, A ₘ* x ≤ b) ≠ (∃ y : I → F≥0, -Aᵀ ₘ* y ≤ 0 ∧ b ᵥ⬝ y < 0)
 \end{lstlisting}
 \begin{lstlisting}
-theorem ExtendedLP.strongDuality (P : ExtendedLP I J F) (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
-  OppositesOpt P.optimum P.dualize.optimum
+theorem ValidELP.strongDuality (P : ValidELP I J F) (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
+    OppositesOpt P.optimum P.dualize.optimum
 \end{lstlisting}
 
 
@@ -1583,7 +1577,7 @@ Then the optimum of $P$ is $r$.
 Proof idea:
 Apply the axiom of choice to the definition of optimum and use \ref{optimum-unique}.
 
-\begin{lemma}[\customlabel{strongDuality-of-prim-feas}{\texttt{strongDuality\_of\_prim\_feas}}]
+\begin{lemma}[\customlabel{strongDuality-of-prim-feas}{\texttt{strongDuality\_of\_prim\_feasible}}]
 Let $P$ be a valid linear program that is feasible.
 Then the optimum of $P$ and the optimum of dual of $P$ are opposites.
 \end{lemma}
@@ -1613,7 +1607,7 @@ If a valid linear program $P$ is feasible, the existence of optimum
 follows from \ref{strongDuality-of-prim-feas}.
 Otherwise, the optimum of $P$ is $\top$ by definition.
 
-\begin{lemma}[\customlabel{strongDuality-of-dual-feas}{\texttt{strongDuality\_of\_dual\_feas}}]
+\begin{lemma}[\customlabel{strongDuality-of-dual-feas}{\texttt{strongDuality\_of\_dual\_feasible}}]
 Let $P$ be a valid linear program whose dual is feasible.
 Then the optimum of $P$ and the optimum of dual of $P$
 are opposites.
