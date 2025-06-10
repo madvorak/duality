@@ -640,14 +640,14 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   natCast_succ : ∀ n : ℕ, natCast (n + 1) = (natCast n) + 1 
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 \end{lstlisting}
-Additive group with one is an additive monoid with ``one'' and additive group, and embeds all integers:
+Additive group with one is an additive monoid with one and additive group, and embeds all integers:
 \begin{lstlisting}
 class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n 
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) 
 \end{lstlisting}
 Nonassociative-semiring is a nonunital-nonassociative-semiring that has a well-behaved multiplication
-by both zero and one and forms an abelian monoid with ``one'' (i.e., the unit is finally defined):
+by both zero and one and forms an abelian monoid with one (i.e., the unit is finally defined):
 \begin{lstlisting}
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
