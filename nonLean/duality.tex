@@ -228,7 +228,7 @@ of~\ref{inequalityFarkas} and~\ref{StandardLP.strongDuality}
 to the case when some of the coefficients are allowed to have infinite values. 
 This scenario can be motivated by discrete optimization problems with ``hard'' constraints
 (the ``hard'' constraints declare what has to be be satisfied,
-whereäs ``soft'' constraints declare what should be optimized).
+whereas ``soft'' constraints declare what should be optimized).
 A common way to concisely write down such problems mathematically is to use
 infinite coefficients in front of the corresponding terms in the objective. 
 Since infinities are not allowed in traditional LPs,
@@ -270,8 +270,8 @@ the partially ordered module $I \r R$ is replaced by a general $R$-module $W$.
 Let $J$ be a finite type.
 Let $R$ be a linearly ordered division ring.
 Let $W$ be an $R$-module.
-Let $A$ be an $R$-linear map from from $W$ to $(J \r R)$.
-Let $b$ be an $R$-linear map from from $W$ to $R$.
+Let $A$ be an $R$-linear map from $W$ to $(J \r R)$.
+Let $b$ be an $R$-linear map from $W$ to $R$.
 Exactly one of the following exists:
 \begin{itemize}
 \item nonnegative vector $x : J \r R$ such that, for all $w : W$, we have
@@ -298,7 +298,7 @@ $ \sum_{j : J}\; (A~w)_j \cdot x_j = b~w $
 \item vector $y : W$ such that $A~y \ge 0$ and $b~y < 0$
 \end{itemize}
 \end{theorem}
-In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereäs
+In the last branch, $A~y \ge 0$ uses the partial order on $(J \r R)$ whereas
 $b~y < 0$ uses the linear order on $V$.
 Note that \ref{fintypeFarkasBartl} subsumes \ref{scalarFarkas} (as well as the other versions based on equality),
 since $R$ can be viewed as a linearly ordered module over itself.
@@ -391,7 +391,7 @@ $(-\top) \* 0 \ge 0$ is false but
 $\top \* 0 \le 0$ is true).
 One must be careful when formulating this condition;
 for example, using the condition from \ref{inequalityFarkas}
-would make the theorem false even if $A$ has a single $\bot$ entry
+would make the theorem false even if $A$ has only a single $\bot$ entry
 (see \sekt{sec:extendedFarkas:counterexamples}).
 
 Next, we define an extended notion of linear program, i.e.,
@@ -905,7 +905,7 @@ determines what the vector does there.
 Infix notation for these two operations is defined as follows
 (the keyword \texttt{infixl} when defining an operator $\circ$ means that
 \hbox{\texttt{x $\circ$ y $\circ$ z}} gets parsed as \texttt{(x $\circ$ y) $\circ$ z}
-whether or not it makes sense, whereäs the keyword \texttt{infixr} when defining an operator $\circ$ means that %lb
+whether or not it makes sense, whereas the keyword \texttt{infixr} when defining an operator $\circ$ means that %lb
 \hbox{\texttt{A $\circ$ B $\circ$ v}} gets parsed as \texttt{A $\circ$ (B $\circ$ v)}
 whether or not it makes sense; the numbers 72 and 73 determine precedence):
 \begin{lstlisting}
@@ -956,7 +956,7 @@ arguments come in alphabetical order.
 
 In the infix notation, you can distinguish between the standard
 Mathlib definitions and our definitions by observing that Mathlib
-operators put the letter $_v$ to the right of the symbol whereäs
+operators put the letter $_v$ to the right of the symbol whereas
 our operators put a letter to the left of the symbol.
 
 We find it unfortunate that the Mathlib name of \texttt{dotProduct}
@@ -1706,7 +1706,7 @@ $$
 
 We also claimed in \sekt{extensions} that changing condition $(-A^T) \* y \le 0$
 to  $A^T \* y \ge 0$ in  \ref{extendedFarkas} would cause the theorem
-to fail even when $A$ has a single $\bot$ entry. The counterexample is as follows:
+to fail even when $A$ has only a single $\bot$ entry. The counterexample is as follows:
 $$
 \begin{array}{c@{\hspace{30pt}}c}
 A =
@@ -1815,7 +1815,7 @@ in the asymmetric version \eqref{eq:StandardLP.strongDuality:assym}.
 
 Several Hahn-Banach theorems have been formalized in Lean as a part of
 Mathlib.
-In particular, it would have been be possible to prove \ref{equalityFarkas}
+In particular, it would have been possible to prove \ref{equalityFarkas}
 for reals using the Hahn-Banach separation theorem for a convex closed set
 and a point \cite{HahnBanach-Lean}.
 It would then have been possible to extend the result to other
