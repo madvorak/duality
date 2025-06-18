@@ -573,8 +573,7 @@ theorem extendedFarkas [DecidableEq I]
           · apply Finset.sum_eq_zero
             intro j _
             apply EF.zero_smul_nonbot
-            intro contr
-            exact hbot ⟨j.val, contr⟩
+            exact (hbot ⟨j.val, ·⟩)
           · erw [←Finset.sum_coe_sort_eq_attach]
             rw [Finset.sum_toE]
             apply Finset.subtype_univ_sum_eq_subtype_univ_sum
