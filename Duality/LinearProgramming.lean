@@ -6,6 +6,7 @@ import Duality.FarkasSpecial
     a system of linear inequalities with nonnegative variables).
     Variables are of type `J`. Conditions are indexed by type `I`.
     The objective function is intended to be minimized. -/
+@[ext]
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   /-- The left-hand-side matrix. -/
   A : Matrix I J F∞
