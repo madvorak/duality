@@ -132,8 +132,7 @@ lemma sumElim_dotWeig_sumElim [Fintype I] [Fintype J] (u : I → F∞) (v : J �
 
 lemma Matrix.fromRows_mulWeig [Fintype J] {I₁ I₂ : Type*} (M₁ : Matrix I₁ J F∞) (M₂ : Matrix I₂ J F∞) (w : J → F≥0) :
     Matrix.fromRows M₁ M₂ ₘ* w = Sum.elim (M₁ ₘ* w) (M₂ ₘ* w) := by
-  ext i
-  cases i <;> rfl
+  ext (_|_) <;> rfl
 
 lemma Matrix.fromCols_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fintype J₂]
     (M₁ : Matrix I J₁ F∞) (M₂ : Matrix I J₂ F∞) (w₁ : J₁ → F≥0) (w₂ : J₂ → F≥0) :

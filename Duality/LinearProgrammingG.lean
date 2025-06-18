@@ -1,4 +1,5 @@
-import Duality.LinearProgramming
+import Duality.LinearProgrammingB
+
 
 @[ext]
 structure GeneralizedELP (I I_ J J' F : Type*) [LinearOrderedField F] where
@@ -42,7 +43,7 @@ variable {I I_ J J' F : Type*} [LinearOrderedField F]
     its multiplication by matrix `A` from the left yields a vector whose
     all entries are less or equal to corresponding entries of the vector `b`. -/
 def GeneralizedELP.IsSolution [Fintype J] [Fintype J'] (P : GeneralizedELP I I_ J J' F) (x : J → F≥0) (x' : J' → F) : Prop :=
-  P.A ₘ* x ≤ P.b ∧ toE ∘ (P.A' ₘ* x') ≤ P.b ∧ P.A_ *ᵥ (Subtype.val ∘ x) ≤ P.b_ ∧ P.A'_ *ᵥ x' ≤ P.b_
+  P.A ₘ* x ≤ P.b ∧ toE ∘ (P.A' ₘ* x') ≤ P.b ∧ P.A_ *ᵥ x ≤ P.b_ ∧ P.A'_ *ᵥ x' ≤ P.b_
 
 /-- Linear program `P` reaches objective value `r` iff there is a solution `x` such that,
     when its entries are elementwise multiplied by the the coefficients `c` and summed up,
