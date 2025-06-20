@@ -37,13 +37,48 @@ structure ValidGELP (I I_ J J' F : Type*) [LinearOrderedField F] extends General
 
 open scoped Matrix
 
+/-- Glue rows of two matrices. -/
+infixl:63 " ⊟ " => Matrix.fromRows
+
+/-- Glue cols of two matrices. -/
+infixl:63 " ◫ " => Matrix.fromCols
+
+/-- Glue four matrices into one block matrix. -/
+notation:62 "⊞ " A:max B:max C:max D:max => Matrix.fromBlocks A B C D
+
+lemma Matrix.fromRows_inl {I₁ I₂ J α : Type*} (A₁ : Matrix I₁ J α) (A₂ : Matrix I₂ J α) (i : I₁) :
+    (A₁ ⊟ A₂) ◩i = A₁ i :=
+  rfl
+
+lemma Matrix.fromRows_inr {I₁ I₂ J α : Type*} (A₁ : Matrix I₁ J α) (A₂ : Matrix I₂ J α) (i : I₂) :
+    (A₁ ⊟ A₂) ◪i = A₂ i :=
+  rfl
+
+lemma Matrix.fromRows_map {I₁ I₂ J α β : Type*} (A₁ : Matrix I₁ J α) (A₂ : Matrix I₂ J α) (f : α → β) :
+    (A₁ ⊟ A₂).map f = A₁.map f ⊟ A₂.map f := by
+  ext (_|_) <;> rfl
+
+lemma Matrix.fromCols_map {I J₁ J₂ α β : Type*} (A₁ : Matrix I J₁ α) (A₂ : Matrix I J₂ α) (f : α → β) :
+    (A₁ ◫ A₂).map f = A₁.map f ◫ A₂.map f := by
+  ext _ (_|_) <;> rfl
+
+@[simp]
+lemma Matrix.fromBlocks_mulWeig {I₁ I₂ J₁ J₂ : Type*} [Fintype J₁] [Fintype J₂] {α γ : Type*} [AddCommMonoid α] [SMul γ α]
+    (A₁₁ : Matrix I₁ J₁ α) (A₁₂ : Matrix I₁ J₂ α) (A₂₁ : Matrix I₂ J₁ α) (A₂₂ : Matrix I₂ J₂ α) (x : J₁ ⊕ J₂ → γ) :
+    Matrix.fromBlocks A₁₁ A₁₂ A₂₁ A₂₂ ₘ* x =
+    Sum.elim
+      (A₁₁ ₘ* (x ∘ Sum.inl) + A₁₂ ₘ* (x ∘ Sum.inr))
+      (A₂₁ ₘ* (x ∘ Sum.inl) + A₂₂ ₘ* (x ∘ Sum.inr))
+    := by
+  ext (_|_) <;> simp [Matrix.mulWeig, dotWeig]
+
 variable {I I_ J J' F : Type*} [LinearOrderedField F]
 
 /-- A nonnegative vector `x` is a solution to a linear program `P` iff
     its multiplication by matrix `A` from the left yields a vector whose
     all entries are less or equal to corresponding entries of the vector `b`. -/
 def GeneralizedELP.IsSolution [Fintype J] [Fintype J'] (P : GeneralizedELP I I_ J J' F) (x : J → F≥0) (x' : J' → F) : Prop :=
-  P.A ₘ* x ≤ P.b ∧ toE ∘ (P.A' ₘ* x') ≤ P.b ∧ P.A_ *ᵥ x ≤ P.b_ ∧ P.A'_ *ᵥ x' ≤ P.b_
+  P.A ₘ* x + toE ∘ (P.A' ₘ* x') ≤ P.b ∧ P.A_ *ᵥ x + P.A'_ *ᵥ x' ≤ P.b_
 
 /-- Linear program `P` reaches objective value `r` iff there is a solution `x` such that,
     when its entries are elementwise multiplied by the the coefficients `c` and summed up,
@@ -93,18 +128,14 @@ lemma GeneralizedELP.dualize_dualize (P : GeneralizedELP I I_ J J' F) :
   simp [GeneralizedELP.dualize, ←Matrix.ext_iff]
 
 private def GeneralizedELP.toExtendedLP (P : GeneralizedELP I I_ J J' F) : ExtendedLP (I ⊕ I_ ⊕ I_) (J ⊕ J' ⊕ J') F :=
-  ⟨Matrix.fromBlocks
-    P.A ((Matrix.fromCols P.A' (-P.A')).map toE)
-    ((Matrix.fromRows P.A_ (-P.A_)).map toE) ((Matrix.fromBlocks P.A'_ (-P.A'_) (-P.A'_) P.A'_).map toE),
+  ⟨⊞ P.A ((P.A' ◫ (-P.A')).map toE)
+    ((P.A_ ⊟ (-P.A_)).map toE) ((⊞ P.A'_ (-P.A'_) (-P.A'_) P.A'_).map toE),
    Sum.elim P.b (toE ∘ Sum.elim P.b_ (-P.b_)),
    Sum.elim P.c (toE ∘ Sum.elim P.c' (-P.c'))⟩
 
 private lemma GeneralizedELP.dualize_toExtendedLP (P : GeneralizedELP I I_ J J' F) :
     P.dualize.toExtendedLP = P.toExtendedLP.dualize := by
-  ext i j
-  · rcases i with (_|_|_) <;> rcases j with (_|_|_) <;> rfl
-  · rfl
-  · rfl
+  ext (_|_|_) (_|_|_) <;> rfl
 
 abbrev partPos (f : F) : F≥0 := ⟨f⁺, posPart_nonneg f⟩
 abbrev partNeg (f : F) : F≥0 := ⟨f⁻, negPart_nonneg f⟩
@@ -112,4 +143,31 @@ abbrev partNeg (f : F) : F≥0 := ⟨f⁻, negPart_nonneg f⟩
 private lemma GeneralizedELP.isSolution_iff_toExtendedLP [Fintype J] [Fintype J']
     (P : GeneralizedELP I I_ J J' F) (x : J → F≥0) (x' : J' → F) :
     P.IsSolution x x' ↔ P.toExtendedLP.IsSolution (Sum.elim x (Sum.elim (partPos ∘ x') (partNeg ∘ x'))) := by
-  sorry
+  simp only [GeneralizedELP.IsSolution, GeneralizedELP.toExtendedLP, ExtendedLP.IsSolution]
+  constructor
+  · intro ⟨hPx, hPx_⟩ i
+    cases i with
+    | inl i =>
+      simp [Matrix.fromCols_mulWeig_sumElim]
+      convert hPx i
+      simp [Matrix.mulWeig, Matrix.fromCols_map]
+      congr
+      sorry
+    | inr i_ =>
+      cases i_ with
+      | inl iₚ =>
+        specialize hPx_ iₚ
+        simp only [Matrix.mulVec] at hPx_
+        simp [Matrix.fromBlocks_map]
+        unfold Matrix.mulWeig
+        simp [Matrix.fromRows_map, Matrix.fromRows_inl]
+        sorry
+      | inr iₙ =>
+        specialize hPx_ iₙ
+        simp only [Matrix.mulVec] at hPx_
+        simp [Matrix.fromBlocks_map]
+        unfold Matrix.mulWeig
+        simp [Matrix.fromRows_map, Matrix.fromRows_inr]
+        sorry
+  · intro hPxx'
+    sorry
