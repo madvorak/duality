@@ -134,7 +134,7 @@ Farkas lemma, linear programming, extended reals, calculus of inductive construc
 \section{Introduction}
 \label{introduction}
 
-When studying linear programming, we often ask whether a given
+In optimization and related fields, we often ask whether a given
 system of linear inequalities has a solution.
 Duality theorems answer these naturally arising questions as follows:
 A system of linear inequalities has a solution if and only if
@@ -361,6 +361,8 @@ Because of them, $F_\infty$ is not a field.
 In fact, $F_\infty$ is not even a group. 
 However, $F_\infty$ is still a densely linearly ordered abelian monoid
 with characteristic zero.
+Note that $\bot + \top = \bot$ is a standard convention in Mathlib \cite{Mathlib}
+but $0 \.\cdot \bot = \bot$ is ad hoc.
 
 \begin{theorem}[\customlabel{extendedFarkas}{\texttt{extendedFarkas}}]
 Let $I$ and $J$ be finite types.
@@ -408,7 +410,7 @@ We say that $P = (A, b, c)$ is a \emph{linear program} over $F_\infty$
 whose constraints are indexed by $I$ and variables are indexed by $J$.
 
 A nonnegative vector $x : J \r R$ is a \emph{solution} to $P$ if  $A \* x \le b$.
-We say that $P$ is \emph{feasible} if there exists \emph{solution} $x$ with $c \* x \ne \top$.
+We say that $P$ is \emph{feasible} if there exists solution $x$ with $c \* x \ne \top$.
 We say that $P$ is \emph{unbounded} if, for any $r\in F$, there exists solution $x$
 with $c \* x \le r$.
 
@@ -436,6 +438,7 @@ Linear Program $P = (A, b, c)$ over $F_\infty$ is said to be
 We say that the linear program $(-A^T, c, b)$ is the \emph{dual} of $P$.
 \end{definition}
 It is straightforward to check that the dual of a valid LP is valid.
+Later we show that a valid $P$ cannot have $P^\star$ undefined.
 
 \begin{theorem}[\customlabel{ExtendedLP.strongDuality}{\texttt{ValidELP.strongDuality}}]
 Let $F$ be a linearly ordered field,
@@ -466,6 +469,85 @@ We considered several ``$\max\,$/$\,\min$'' and ``$\max\,$/$\,\max$'' versions,
 but they all required stronger preconditions compared to the ``$\min\,$/$\,\min$'' version
 given in~\ref{ExtendedLP.strongDuality}.
 
+According to (1) a kilogram of boiled white rice contains $27$ g protein and $1300$ kcal.
+According to (2) a kilogram of boiled lentils contains $90$ g protein and $1150$ kcal.
+Let's say that a kilogram of boiled white rice costs $0.92$ euro and that
+a kilogram of boiled lentils costs $1.75$ euro.
+We want to cook a lunch, as cheap as possible, that contains at least
+$30$ g protein and at least $700$ kcal.
+The choice of white rice and lentils isn't random\:---\:one of the authors
+ate this lunch at a mathematical lamp\:---\:at the moment, he didn't like the
+lunch\:---\:it wasn't very tasty\:---\:but later he realized what an awesome nutritional
+value the lunch had for its low price.
+This is a simple instance of the well-known diet problem \cite{Dantzig}.
+$$
+\begin{array}{rcl}
+\min && 0.92 \cdot r + 1.75 \cdot l \\
+(-27) \cdot r + (-90) \cdot l &\le& - 30 \\
+(-1300) \cdot r + (-1150) \cdot l &\le& - 700 \\
+r &\ge& 0  \\
+l &\ge& 0 
+\end{array}
+$$
+Using a numerical LP solver, we obtain the optimal solution
+$r=0.331588$ and $l=0.233857$ which satisfies our dietary requirements for
+$0.714311$ euro.
+The dual of this problem, in the sense of \ref{ExtendedLP.strongDuality}, is the following LP:
+$$
+\begin{array}{rcl}
+\min && (-30) \cdot p + (-700) \cdot k \\
+27 \cdot p + 1300 \cdot k &\le& 0.92 \\
+ 90 \cdot p + 1150 \cdot k &\le& 1.75 \\
+p &\ge& 0  \\
+k &\ge& 0 
+\end{array}
+$$
+Using a numerical LP solver, we obtain the optimal solution
+$p=0.0141594$ and $k=0.000413613$ leading to the
+objective value $-0.714311$ here.
+To summarize, the cheapest lunch that contains at least
+30 g protein and at least 700 kcal consists of $332$ g white rice
+and $224$ g lentils; the shadow cost of a gram of protein is
+$0.014$ euro and the shadow cost of a kcal is $0.00041$ euro
+in our settings.
+
+Now consider settings where lentils are out of stock.
+We still want to obtain at least 30 g protein and at least 700 kcal.
+What is the price of our lunch now?
+On paper, it is most natural to entirely remove lentils out of the picture
+and recompute the LP.
+However, computer proof systems generally don't like it when
+sizes of matrices change, so let's do the modification of input in place.
+One could suggest that, in order to model the newly arised situation,
+the price of lentils will be increased to $999999$ euro,
+so that the optimal solution will assign $0$ to it.
+This is, however, not mathematically elegant, as it requires some
+engineering insight into setting the constant to an appropriately large number.
+We claim that the proper mathematical approach is to increase the
+price of lentils to infinity! Let's see how our original LP will look now:
+$$
+\begin{array}{rcl}
+\min && 0.92 \cdot r + \top \cdot l \\
+(-27) \cdot r + (-90) \cdot l &\le& - 30 \\
+(-1300) \cdot r + (-1150) \cdot l &\le& - 700 \\
+r &\ge& 0  \\
+l &\ge& 0 
+\end{array}
+$$
+The optimal solution is now $r=1.111111$ and $l=0$ and costs $1.022222$ euro.
+The dual of this problem is the following LP:
+$$
+\begin{array}{rcl}
+\min && (-30) \cdot p + (-700) \cdot k \\
+27 \cdot p + 1300 \cdot k &\le& 0.92 \\
+ 90 \cdot p + 1150 \cdot k &\le& \top \\
+p &\ge& 0  \\
+k &\ge& 0 
+\end{array}
+$$
+At this point, the shadow price of a gram of protein is $0.034074$ euro but the shadow price of kcal is $0$ euro.
+The objective value is $-1.022222$ in accordance with our theoretical prediction.
+
 \subsection{Structure of this paper}
 
 In \sekt{preliminaries}, we explain all underlying definitions and
@@ -485,7 +567,7 @@ In \sekt{dualityELP}, we prove \ref{ExtendedLP.strongDuality}
 In \sekt{counterexamples}, we show what happens when various preconditions
 are not satisfied.
 
-Repository \texttt{https://github.com/madvorak/duality/tree/v2}
+Repository \texttt{https://github.com/madvorak/duality/tree/v3.2}
 contains the full version of all definitions, statements,
 and proofs. They are written in a formal language called
 Lean, which provides a guarantee that every step of
@@ -494,10 +576,9 @@ The only axioms used in our proofs are
 \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}, which you can check by the
 \texttt{\#print axioms} command.}
-We use Lean version 4.11.0 together with the Lean
+We use Lean version 4.18.0 together with the Lean
 mathematical library \texttt{Mathlib} \cite{Mathlib}
-revision \texttt{00df099} (dated 2024-09-02).
-% TODO update version info !!!!
+revision \texttt{aa936c3} (dated 2025-04-01).
 This paper attempts to be an accurate description of
 the \texttt{duality} project.
 However, in case of any discrepancy, the code shall prevail.
@@ -521,18 +602,19 @@ how multiplication between them is defined.
 \subsection{Review of algebraic typeclasses that our project depends on}
 \label{preliminaries-typeclasses}
 
-Additive semigroup is a structure on any type with addition where the addition is associative:
+Additive semigroup is a structure on any type with addition (denoted by the infix \texttt{+} operator) where the addition is associative:
 \begin{lstlisting}
 class AddSemigroup (G : Type u) extends Add G where
   add_assoc : ∀ a b c : G, (a + b) + c = a + (b + c)
 \end{lstlisting}
-Similarly, semigroup is a structure on any type with multiplication where the multiplication is associative:
+%Similarly, semigroup is a structure on any type with multiplication (denoted by the infix \texttt{*} operator) where the multiplication is~associative:
+Semigroup is a structure on any type with multiplication (denoted by the infix \texttt{*} operator) where the multiplication is associative:
 \begin{lstlisting}
 class Semigroup (G : Type u) extends Mul G where
   mul_assoc : ∀ a b c : G, (a * b) * c = a * (b * c)
 \end{lstlisting}
 Additive monoid is an additive semigroup with the ``zero'' element that is neutral with respect to addition
-from both left and right, thanks to which we can define a scalar multiplication by the natural numbers:
+from both left and right, equipped with a scalar multiplication by the natural numbers:
 \begin{lstlisting}
 class AddZeroClass (M : Type u) extends Zero M, Add M where
   zero_add : ∀ a : M, 0 + a = a
@@ -543,7 +625,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul_succ : ∀ (n : ℕ) (x : M), nsmul (n + 1) x = nsmul n x + x 
 \end{lstlisting}
 Similarly, monoid is a semigroup with the ``one'' element that is neutral with respect to multiplication
-from both left and right, thanks to which we can define a power to the natural numbers:
+from both left and right, equipped with a power to the natural numbers:
 \begin{lstlisting}
 class MulOneClass (M : Type u) extends One M, Mul M where
   one_mul : ∀ a : M, 1 * a = a
@@ -909,7 +991,7 @@ Infix notation for these two operations is defined as follows
 \hbox{\texttt{x $\circ$ y $\circ$ z}} gets parsed as \texttt{(x $\circ$ y) $\circ$ z}
 whether or not it makes sense, whereas the keyword \texttt{infixr} when defining an operator $\circ$ means that %lb
 \hbox{\texttt{A $\circ$ B $\circ$ v}} gets parsed as \texttt{A $\circ$ (B $\circ$ v)}
-whether or not it makes sense; the numbers 72 and 73 determine precedence):
+whether or not it makes sense; the numbers 72 and 73 determine precedence\:---\:higher number means tighter):
 \begin{lstlisting}
 infixl:72 " ⬝ᵥ " => dotProduct
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
@@ -973,6 +1055,7 @@ It was still a lot of lemmas.
 \label{preliminaries-modules}
 
 Given types $\alpha$ and $\beta$ such that $\alpha$ has a scalar action on $\beta$
+(denoted by the infix • operator)
 and $\alpha$ forms a monoid, Mathlib defines multiplicative action where
 $1$ of type $\alpha$ gives the identity action and multiplication in the monoid
 associates with the scalar action:
@@ -1414,15 +1497,6 @@ Proof idea: Apply \ref{no-bot-of-reaches} to P.
 Apply \ref{no-bot-of-reaches} to the dual of P.
 Finish the proof using \ref{weakDuality-of-no-bot}.
 
-\begin{lemma}[\customlabel{no-bot-of-feasible}{\texttt{no\_bot\_of\_feasible}}]
-Let $F$ be a linearly ordered field.
-Let $P$ be a valid linear program over $F_\infty$.
-If $P$ is feasible, then $b$ does not contain $\bot$.
-\end{lemma}
-
-\noindent
-Proof idea: This is just a weaker version of \ref{no-bot-of-reaches}.
-
 \begin{lemma}[\customlabel{unbounded-of-reaches-le}{\texttt{unbounded\_of\_reaches\_le}}]
 Let $F$ be a linearly ordered field.
 Let $P$ be a valid linear program over $F_\infty$.
@@ -1536,8 +1610,6 @@ that the dual of $P$ is feasible.
 If $b \* y < 0$, we apply \ref{unbounded-of-feasible-of-neg} to
 the dual of $P$, which (using \ref{infeasible-of-unbounded} and
 \ref{dualize-dualize}) contradicts that $P$ is feasible.
-
-Lemma \ref{no-bot-of-feasible} is used 12 times throughout this proof.
 
 \begin{lemma}[\customlabel{strongDuality-of-both-feasible}{\texttt{strongDuality\_of\_both\_feasible}}]
 Let $P$ be a valid linear program such that
