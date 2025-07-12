@@ -6,6 +6,7 @@ import Duality.FarkasSpecial
     a system of linear inequalities with nonnegative variables).
     Variables are of type `J`. Conditions are indexed by type `I`.
     The objective function is intended to be minimized. -/
+@[ext]
 structure ExtendedLP (I J F : Type*) [LinearOrderedField F] where
   /-- The left-hand-side matrix. -/
   A : Matrix I J F∞
@@ -131,8 +132,7 @@ lemma sumElim_dotWeig_sumElim [Fintype I] [Fintype J] (u : I → F∞) (v : J �
 
 lemma Matrix.fromRows_mulWeig [Fintype J] {I₁ I₂ : Type*} (M₁ : Matrix I₁ J F∞) (M₂ : Matrix I₂ J F∞) (w : J → F≥0) :
     Matrix.fromRows M₁ M₂ ₘ* w = Sum.elim (M₁ ₘ* w) (M₂ ₘ* w) := by
-  ext i
-  cases i <;> rfl
+  ext (_|_) <;> rfl
 
 lemma Matrix.fromCols_mulWeig_sumElim {J₁ J₂ : Type*} [Fintype J₁] [Fintype J₂]
     (M₁ : Matrix I J₁ F∞) (M₂ : Matrix I J₂ F∞) (w₁ : J₁ → F≥0) (w₂ : J₂ → F≥0) :
@@ -258,13 +258,12 @@ section nneg_vs_zero
 
 lemma eq_zero_of_zero_eq_val {k : F≥0} (hk : 0 = k.val) :
     k = 0 :=
-  Eq.symm (Subtype.eq hk)
+  Subtype.eq hk.symm
 
 lemma pos_of_NN_not_zero {k : F≥0} (hk : ¬(k = 0)) :
     0 < k := by
   apply lt_of_le_of_ne k.property
-  intro contr
-  exact hk (eq_zero_of_zero_eq_val contr)
+  exact hk ∘ eq_zero_of_zero_eq_val
 
 end nneg_vs_zero
 
@@ -437,8 +436,7 @@ lemma EF.mul_smul (k l : F≥0) (r : F∞) :
     else
       have l_pos : 0 < l
       · apply lt_of_le_of_ne l.property
-        intro contr
-        exact l_eq_0 (eq_zero_of_zero_eq_val contr)
+        exact l_eq_0 ∘ eq_zero_of_zero_eq_val
       rw [EF.pos_smul_top l_pos]
       if k_eq_0 : k = 0 then
         rw [k_eq_0, EF.zero_smul_nonbot top_ne_bot, zero_mul, EF.zero_smul_nonbot top_ne_bot]
@@ -682,8 +680,7 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
         · apply Finset.sum_eq_zero
           intro i _
           apply EF.zero_smul_nonbot
-          intro contr
-          exact P.no_bot_of_feasible hP i.val contr
+          exact P.no_bot_of_feasible hP i.val
         · change hby to b' ᵥ⬝ y = toE q
           erw [←Finset.sum_coe_sort_eq_attach]
           rw [←hby]
