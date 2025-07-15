@@ -34,7 +34,7 @@ instance : DecidableRel ((· < ·) : Extend F → Extend F → Prop) := WithBot.
 
 
 /-- The canonical inclusion from `F` to `Extend F` is registered as a coercion. -/
-@[coe] def toE : F → (Extend F) := some ∘ some
+@[coe] def toE : F → Extend F := some ∘ some
 
 instance : Coe F (Extend F) := ⟨toE⟩
 
