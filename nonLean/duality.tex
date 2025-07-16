@@ -673,7 +673,7 @@ Similarly, commutative magma is a structure on any type that has commutative mul
 \begin{lstlisting}
 class CommMagma (G : Type u) extends Mul G where
   mul_comm : ∀ a b : G, a * b = b * a
-\end{lstlisting} \pagebreak[2]
+\end{lstlisting}
 Abelian semigroup is an abelian magma and an additive semigroup at the same time:
 \begin{lstlisting}
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G
@@ -681,7 +681,7 @@ class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G
 Similarly, commutative semigroup is a commutative magma and a semigroup at the same time:
 \begin{lstlisting}
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G
-\end{lstlisting}
+\end{lstlisting} \pagebreak[2]
 Abelian monoid is an additive monoid and an abelian semigroup at the same time:
 \begin{lstlisting}
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
@@ -846,13 +846,13 @@ that $F_\infty$ forms a linearly ordered abelian monoid:
 \begin{lstlisting}
 instance : LinearOrderedAddCommMonoid (Extend F) :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop F)))
-\end{lstlisting} \pagebreak[2]
+\end{lstlisting}
 The following definition embeds $F$ in $F_\infty$ and registers
 this canonical embedding as a type coercion:
 \begin{lstlisting}
 @[coe] def toE : F → (Extend F) := some ∘ some
 instance : Coe F (Extend F) := ⟨toE⟩
-\end{lstlisting}
+\end{lstlisting} \pagebreak[2]
 Unary minus on $F_\infty$ is defined as follows:
 \begin{lstlisting}
 def neg : Extend F → Extend F
@@ -1362,7 +1362,7 @@ $A_{<m}~y \ge 0$ implies $b~y \ge 0$, then plug $A_{<m}$
 for $\bar{A}$, obtain $\bar{x}$, and construct a vector family $x$ such that
 $x_m = 0$ and otherwise $x$ copies $\bar{x}$. We easily check that
 $x$ is nonnegative and that
-$ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $ holds.
+$ \sum_{i : \fin{m+1}}\; (A~w)_i \cdot x_i = b~w $ holds. \pagebreak[2]
 
 In the second case, we have $y'$ such that $A_{<m}~y' \ge 0$
 holds but $b~y' < 0$ also holds. We realize that $(A~y')_m < 0$.
