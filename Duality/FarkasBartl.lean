@@ -93,8 +93,8 @@ private lemma finishing_piece {m : ℕ} [Semiring R]
     ∑ i : { j : Fin m.succ // j ∈ Finset.univ.filter (·.val < m) }, A w i.val • x ⟨i.val.val, by aesop⟩ := by
   apply
     Finset.sum_bij'
-      (fun i : Fin m => fun _ => (⟨⟨i.val, by omega⟩, by aesop⟩ : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) }))
-      (fun i' : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) } => fun _ => ⟨i'.val.val, by aesop⟩)
+      (fun i : Fin m => ↓(⟨⟨i.val, by omega⟩, by aesop⟩ : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) }))
+      (fun i' : { a : Fin m.succ // a ∈ Finset.univ.filter (·.val < m) } => ↓⟨i'.val.val, by aesop⟩)
       (by aesop)
       (by aesop)
       (by aesop)

@@ -545,7 +545,7 @@ theorem extendedFarkas [DecidableEq I]
             · simp only [Matrix.mulVec, dotProduct, Matrix.neg_apply, Matrix.transpose_apply, EF.coe_neg]
               rw [Finset.sum_toE]
               apply Finset.subtype_univ_sum_eq_subtype_univ_sum
-              · ext i
+              · ext
                 simp
               · intro i hi hif
                 rw [mul_comm]

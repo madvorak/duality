@@ -4,6 +4,7 @@ https://github.com/leanprover-community/mathlib4/blob/333e2d79fdaee86489af73dee9
 -/
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Field.Basic
+import Duality.Common
 
 
 /-- `Extend F` is the type of values in `F ∪ {⊥, ⊤}` where, informally speaking,
@@ -34,7 +35,7 @@ instance : DecidableRel ((· < ·) : Extend F → Extend F → Prop) := WithBot.
 
 
 /-- The canonical inclusion from `F` to `Extend F` is registered as a coercion. -/
-@[coe] def toE : F → (Extend F) := some ∘ some
+@[coe] def toE : F → Extend F := some ∘ some
 
 instance : Coe F (Extend F) := ⟨toE⟩
 
@@ -87,7 +88,7 @@ lemma bot_neq_coe (x : F) : (⊥ : Extend F) ≠ x :=
 
 @[simp]
 lemma coe_lt_top (x : F) : (x : Extend F) < ⊤ :=
-  WithBot.coe_lt_coe.2 <| WithTop.coe_lt_top _
+  WithBot.coe_lt_coe.← <| WithTop.coe_lt_top _
 
 @[simp]
 lemma coe_neq_top (x : F) : (x : Extend F) ≠ ⊤ :=

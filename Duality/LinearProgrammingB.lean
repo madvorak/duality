@@ -101,12 +101,12 @@ private def StandardLP.toValidELP (P : StandardLP I J R) : ValidELP I J R :=
   ⟨⟨P.A.map toE, toE ∘ P.b, toE ∘ P.c⟩, by aesop, by aesop, by aesop, by aesop, by aesop, by aesop⟩
 
 private lemma StandardLP.toE_dotProduct_apply (P : StandardLP I J R) (x : J → R≥0) :
-    toE (P.c ⬝ᵥ ↑x) = (toE ∘ P.c ᵥ⬝ x) := by
+    toE (P.c ⬝ᵥ x) = (toE ∘ P.c ᵥ⬝ x) := by
   simp_rw [dotProduct, dotWeig, mul_comm]
   apply Finset.sum_toE
 
 private lemma StandardLP.toE_mulVec_apply (P : StandardLP I J R) (x : J → R≥0) (i : I) :
-    toE ((P.A *ᵥ ↑x) i) = (P.A.map toE ₘ* x) i := by
+    toE ((P.A *ᵥ x) i) = (P.A.map toE ₘ* x) i := by
   simp_rw [Matrix.mulVec, Matrix.mulWeig, Matrix.map, dotProduct, dotWeig, Matrix.of_apply, mul_comm]
   apply Finset.sum_toE
 

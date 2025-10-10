@@ -562,13 +562,13 @@ lemma ValidELP.no_bot_of_feasible [Fintype J] (P : ValidELP I J F) (hP : P.IsFea
 
 variable [Fintype J]
 
-lemma ValidELP.IsUnbounded.iff (P : ValidELP I J F) :
+lemma ValidELP.isUnbounded_iff (P : ValidELP I J F) :
     P.IsUnbounded ↔ ∀ r : F, ∃ p : F∞, P.Reaches p ∧ p < r := by
   simp [ExtendedLP.IsUnbounded, ExtendedLP.IsBoundedBy]
 
 lemma ValidELP.unbounded_of_reaches_le (P : ValidELP I J F) (hP : ∀ r : F, ∃ p : F∞, P.Reaches p ∧ p ≤ r) :
     P.IsUnbounded := by
-  rw [ValidELP.IsUnbounded.iff]
+  rw [ValidELP.isUnbounded_iff]
   intro r
   obtain ⟨p, hPp, hpr⟩ := hP (r-1)
   exact ⟨p, hPp, hpr.trans_lt (EF.coe_lt_coe_iff.← (sub_one_lt r))⟩
@@ -715,7 +715,7 @@ variable [DecidableEq I]
 lemma ValidELP.infeasible_of_unbounded (P : ValidELP I J F) (hP : P.IsUnbounded) :
     ¬P.dualize.IsFeasible := by
   intro ⟨q, hPq, hq⟩
-  rw [ValidELP.IsUnbounded.iff] at hP
+  rw [ValidELP.isUnbounded_iff] at hP
   match q with
   | ⊥ =>
     obtain ⟨p, hp, -⟩ := hP 0
