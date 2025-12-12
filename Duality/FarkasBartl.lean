@@ -103,8 +103,7 @@ private lemma finishing_piece {m : ℕ} [Semiring R] [Semiring S]
   intros
   rfl
 
-set_option maxHeartbeats 666666
-lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
+lemma industepFarkasBartl {m : ℕ} [Ring R] [LinearOrderedDivisionRing S]
     [LinearOrderedAddCommGroup V] [Module S V] [PosSMulMono S V] [AddCommGroup W] [Module R W]
     {σ : RingHom R S} {σ' : RingHom S R} [RingHomInvPair σ σ']
     (ih : ∀ A₀ : W →ₛₗ[σ] Fin m → S, ∀ b₀ : W →ₛₗ[σ] V,
@@ -196,9 +195,9 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R] [LinearOrdered
       rw [smul_sub, finishing_piece]
       apply add_comm_sub
 
-theorem finFarkasBartlSemi {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
+theorem finFarkasBartlSemi {n : ℕ} [Ring R] [LinearOrderedDivisionRing S]
     [LinearOrderedAddCommGroup V] [Module S V] [PosSMulMono S V] [AddCommGroup W] [Module R W]
-    {σ : RingHom R S} {σ' : RingHom S R} [RingHomInvPair σ σ']
+    {σ : RingHom R S} (hσ : ∃ σ' : RingHom S R, Nonempty (RingHomInvPair σ σ'))
     (A : W →ₛₗ[σ] Fin n → S) (b : W →ₛₗ[σ] V) :
     (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   apply neq_of_iff_neg
@@ -217,6 +216,9 @@ theorem finFarkasBartlSemi {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrdere
     apply eq_of_le_of_le (hAb w (A_tauto w))
     simpa using hAb (-w) (A_tauto (-w))
   | succ m ih =>
+    obtain ⟨σ', hσσ'⟩ := hσ
+    have : RingHomInvPair σ σ'
+    · simpa using hσσ'
     exact industepFarkasBartl ih
 
 theorem finFarkasBartlSemi' {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
@@ -224,9 +226,7 @@ theorem finFarkasBartlSemi' {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrder
     {e : RingEquiv R S}
     (A : W →ₛₗ[e.toRingHom] Fin n → S) (b : W →ₛₗ[e.toRingHom] V) :
     (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
-  have σₕ : RingHomInvPair e.toRingHom e.symm.toRingHom :=
-    ⟨e.symm_toRingHom_comp_toRingHom, e.toRingHom_comp_symm_toRingHom⟩
-  apply finFarkasBartlSemi
+  apply finFarkasBartlSemi ⟨_, ⟨e.symm_toRingHom_comp_toRingHom, e.toRingHom_comp_symm_toRingHom⟩⟩
 
 theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
     [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
