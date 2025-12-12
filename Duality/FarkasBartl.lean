@@ -13,9 +13,9 @@ class LinearOrderedDivisionRing (R : Type*) extends LinearOrderedRing R, Divisio
 lemma inv_neg_of_neg {R : Type*} [LinearOrderedDivisionRing R] {a : R} (ha : a < 0) : a⁻¹ < 0 :=
   lt_of_mul_lt_mul_left (by simp [ha.ne]) (neg_nonneg_of_nonpos ha.le)
 
-private def withoutLastMap {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W] [Module R W]
-    (A : W →ₗ[R] Fin m.succ → R) :
-    W →ₗ[R] Fin m → R :=
+private def withoutLastMap {m : ℕ} {R S W : Type*} [Semiring R] [Semiring S] [AddCommMonoid W] [Module R W] {σ : RingHom R S}
+    (A : W →ₛₗ[σ] Fin m.succ → S) :
+    W →ₛₗ[σ] Fin m → S :=
   ⟨⟨
     fun w : W => fun i : Fin m => A w i.castSucc,
   by
@@ -31,9 +31,9 @@ private def withoutLastMap {m : ℕ} {R W : Type*} [Semiring R] [AddCommMonoid W
 
 prefix:max "▀" => withoutLastMap
 
-private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Module R W]
-    (A : W →ₗ[R] Fin m.succ → R) (y : W) :
-    W →ₗ[R] Fin m → R :=
+private def auxLinMaps {m : ℕ} {R S W : Type*} [Ring R] [Ring S] [AddCommMonoid W] [Module R W] {σ : RingHom R S}
+    (A : W →ₛₗ[σ] Fin m.succ → S) (y : W) :
+    W →ₛₗ[σ] Fin m → S :=
   ⟨⟨
     ▀A - (A · ⟨m, m.lt_add_one⟩ • ▀A y),
   by
@@ -48,8 +48,8 @@ private def auxLinMaps {m : ℕ} {R W : Type*} [Ring R] [AddCommMonoid W] [Modul
     simp [withoutLastMap, mul_sub, mul_assoc]
   ⟩
 
-private def auxLinMap {m : ℕ} {R V W : Type*} [Semiring R] [AddCommGroup V] [Module R V] [AddCommMonoid W] [Module R W]
-    (A : W →ₗ[R] Fin m.succ → R) (b : W →ₗ[R] V) (y : W) : W →ₗ[R] V :=
+private def auxLinMap {m : ℕ} {R S V W : Type*} [Semiring R] [Semiring S] [AddCommGroup V] [AddCommGroup S] [Module S V] [AddCommMonoid W] [Module R W] {σ : RingHom R S}
+    (A : W →ₛₗ[σ] Fin m.succ → S) (b : W →ₛₗ[σ] V) (y : W) : W →ₛₗ[σ] V :=
   ⟨⟨
     b - (A · ⟨m, m.lt_add_one⟩ • b y),
   by
@@ -58,13 +58,14 @@ private def auxLinMap {m : ℕ} {R V W : Type*} [Semiring R] [AddCommGroup V] [M
     abel
   ⟩,
   by
-    intros
+    intro r w
     -- note that `simp` does not work here
-    simp only [Pi.smul_apply, Pi.sub_apply, LinearMapClass.map_smul, RingHom.id_apply, smul_sub, IsScalarTower.smul_assoc]
+    simp_rw [Nat.succ_eq_add_one]
+    rw [Pi.sub_apply, Pi.sub_apply, LinearMap.map_smulₛₗ, LinearMap.map_smulₛₗ, Pi.smul_apply, ←neg_add_eq_sub, ←neg_add_eq_sub, smul_add, smul_neg, smul_assoc]
   ⟩
 
-private lemma filter_yielding_singleton_attach_sum {m : ℕ} {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
-    (f : Fin m.succ → R) (v : V) :
+private lemma filter_yielding_singleton_attach_sum {m : ℕ} {S V : Type*} [Semiring S] [AddCommMonoid V] [Module S V]
+    (f : Fin m.succ → S) (v : V) :
     ∑ j ∈ (Finset.univ.filter (fun i : Fin m.succ => ¬(i.val < m))).attach, f j.val • v =
     f ⟨m, m.lt_add_one⟩ • v := by
   have singlet : Finset.univ.filter (fun i : Fin m.succ => ¬(i.val < m)) = {⟨m, m.lt_add_one⟩}
@@ -84,11 +85,11 @@ private lemma impossible_index {m : ℕ} {i : Fin m.succ} (hi : ¬(i.val < m)) (
   push_neg at hi
   exact i_neq_m (eq_of_le_of_le (Fin.succ_le_succ_iff.→ i.isLt) hi)
 
-variable {R V W : Type*}
+variable {R S V W : Type*}
 
-private lemma finishing_piece {m : ℕ} [Semiring R]
-    [AddCommMonoid V] [Module R V] [AddCommMonoid W] [Module R W]
-    {A : W →ₗ[R] Fin m.succ → R} {w : W} {x : Fin m → V} :
+private lemma finishing_piece {m : ℕ} [Semiring R] [Semiring S]
+    [AddCommMonoid V] [Module S V] [AddCommMonoid W] [Module R W] {σ : RingHom R S}
+    {A : W →ₛₗ[σ] Fin m.succ → S} {w : W} {x : Fin m → V} :
     ∑ i : Fin m, ▀A w i • x i =
     ∑ i : { j : Fin m.succ // j ∈ Finset.univ.filter (·.val < m) }, A w i.val • x ⟨i.val.val, by aesop⟩ := by
   apply
@@ -102,12 +103,14 @@ private lemma finishing_piece {m : ℕ} [Semiring R]
   intros
   rfl
 
-lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
-    (ih : ∀ A₀ : W →ₗ[R] Fin m → R, ∀ b₀ : W →ₗ[R] V,
+set_option maxHeartbeats 666666
+lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
+    [LinearOrderedAddCommGroup V] [Module S V] [PosSMulMono S V] [AddCommGroup W] [Module R W]
+    {σ : RingHom R S} {σ' : RingHom S R} [RingHomInvPair σ σ']
+    (ih : ∀ A₀ : W →ₛₗ[σ] Fin m → S, ∀ b₀ : W →ₛₗ[σ] V,
       (∀ y₀ : W, 0 ≤ A₀ y₀ → 0 ≤ b₀ y₀) →
         (∃ x₀ : Fin m → V, 0 ≤ x₀ ∧ ∀ w₀ : W, ∑ i₀ : Fin m, A₀ w₀ i₀ • x₀ i₀ = b₀ w₀))
-    {A : W →ₗ[R] Fin m.succ → R} {b : W →ₗ[R] V} (hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y) :
+    {A : W →ₛₗ[σ] Fin m.succ → S} {b : W →ₛₗ[σ] V} (hAb : ∀ y : W, 0 ≤ A y → 0 ≤ b y) :
     ∃ x : Fin m.succ → V, 0 ≤ x ∧ ∀ w : W, ∑ i : Fin m.succ, A w i • x i = b w := by
   if
     is_easy : ∀ y : W, 0 ≤ ▀A y → 0 ≤ b y
@@ -131,7 +134,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     push_neg at is_easy
     obtain ⟨y', hay', hby'⟩ := is_easy
     let M : Fin m.succ := ⟨m, lt_add_one m⟩ -- the last (new) index
-    let y : W := (A y' M)⁻¹ • y' -- rescaled `y'`
+    let y : W := σ' (A y' M)⁻¹ • y' -- rescaled `y'`
     have hAy' : A y' M < 0
     · by_contra! contr
       exact (
@@ -147,10 +150,10 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
     have hAy : A y M = 1
     · convert inv_mul_cancel₀ hAy'.ne
       simp [y]
-    have hAA : ∀ w : W, A (w - (A w M • y)) M = 0
+    have hAA : ∀ w : W, A (w - (σ' (A w M) • y)) M = 0
     · intro w
       simp [hAy]
-    have hbA : ∀ w : W, 0 ≤ ▀A (w - (A w M • y)) → 0 ≤ b (w - (A w M • y))
+    have hbA : ∀ w : W, 0 ≤ ▀A (w - (σ' (A w M) • y)) → 0 ≤ b (w - (σ' (A w M) • y))
     · intro w hw
       apply hAb
       intro i
@@ -172,7 +175,8 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
         aesop
       else
         have hAy'' : (A y' M)⁻¹ ≤ 0
-        · exact (inv_neg_of_neg hAy').le
+        · rw [←inv_lt_zero] at hAy'
+          exact hAy'.le
         have hay : ▀A y ≤ 0
         · simpa [y] using smul_nonpos_of_nonpos_of_nonneg hAy'' hay'
         have hby : 0 ≤ b y
@@ -192,9 +196,10 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
       rw [smul_sub, finishing_piece]
       apply add_comm_sub
 
-theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
-    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
-    (A : W →ₗ[R] Fin n → R) (b : W →ₗ[R] V) :
+theorem finFarkasBartlSemi {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
+    [LinearOrderedAddCommGroup V] [Module S V] [PosSMulMono S V] [AddCommGroup W] [Module R W]
+    {σ : RingHom R S} {σ' : RingHom S R} [RingHomInvPair σ σ']
+    (A : W →ₛₗ[σ] Fin n → S) (b : W →ₛₗ[σ] V) :
     (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   apply neq_of_iff_neg
   push_neg
@@ -213,6 +218,21 @@ theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
     simpa using hAb (-w) (A_tauto (-w))
   | succ m ih =>
     exact industepFarkasBartl ih
+
+theorem finFarkasBartlSemi' {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
+    [LinearOrderedAddCommGroup V] [Module S V] [PosSMulMono S V] [AddCommGroup W] [Module R W]
+    {e : RingEquiv R S}
+    (A : W →ₛₗ[e.toRingHom] Fin n → S) (b : W →ₛₗ[e.toRingHom] V) :
+    (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
+  have σₕ : RingHomInvPair e.toRingHom e.symm.toRingHom :=
+    ⟨e.symm_toRingHom_comp_toRingHom, e.toRingHom_comp_symm_toRingHom⟩
+  apply finFarkasBartlSemi
+
+theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
+    [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
+    (A : W →ₗ[R] Fin n → R) (b : W →ₗ[R] V) :
+    (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
+  apply finFarkasBartlSemi' (e := RingEquiv.refl R)
 
 theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
