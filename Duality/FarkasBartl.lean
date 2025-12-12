@@ -221,12 +221,13 @@ theorem finFarkasBartlSemi {n : ℕ} [Ring R] [LinearOrderedDivisionRing S]
     · simpa using hσσ'
     exact industepFarkasBartl ih
 
-theorem finFarkasBartlSemi' {n : ℕ} [LinearOrderedDivisionRing R] [LinearOrderedDivisionRing S]
+theorem finFarkasBartlSemi' {n : ℕ} [Ring R] [LinearOrderedDivisionRing S] {e : RingEquiv R S}
     [LinearOrderedAddCommGroup V] [Module S V] [PosSMulMono S V] [AddCommGroup W] [Module R W]
-    {e : RingEquiv R S}
     (A : W →ₛₗ[e.toRingHom] Fin n → S) (b : W →ₛₗ[e.toRingHom] V) :
     (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   apply finFarkasBartlSemi ⟨_, ⟨e.symm_toRingHom_comp_toRingHom, e.toRingHom_comp_symm_toRingHom⟩⟩
+
+omit S
 
 theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
     [LinearOrderedAddCommGroup V] [Module R V] [PosSMulMono R V] [AddCommGroup W] [Module R W]
