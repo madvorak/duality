@@ -198,7 +198,7 @@ theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
     (∃ x : Fin n → V, 0 ≤ x ∧ ∀ w : W, ∑ j : Fin n, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   apply neq_of_iff_neg
   push_neg
-  refine ⟨fun ⟨x, hx, hb⟩ y hy => hb y ▸ Finset.sum_nonneg (fun i _ => smul_nonneg (hy i) (hx i)), ?_⟩
+  refine ⟨fun ⟨x, hx, hb⟩ y hy => hb y ▸ Finset.sum_nonneg (fun i : Fin n => ↓(smul_nonneg (hy i) (hx i))), ?_⟩
   induction n generalizing b with -- note that `A` is "generalized" automatically
   | zero =>
     have A_tauto : ∀ w : W, 0 ≤ A w := ↓(Nat.not_lt_zero _ ·.isLt |>.elim)

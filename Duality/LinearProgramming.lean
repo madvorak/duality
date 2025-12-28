@@ -160,7 +160,7 @@ lemma ValidELP.weakDuality_of_no_bot [Fintype I] [Fintype J] [DecidableEq I] [De
     not_and_of_neq
       (extendedFarkas
         (Matrix.fromRows P.A (Matrix.replicateRow Unit P.c))
-        (Sum.elim P.b (fun _ => P.c ᵥ⬝ x))
+        (Sum.elim P.b ↓(P.c ᵥ⬝ x))
         (by
           intro ⟨i, ⟨s, his⟩, ⟨t, hit⟩⟩
           cases i with
