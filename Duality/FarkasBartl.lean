@@ -201,11 +201,7 @@ theorem finFarkasBartl {n : ℕ} [LinearOrderedDivisionRing R]
   refine ⟨fun ⟨x, hx, hb⟩ y hy => hb y ▸ Finset.sum_nonneg (fun i _ => smul_nonneg (hy i) (hx i)), ?_⟩
   induction n generalizing b with -- note that `A` is "generalized" automatically
   | zero =>
-    have A_tauto (w : W) : 0 ≤ A w
-    · intro j
-      exfalso
-      apply Nat.not_lt_zero
-      exact j.isLt
+    have A_tauto : ∀ w : W, 0 ≤ A w := ↓(Nat.not_lt_zero _ ·.isLt |>.elim)
     intro hAb
     refine ⟨0, le_refl 0, fun w : W => ?_⟩
     simp_rw [Pi.zero_apply, smul_zero, Finset.sum_const_zero]
