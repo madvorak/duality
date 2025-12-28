@@ -219,7 +219,7 @@ theorem fintypeFarkasBartl {J : Type*} [Fintype J] [LinearOrderedDivisionRing R]
     (A : W →ₗ[R] J → R) (b : W →ₗ[R] V) :
     (∃ x : J → V, 0 ≤ x ∧ ∀ w : W, ∑ j : J, A w j • x j = b w) ≠ (∃ y : W, 0 ≤ A y ∧ b y < 0) := by
   convert
-    finFarkasBartl ⟨⟨fun w : W => fun j' => A w ((Fintype.equivFin J).symm j'), by aesop⟩, by aesop⟩ b
+    finFarkasBartl ⟨⟨(A · ∘ (Fintype.equivFin J).symm), by aesop⟩, by aesop⟩ b
       using 1
   · constructor <;> intro ⟨x, hx, hA⟩
     · use x ∘ (Fintype.equivFin J).invFun
