@@ -177,7 +177,7 @@ lemma industepFarkasBartl {m : ℕ} [LinearOrderedDivisionRing R]
         · simpa [y] using smul_nonpos_of_nonpos_of_nonneg hAy'' hay'
         have hby : 0 ≤ b y
         · simpa [y] using smul_nonneg_of_nonpos_of_nonpos hAy'' hby'.le
-        simpa [hi] using (Finset.sum_nonpos (fun i _ => smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i))).trans hby
+        simpa [hi] using (Finset.sum_nonpos (fun i : Fin m => ↓(smul_nonpos_of_nonpos_of_nonneg (hay i) (hx' i)))).trans hby
     · intro w
       have haAa : ∑ i : Fin m, (▀A w i - A w M * ▀A y i) • x' i = b w - A w M • b y
       · simpa using hxb' w

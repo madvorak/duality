@@ -442,8 +442,9 @@ theorem extendedFarkas [DecidableEq I]
         constructor
         · intro i'
           exact (y i'.val).property
-        have h0 (i : I) (i_not_I' : ¬ (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥)) : y i = 0
-        · by_contra contr
+        have h0 : ∀ i : I, ¬ (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥) → y i = 0
+        · intro i i_not_I'
+          by_contra contr
           have hyi : 0 < y i
           · cases lt_or_eq_of_le (y i).property with
             | inl hpos =>
@@ -470,8 +471,8 @@ theorem extendedFarkas [DecidableEq I]
             rw [htop, top_le_iff] at ineqality
             exact EF.zero_neq_top ineqality
         constructor
-        · have hnb (i : I) (i_not_I' : ¬ (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥)) (j : J) : (-Aᵀ) j i ≠ ⊥
-          · intro contr
+        · have hnb : ∀ i : I, ¬ (b i ≠ ⊤ ∧ ∀ j : J, A i j ≠ ⊥) → ∀ j : J, (-Aᵀ) j i ≠ ⊥
+          · intro i i_not_I' j contr
             have btop : ∃ j : J, A i j = ⊤
             · use j
               simpa using contr
