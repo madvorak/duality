@@ -14,11 +14,9 @@ def Extend (F : Type*) := WithBot (WithTop F)
 
 variable {F : Type*} [LinearOrderedField F]
 
--- Henrik Böving helped me with this instance:
 instance : LinearOrderedAddCommMonoid (Extend F) :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop F)))
 
--- Henrik Böving helped me with this instance:
 instance : AddCommMonoidWithOne (Extend F) :=
   inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop F)))
 

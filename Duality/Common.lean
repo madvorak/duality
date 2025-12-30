@@ -17,7 +17,6 @@ lemma Finset.subtype_univ_sum_eq_subtype_univ_sum {p q : α → Prop} (hpq : p =
   symm
   apply hfg
 
--- Andrew Yang proved this lemma:
 lemma Finset.univ_sum_of_zero_when_not [Fintype α] [AddCommMonoid β]
     {f : α → β} (p : α → Prop) [DecidablePred p] (hpf : ∀ a : α, ¬(p a) → f a = 0) :
     Finset.univ.sum f = Finset.univ.sum (fun a : { a : α // p a } => f a.val) := by

@@ -2,7 +2,6 @@ import Duality.ExtendedFields
 import Duality.FarkasBasic
 
 
--- Henrik Böving wrote this entire section:
 section notation_EF
 
 syntax:max ident noWs "∞" : term
@@ -80,13 +79,11 @@ lemma EF.zero_smul_nonbot {r : F∞} (hr : r ≠ ⊥) : (0 : F≥0) • r = 0 :=
 lemma EF.zero_smul_coe (f : F) : (0 : F≥0) • toE f = 0 :=
   EF.zero_smul_nonbot (EF.coe_neq_bot f)
 
-
--- Richard Copley pointed out that we need this homomorphism:
-def RatAddHom : F →+ F∞ := ⟨⟨toE, EF.coe_zero⟩, EF.coe_add⟩
+def EF.AddHom : F →+ F∞ := ⟨⟨toE, EF.coe_zero⟩, EF.coe_add⟩
 
 lemma Finset.sum_toE {ι : Type*} [Fintype ι] (s : Finset ι) (f : ι → F) :
     toE (s.sum f) = s.sum (fun i : ι => toE (f i)) :=
-  map_sum RatAddHom f s
+  map_sum EF.AddHom f s
 
 lemma Multiset.sum_eq_EF_bot_iff (s : Multiset F∞) : s.sum = (⊥ : F∞) ↔ ⊥ ∈ s := by
   constructor <;> intro hs
