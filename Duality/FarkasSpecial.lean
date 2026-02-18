@@ -206,14 +206,14 @@ lemma no_bot_dotWeig_zero {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) :
   Finset.sum_eq_zero (fun (i : I) _ =>
     match hvi : v i with
     | ⊤ => show EF.smulNN 0 ⊤ = 0 by simp [EF.smulNN]
-    | ⊥ => False.elim (hv i hvi)
+    | ⊥ => (hv i hvi).elim
     | (f : F) => EF.zero_smul_coe f)
 
 lemma has_bot_dotWeig_nneg {v : I → F∞} {i : I} (hvi : v i = ⊥) (w : I → F≥0) :
     v ᵥ⬝ w = (⊥ : F∞) := by
   simp only [dotWeig, Finset.sum, Multiset.sum_eq_EF_bot_iff, Multiset.mem_map, Finset.mem_val, Finset.mem_univ, true_and]
   use i
-  rw [hvi]
+  rewrite [hvi]
   rfl
 
 lemma no_bot_dotWeig_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w : I → F≥0) :
@@ -321,66 +321,45 @@ theorem extendedFarkas [DecidableEq I]
       Matrix.of (fun i' : I' => fun j' : J' =>
         match matcha : A i'.val j'.val with
         | (f : F) => f
-        | ⊥ => False.elim (i'.property.right j' matcha)
-        | ⊤ => False.elim (j'.property i' matcha)
+        | ⊥ => (i'.property.right j' matcha).elim
+        | ⊤ => (j'.property i' matcha).elim
       )
     let b' : I' → F := -- the new RHS
       fun i' : I' =>
         match hbi : b i'.val with
         | (f : F) => f
-        | ⊥ => False.elim (hbot ⟨i', hbi⟩)
-        | ⊤ => False.elim (i'.property.left hbi)
+        | ⊥ => (hbot ⟨i', hbi⟩).elim
+        | ⊤ => (i'.property.left hbi).elim
     convert inequalityFarkas_neg A' b'
     · constructor
       · intro ⟨x, ineqalities⟩
-        use (fun j' : J' => x j'.val)
-        constructor
-        · intro j'
-          exact (x j'.val).property
-        intro i'
+        refine ⟨(x ·.val), (x ·.val |>.property), fun i' : I' => ?_⟩
         rw [←EF.coe_le_coe_iff]
         convert ineqalities i'.val; swap
         · simp only [b']
-          split <;> rename_i hbi <;> simp only [hbi]
-          · rfl
-          · exfalso
-            apply hbot
-            use i'
-            exact hbi
-          · exfalso
-            apply i'.property.left
-            exact hbi
+          split <;> rename_i hbi
+          · exact hbi.symm
+          · exact (hbot ⟨i', hbi⟩).elim
+          · exact (i'.property.left hbi).elim
         simp only [Matrix.mulVec, dotProduct, Matrix.mulWeig, dotWeig]
         rw [Finset.sum_toE, Finset.univ_sum_of_zero_when_not (fun j : J => ∀ i' : I', A i'.val j ≠ ⊤)]
         · congr
           ext j'
           rw [mul_comm]
           simp only [A', Matrix.of_apply]
-          split <;> rename_i hAij <;> simp only [hAij]
-          · rfl
-          · exfalso
-            apply i'.property.right
-            exact hAij
-          · exfalso
-            apply j'.property
-            exact hAij
+          split <;> rename_i hAij
+          · exact congr_arg (x j'.val • ·) hAij.symm
+          · exact (i'.property.right _ hAij).elim
+          · exact (j'.property _ hAij).elim
         · intro j where_top
           push_neg at where_top
           obtain ⟨t, ht⟩ := where_top
           have hxj : x j = 0
-          · obtain ⟨e, he⟩ : ∃ e : F, b t = e
-            · match hbt : b t.val with
-              | (f : F) =>
-                exact ⟨_, rfl⟩
-              | ⊥ =>
-                exfalso
-                apply hbot
-                use t
-                exact hbt
-              | ⊤ =>
-                exfalso
-                apply t.property.left
-                exact hbt
+          · obtain ⟨e, he⟩ : ∃ e : F, b t = e :=
+              match hbt : b t.val with
+              | (f : F) => ⟨_, rfl⟩
+              | ⊥ => (hbot ⟨t, hbt⟩).elim
+              | ⊤ => (t.property.left hbt).elim
             exact no_bot_has_top_dotWeig_nneg_le (t.property.right) ht x (he ▸ ineqalities t.val)
           rw [hxj]
           apply EF.zero_smul_nonbot
@@ -406,23 +385,15 @@ theorem extendedFarkas [DecidableEq I]
               · intro j hj _
                 rw [mul_comm]
                 simp only [A', Matrix.of_apply]
-                split <;> rename_i hAij <;> simp only [hAij]
-                · rfl
-                · exfalso
-                  apply hi.right
-                  exact hAij
-                · exfalso
-                  exact hj ⟨i, hi⟩ hAij
+                split <;> rename_i hAij
+                · exact hAij ▸ rfl
+                · exact (hi.right _ hAij).elim
+                · exact (hj ⟨i, hi⟩ hAij).elim
           · simp only [b']
-            split <;> rename_i hbi <;> simp only [hbi]
-            · rfl
-            · exfalso
-              apply hbot
-              use i
-              exact hbi
-            · exfalso
-              apply hi.left
-              exact hbi
+            split <;> rename_i hbi
+            · exact hbi
+            · exact (hbot ⟨i, hbi⟩).elim
+            · exact (hi.left hbi).elim
         else
           push_neg at hi
           if hbi : b i = ⊤ then
@@ -489,8 +460,8 @@ theorem extendedFarkas [DecidableEq I]
             congr
             ext i'
             simp only [A', Matrix.neg_apply, Matrix.transpose_apply, Matrix.of_apply]
-            split <;> rename_i hAij <;> simp only [hAij]
-            · rewrite [mul_comm]
+            split <;> rename_i hAij
+            · rewrite [hAij, mul_comm]
               rfl
             · exfalso
               apply i'.property.right
@@ -509,8 +480,8 @@ theorem extendedFarkas [DecidableEq I]
             rw [←EF.coe_lt_coe_iff, Finset.sum_toE]
             convert sharpine with i'
             simp only [b']
-            split <;> rename_i hbi <;> simp only [hbi]
-            · rewrite [mul_comm]
+            split <;> rename_i hbi
+            · rewrite [hbi, mul_comm]
               rfl
             · exfalso
               apply hbot
@@ -548,14 +519,10 @@ theorem extendedFarkas [DecidableEq I]
               · intro i hi hif
                 rw [mul_comm]
                 simp only [A', Matrix.neg_apply, Matrix.of_apply]
-                split <;> rename_i hAij <;> simp only [hAij]
-                · rfl
-                · exfalso
-                  apply hi.right
-                  exact hAij
-                · exfalso
-                  apply hj
-                  exact hAij
+                split <;> rename_i hAij
+                · exact hAij ▸ rfl
+                · exact (hi.right _ hAij).elim
+                · exact (hj _ hAij).elim
           else
             push_neg at hj
             obtain ⟨i, Aij_eq_top⟩ := hj
@@ -580,11 +547,9 @@ theorem extendedFarkas [DecidableEq I]
             · intro i hi _
               rw [mul_comm]
               simp only [b', Matrix.of_apply]
-              split <;> rename_i hbi <;> simp only [hbi]
-              · rfl
-              · exfalso
-                exact hbot ⟨i, hbi⟩
-              · exfalso
-                exact hi.left hbi
+              split <;> rename_i hbi
+              · simp_rw [hbi]; exact rfl
+              · exact (hbot ⟨i, hbi⟩).elim
+              · exact (hi.left hbi).elim
 
 end extended_Farkas

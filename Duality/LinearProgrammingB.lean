@@ -115,14 +115,14 @@ private lemma StandardLP.toValidELP.isSolution_iff (P : StandardLP I J R) (x : J
   show P.A.map toE ₘ* x ≤ toE ∘ P.b ↔ P.A *ᵥ x ≤ P.b
   simp [Pi.le_def, ←EF.coe_le_coe_iff, StandardLP.toE_mulVec_apply]
 
-private lemma StandardLP.toValidELP.reaches_iff (P : StandardLP I J R) (r : R) :
+private lemma StandardLP.toValidELP_reaches_iff (P : StandardLP I J R) (r : R) :
     P.toValidELP.Reaches r ↔ P.Reaches r := by
   peel with x
   apply and_congr
   · apply StandardLP.toValidELP.isSolution_iff
   · exact P.toE_dotProduct_apply x ▸ EF.coe_eq_coe_iff
 
-private lemma StandardLP.toValidELP.isFeasible_iff (P : StandardLP I J R) :
+private lemma StandardLP.toValidELP_isFeasible_iff (P : StandardLP I J R) :
     P.toValidELP.IsFeasible ↔ P.IsFeasible := by
   constructor
   · intro ⟨r, ⟨x, hx, hxr⟩, hr⟩
@@ -143,12 +143,12 @@ private lemma StandardLP.toValidELP.isFeasible_iff (P : StandardLP I J R) :
     · rwa [StandardLP.toValidELP.isSolution_iff]
     · rwa [←EF.coe_eq_coe_iff, P.toE_dotProduct_apply] at hxr
 
-private lemma StandardLP.toValidELP.isBoundedBy_iff (P : StandardLP I J R) (r : R) :
+private lemma StandardLP.toValidELP_isBoundedBy_iff (P : StandardLP I J R) (r : R) :
     P.toValidELP.IsBoundedBy r ↔ P.IsBoundedBy r := by
   unfold StandardLP.IsBoundedBy ExtendedLP.IsBoundedBy
   constructor <;> intro hP p hPp
   · simpa [EF.coe_le_coe_iff] using
-      hP (toE p) (by simpa [StandardLP.toValidELP.reaches_iff] using hPp)
+      hP (toE p) (by simpa [StandardLP.toValidELP_reaches_iff] using hPp)
   · match p with
     | ⊥ =>
       exfalso
@@ -160,37 +160,36 @@ private lemma StandardLP.toValidELP.isBoundedBy_iff (P : StandardLP I J R) (r : 
     | (_ : R) =>
       rw [EF.coe_le_coe_iff]
       apply hP
-      simpa [StandardLP.toValidELP.reaches_iff] using hPp
+      simpa [StandardLP.toValidELP_reaches_iff] using hPp
 
-private lemma StandardLP.toValidELP.isUnbounded_iff (P : StandardLP I J R) :
+private lemma StandardLP.toValidELP_isUnbounded_iff (P : StandardLP I J R) :
     P.toValidELP.IsUnbounded ↔ P.IsUnbounded := by
-  constructor <;> intro hP hr <;> apply hP <;> simpa [StandardLP.toValidELP.isBoundedBy_iff] using hr
+  constructor <;> intro hP hr <;> apply hP <;> simpa only [P.toValidELP_isBoundedBy_iff] using hr
 
-private theorem StandardLP.toValidELP.optimum_eq (P : StandardLP I J R) :
+private theorem StandardLP.toValidELP_optimum_eq (P : StandardLP I J R) :
     P.toValidELP.optimum = P.optimum := by
   if feas : P.IsFeasible then
     if unbo : P.IsUnbounded then
       convert @rfl _ (some (⊥ : R∞))
-      · simp [ExtendedLP.optimum, feas, unbo, StandardLP.toValidELP.isFeasible_iff, StandardLP.toValidELP.isUnbounded_iff]
+      · simp [ExtendedLP.optimum, feas, unbo, P.toValidELP_isFeasible_iff, P.toValidELP_isUnbounded_iff]
       · simp [StandardLP.optimum, feas, unbo]
     else
-      simp only [StandardLP.optimum, ExtendedLP.optimum, feas, unbo,
-        StandardLP.toValidELP.isFeasible_iff, StandardLP.toValidELP.isUnbounded_iff]
+      simp only [StandardLP.optimum, ExtendedLP.optimum, feas, unbo, P.toValidELP_isFeasible_iff, P.toValidELP_isUnbounded_iff]
       if hr : ∃ r, P.Reaches r ∧ P.IsBoundedBy r then
         convert @rfl _ (some (toE hr.choose))
-        · simp [hr, StandardLP.toValidELP.reaches_iff, StandardLP.toValidELP.isBoundedBy_iff]
+        · simp [hr, P.toValidELP_reaches_iff, P.toValidELP_isBoundedBy_iff]
         · simp [hr]
       else
         convert @rfl _ none
-        · simp [hr, StandardLP.toValidELP.reaches_iff, StandardLP.toValidELP.isBoundedBy_iff]
+        · simp [hr, P.toValidELP_reaches_iff, P.toValidELP_isBoundedBy_iff]
         · simp [hr]
   else
     convert @rfl _ (some (⊤ : R∞))
-    · simp [ExtendedLP.optimum, feas, StandardLP.toValidELP.isFeasible_iff]
+    · simp [ExtendedLP.optimum, feas, P.toValidELP_isFeasible_iff]
     · simp [StandardLP.optimum, feas]
 
 omit [Fintype J] in
-private lemma StandardLP.toValidELP.dualize_eq (P : StandardLP I J R) :
+private lemma StandardLP.toValidELP_dualize_eq (P : StandardLP I J R) :
     P.toValidELP.dualize = P.dualize.toValidELP :=
   rfl
 
@@ -199,11 +198,11 @@ variable [Fintype I] [DecidableEq I] [DecidableEq J]
 
 theorem StandardLP.optimum_neq_none (P : StandardLP I J R) :
     P.optimum ≠ none :=
-  StandardLP.toValidELP.optimum_eq P ▸ P.toValidELP.optimum_neq_none
+  P.toValidELP_optimum_eq ▸ P.toValidELP.optimum_neq_none
 
 theorem StandardLP.strongDuality (P : StandardLP I J R) (hP : P.IsFeasible ∨ P.dualize.IsFeasible) :
     OppositesOpt P.optimum P.dualize.optimum := by
-  simpa [StandardLP.toValidELP.optimum_eq, StandardLP.toValidELP.dualize_eq] using
+  simpa [StandardLP.toValidELP_optimum_eq, P.toValidELP_dualize_eq] using
     P.toValidELP.strongDuality (by
-      simpa [StandardLP.toValidELP.isFeasible_iff, StandardLP.toValidELP.dualize_eq] using
+      simpa [StandardLP.toValidELP_isFeasible_iff, P.toValidELP_dualize_eq] using
         hP)

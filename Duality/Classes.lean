@@ -15,9 +15,9 @@ private def Monoid.toMonoid' {M : Type} (hM : Monoid M) : Monoid' M where
 
 private class AddMonoidWithOne' (R : Type) extends AddMonoid R, One R
 
-private def AddMonoidWithOne.AddMonoidWithOne' {R : Type} (hM : AddMonoidWithOne R) : AddMonoidWithOne' R where
+private def AddMonoidWithOne'.AddMonoidWithOne {R : Type} (hR : AddMonoidWithOne' R) : AddMonoidWithOne R where
 
-private def AddMonoidWithOne'.AddMonoidWithOne {R : Type} (hM : AddMonoidWithOne' R) : AddMonoidWithOne R where
+private def AddMonoidWithOne.AddMonoidWithOne' {R : Type} (hR : AddMonoidWithOne R) : AddMonoidWithOne' R where
 
 
 private class AddGroupWithOne' (R : Type) extends AddMonoidWithOne R, AddGroup R
@@ -25,8 +25,8 @@ private class AddGroupWithOne' (R : Type) extends AddMonoidWithOne R, AddGroup R
 private def AddGroupWithOne'.toAddGroupWithOne {R : Type} (hR : AddGroupWithOne' R) : AddGroupWithOne R where
   zsmul z x := if z ≥ 0 then z.toNat • x else - ((-z).toNat • x)
   zsmul_zero' _ := by simp
-  zsmul_succ' _ _ := by simp; split; apply succ_nsmul; omega;
-  zsmul_neg' _ _ := by rfl;
+  zsmul_succ' _ _ := by simp; split; apply succ_nsmul; omega
+  zsmul_neg' _ _ := by rfl
   neg_add_cancel := hR.neg_add_cancel
   sub_eq_add_neg := hR.sub_eq_add_neg
 
