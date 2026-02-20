@@ -108,7 +108,7 @@ theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     use Sum.elim (b - A *ᵥ x) x
     constructor
     · rw [Sum.nonneg_elim_iff]
-      exact ⟨fun i : I => sub_nonneg_of_le (hAxb i), hx⟩
+      exact ⟨sub_nonneg_of_le hAxb, hx⟩
     · aesop
   · intro ⟨x, hx, hAxb⟩
     use x ∘ Sum.inr
@@ -137,8 +137,7 @@ theorem inequalityFarkas [DecidableEq I] (A : Matrix I J F) (b : I → F) :
     · intro k
       simp only [A', Matrix.transpose_fromCols, Matrix.transpose_one] at hAy
       apply hAy
-    refine ⟨y, ?_, fun j : J => h1Ay ◪j, hby⟩
-    intro i
+    refine ⟨y, fun i : I => ?_, fun j : J => h1Ay ◪j, hby⟩
     simpa using h1Ay ◩i
 
 /-- A system of linear inequalities over nonnegative variables has a solution if and only if

@@ -222,10 +222,10 @@ lemma no_bot_dotWeig_nneg {v : I → F∞} (hv : ∀ i, v i ≠ ⊥) (w : I → 
   intro contr
   simp only [Multiset.sum_eq_EF_bot_iff, Multiset.mem_map, Finset.mem_val, Finset.mem_univ, true_and] at contr
   obtain ⟨i, hi⟩ := contr
-  match hvi : v i with
-  | ⊥ => exact hv i hvi
-  | ⊤ => rw [hvi] at hi; exact EF.smul_top_neq_bot (w i) hi
-  | (f : F) => rw [hvi] at hi; exact EF.smul_coe_neq_bot (w i) f hi
+  exact match hvi : v i with
+  | ⊥ => hv i hvi
+  | ⊤ => EF.smul_top_neq_bot (w i) ((congr_arg _ hvi.symm).trans hi)
+  | (f : F) => EF.smul_coe_neq_bot (w i) f ((congr_arg _ hvi.symm).trans hi)
 
 lemma no_bot_has_top_dotWeig_pos {v : I → F∞} (hv : ∀ a, v a ≠ ⊥) {i : I} (hvi : v i = ⊤)
     (w : I → F≥0) (hwi : 0 < w i) :
