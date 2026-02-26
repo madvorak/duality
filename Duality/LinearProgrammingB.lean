@@ -75,9 +75,9 @@ theorem StandardLP.weakDuality [Fintype I] [OrderedCommRing R] {P : StandardLP I
     dotProduct_le_dotProduct_of_nonneg_right hyc (x ·|>.property)
   have hxyy : P.A *ᵥ ↑x ⬝ᵥ ↑y ≤ P.b ⬝ᵥ ↑y :=
     dotProduct_le_dotProduct_of_nonneg_right hxb (y ·|>.property)
-  rw [Matrix.neg_mulVec, neg_dotProduct, neg_le] at hyxx
-  rw [Matrix.transpose_mulVec_dotProduct] at hyxx
-  exact neg_le_iff_add_nonneg'.→ (hyxx.trans hxyy)
+  rw [←neg_le_iff_add_nonneg']
+  rw [Matrix.neg_mulVec, neg_dotProduct, neg_le, Matrix.transpose_mulVec_dotProduct] at hyxx
+  exact (hyxx.trans hxyy)
 
 
 variable [LinearOrderedField R]
@@ -170,21 +170,21 @@ private theorem StandardLP.toValidELP_optimum_eq (P : StandardLP I J R) :
     P.toValidELP.optimum = P.optimum := by
   if feas : P.IsFeasible then
     if unbo : P.IsUnbounded then
-      convert @rfl _ (some (⊥ : R∞))
+      convert Eq.refl (some (⊥ : R∞))
       · simp [ExtendedLP.optimum, feas, unbo, P.toValidELP_isFeasible_iff, P.toValidELP_isUnbounded_iff]
       · simp [StandardLP.optimum, feas, unbo]
     else
       simp only [StandardLP.optimum, ExtendedLP.optimum, feas, unbo, P.toValidELP_isFeasible_iff, P.toValidELP_isUnbounded_iff]
-      if hr : ∃ r, P.Reaches r ∧ P.IsBoundedBy r then
-        convert @rfl _ (some (toE hr.choose))
+      if hr : ∃ r : R, P.Reaches r ∧ P.IsBoundedBy r then
+        convert Eq.refl (some (toE hr.choose))
         · simp [hr, P.toValidELP_reaches_iff, P.toValidELP_isBoundedBy_iff]
         · simp [hr]
       else
-        convert @rfl _ none
+        convert Eq.refl none
         · simp [hr, P.toValidELP_reaches_iff, P.toValidELP_isBoundedBy_iff]
         · simp [hr]
   else
-    convert @rfl _ (some (⊤ : R∞))
+    convert Eq.refl (some (⊤ : R∞))
     · simp [ExtendedLP.optimum, feas, P.toValidELP_isFeasible_iff]
     · simp [StandardLP.optimum, feas]
 

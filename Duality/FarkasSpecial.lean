@@ -500,7 +500,7 @@ theorem extendedFarkas [DecidableEq I]
         constructor
         · intro j
           if hj : (∀ i : I, A i j ≠ ⊤) then
-            convert EF.coe_le_coe_iff.← (ineqalities ⟨j, fun i' => hj i'.val⟩)
+            convert EF.coe_le_coe_iff.← (ineqalities ⟨j, (hj ·.val)⟩)
             simp only [Matrix.mulWeig, Matrix.neg_apply, Matrix.transpose_apply, Pi.zero_apply]
             simp only [dotWeig, dite_smul]
             rw [Finset.sum_dite]

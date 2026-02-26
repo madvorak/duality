@@ -651,7 +651,7 @@ lemma ValidELP.unbounded_of_feasible_of_infeasible (P : ValidELP I J F)
     exfalso
     obtain ⟨y, hy⟩ := caseI
     match hby : b' ᵥ⬝ y with
-    | ⊥ => exact no_bot_dotWeig_nneg (fun i hi => P.no_bot_of_feasible hP i.val hi) y hby
+    | ⊥ => exact no_bot_dotWeig_nneg (P.no_bot_of_feasible hP ·.val ·) y hby
     | ⊤ => exact no_top_dotWeig_nneg (·.property) y hby
     | (q : F) =>
       apply hQ
@@ -964,9 +964,8 @@ lemma ValidELP.strongDuality_aux (P : ValidELP I J F)
         show z⁻¹ * p + z⁻¹ * q ≤ 0
         rw [←mul_add]
         have hpq : p + q < 0
-        · rw [←EF.coe_lt_coe_iff, add_comm]
-          exact hbc
-        exact Linarith.mul_nonpos hpq.le z_inv_pos
+        · rwa [←EF.coe_lt_coe_iff, add_comm]
+        exact mul_nonpos_of_nonneg_of_nonpos z_inv_pos.le hpq.le
 
 lemma ValidELP.strongDuality_of_both_feasible (P : ValidELP I J F)
     (hP : P.IsFeasible) (hQ : P.dualize.IsFeasible) :
